@@ -15,10 +15,7 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private String apiKey = "f1b9458c5a22388abc326bc55eab3216";
-    private String baseUrl = "https://api.themoviedb.org/3";
-    private String apiKeyQuery = "api_key=";
-    private String popularMovies = baseUrl + "movie/popular/" + "?" + apiKeyQuery + apiKey;
-    private String topRatedMovies = baseUrl + "movie/top_rated/" + "?" + apiKeyQuery + apiKey;
+    private String baseUrl = "https://api.themoviedb.org/3/";
 
 
     @Override
@@ -46,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
