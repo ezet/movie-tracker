@@ -1,6 +1,7 @@
 package no.ezet.fasttrack.popularmovies;
 
 import no.ezet.fasttrack.popularmovies.models.MovieList;
+import no.ezet.fasttrack.popularmovies.services.IMovieService;
 import org.junit.Assert;
 import org.junit.Test;
 import retrofit2.Response;
@@ -19,21 +20,18 @@ public class FetchPopularMovies {
 
     @Test
     public void fetch_popularMovies() throws Exception {
-        MovieDbService service = createMovieService();
+        IMovieService service = createMovieService();
         Response<MovieList> response = service.getPopular(apiKey).execute();
         Assert.assertTrue(response.isSuccessful());
         Assert.assertNotEquals(0, response.body().getTotalResults().longValue());
     }
 
-
-
-
-    private MovieDbService createMovieService() {
+    private IMovieService createMovieService() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        return retrofit.create(MovieDbService.class);
+        return retrofit.create(IMovieService.class);
     }
 
 
