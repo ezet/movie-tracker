@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="msg_error">Errormessage</string>
+    <string name="msg_error">An error has occurred</string>
+    <string name="title_movie_list">Movies</string>
+    <string name="title_movie_detail">Movie Detail</string>
+    <string name="detail_release_date">Release date:</string>
+    <string name="detail_rating">Rating:</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top rated</string>
+    <string name="upcoming">Upcoming</string>
 </resources>

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="no.ezet.fasttrack.popularmovies.MainActivity">
+    android:layout_width="match_parent"
+    tools:context="no.ezet.fasttrack.popularmovies.MovieListActivity"
+    >
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/movie_list"
+        android:name="no.ezet.fasttrack.popularmovies.MovieListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rv_movies"
-        />
+        app:layoutManager="GridLayoutManager"
+        app:spanCount="2"
+        tools:listitem="@layout/movie_list_content"/>
 
     <TextView
         android:id="@+id/tv_error_message"
@@ -23,8 +23,9 @@
         android:layout_height="wrap_content"
         android:text="@string/msg_error"
         android:visibility="invisible"
+        android:layout_margin="16dp"
         />
-    
+
     <ProgressBar
         android:id="@+id/pb_loading_indicator"
         android:layout_width="42dp"

@@ -1,0 +1,287 @@
+package no.ezet.fasttrack.popularmovies;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.*;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.model.MovieList;
+import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.service.ImageService;
+import no.ezet.fasttrack.popularmovies.service.MovieServiceFactory;
+
+import java.io.IOException;
+
+/**
+ * An activity representing a list of Movies. This activity
+ * has different presentations for handset and tablet-size devices. On
+ * handsets, the activity presents a list of items, which when touched,
+ * lead to a {@link MovieDetailActivity} representing
+ * item details. On tablets, the activity presents the list of items and
+ * item details side-by-side using two vertical panes.
+ */
+public class MovieListActivity extends AppCompatActivity {
+
+
+    private static final String API_KEY = "";
+    private static final String BASE_URL = "https://api.themoviedb.org/3/";
+
+    private RecyclerView recyclerView;
+    private MovieListRecyclerViewAdapter adapter;
+    private ProgressBar progressBar;
+    private TextView errorTextView;
+    private Toolbar toolbar;
+    private boolean twoPane;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_movie_list);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(getTitle());
+
+        initFloatingActionButton();
+
+        recyclerView = (RecyclerView) findViewById(R.id.movie_list);
+        progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        errorTextView = (TextView) findViewById(R.id.tv_error_message);
+
+        setupRecyclerView(recyclerView);
+        loadPopular();
+
+        if (findViewById(R.id.movie_detail_container) != null) {
+            twoPane = true;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.app_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.isChecked()) return true;
+        item.setChecked(true);
+        switch (item.getItemId()) {
+            case R.id.action_popular: {
+                loadPopular();
+                break;
+            }
+            case R.id.action_top_rated: {
+                loadTopRated();
+                break;
+            }
+            case R.id.action_upcoming: {
+                loadUpcoming();
+                break;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    private void loadUpcoming() {
+        adapter.loadUpcoming();
+        toolbar.setSubtitle(R.string.upcoming);
+    }
+
+    private void loadTopRated() {
+        adapter.loadTopRated();
+        toolbar.setSubtitle(R.string.top_rated);
+    }
+
+    private void loadPopular() {
+        adapter.loadPopular();
+        toolbar.setSubtitle(R.string.popular);
+    }
+
+    private void showLoadingIndicator() {
+        errorTextView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void showLoadingError() {
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
+        errorTextView.setVisibility(View.VISIBLE);
+
+    }
+
+    private void showMovieList() {
+        progressBar.setVisibility(View.INVISIBLE);
+        errorTextView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void initFloatingActionButton() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        fab.setVisibility(View.INVISIBLE);
+    }
+
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        adapter = new MovieListRecyclerViewAdapter(ImageService.getImageService(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    public class MovieListRecyclerViewAdapter
+            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> {
+
+        private IMovieService movieService;
+        private ImageService imageService;
+        private MovieList movies;
+
+
+        MovieListRecyclerViewAdapter(ImageService imageService) {
+            this.imageService = imageService;
+            movieService = MovieServiceFactory.getMovieService(BASE_URL, API_KEY);
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.movie_list_content, parent, false);
+            return new ViewHolder(view);
+        }
+
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, int position) {
+            holder.movie = movies.getMovies().get(position);
+            loadImage(holder.movie.getPosterPath(), holder.posterImage);
+
+
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (twoPane) {
+                        Bundle arguments = new Bundle();
+                        arguments.putParcelable(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
+                        MovieDetailFragment fragment = new MovieDetailFragment();
+                        fragment.setArguments(arguments);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.movie_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, MovieDetailActivity.class);
+                        intent.putExtra(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
+                        context.startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            if (movies == null) return 0;
+            return movies.getMovies().size();
+        }
+
+        private void loadImage(String relPath, ImageView imageView) {
+            imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
+        }
+
+        private void setMovies(MovieList movies) {
+            this.movies = movies;
+            notifyDataSetChanged();
+        }
+
+        void loadPopular() {
+            new FetchMoviesTask(movieService).execute("popular");
+        }
+
+        void loadTopRated() {
+            new FetchMoviesTask(movieService).execute("top_rated");
+        }
+
+        void loadUpcoming() {
+            new FetchMoviesTask(movieService).execute("upcoming");
+        }
+
+        public class FetchMoviesTask extends AsyncTask<String, Void, MovieList> {
+
+            private IMovieService movieService;
+
+            FetchMoviesTask(IMovieService movieService) {
+                this.movieService = movieService;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                showLoadingIndicator();
+            }
+
+            @Override
+            protected MovieList doInBackground(String... params) {
+                String sortBy = params[0];
+                if (!isOnline()) return null;
+                MovieList movies = null;
+                try {
+                    movies = movieService.getMovies(sortBy).execute().body();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    showLoadingError();
+                }
+                return movies;
+            }
+
+            @Override
+            protected void onPostExecute(MovieList movieList) {
+                if (movieList != null) {
+                    setMovies(movieList);
+                    showMovieList();
+                } else {
+                    showLoadingError();
+                }
+            }
+
+            private boolean isOnline() {
+                ConnectivityManager cm =
+                        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo netInfo = cm.getActiveNetworkInfo();
+                return netInfo != null && netInfo.isConnectedOrConnecting();
+            }
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            final View view;
+            final ImageView posterImage;
+            Movie movie;
+
+            ViewHolder(View view) {
+                super(view);
+                this.view = view;
+                posterImage = (ImageView) view.findViewById(R.id.iv_poster_image);
+            }
+
+        }
+    }
+
+
+}
