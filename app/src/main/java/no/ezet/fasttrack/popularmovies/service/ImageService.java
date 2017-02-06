@@ -14,7 +14,7 @@ public class ImageService {
 
 
     public static ImageService getImageService(Context context) {
-        return new ImageService(new Picasso.Builder(context).loggingEnabled(false).build());
+        return new ImageService(new Picasso.Builder(context).loggingEnabled(true).build());
     }
 
     private Picasso picasso;

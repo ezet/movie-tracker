@@ -4,14 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -21,8 +22,6 @@ import no.ezet.fasttrack.popularmovies.model.MovieList;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.service.MovieServiceFactory;
-
-import java.io.IOException;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -45,6 +44,12 @@ public class MovieListActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private boolean twoPane;
 
+    private static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 180);
+        return noOfColumns;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,13 +118,13 @@ public class MovieListActivity extends AppCompatActivity {
         toolbar.setSubtitle(R.string.popular);
     }
 
-    private void showLoadingIndicator() {
+    public void showLoadingIndicator() {
         errorTextView.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void showLoadingError() {
+    public void showLoadingError() {
         recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
         errorTextView.setVisibility(View.VISIBLE);
@@ -145,12 +150,13 @@ public class MovieListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        recyclerView.setLayoutManager(new GridLayoutManager(this, calculateNoOfColumns(getBaseContext())));
         adapter = new MovieListRecyclerViewAdapter(ImageService.getImageService(this));
         recyclerView.setAdapter(adapter);
     }
 
     public class MovieListRecyclerViewAdapter
-            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> {
+            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> implements AsyncTaskCompleteListener<MovieList> {
 
         private IMovieService movieService;
         private ImageService imageService;
@@ -203,6 +209,21 @@ public class MovieListActivity extends AppCompatActivity {
             return movies.getMovies().size();
         }
 
+        @Override
+        public void onPostExecute(MovieList movieList) {
+            if (movieList != null) {
+                setMovies(movieList);
+                showMovieList();
+            } else {
+                showLoadingError();
+            }
+        }
+
+        @Override
+        public void onPreExecute() {
+            showLoadingIndicator();
+        }
+
         private void loadImage(String relPath, ImageView imageView) {
             imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
         }
@@ -213,61 +234,24 @@ public class MovieListActivity extends AppCompatActivity {
         }
 
         void loadPopular() {
-            new FetchMoviesTask(movieService).execute("popular");
+            new FetchMoviesTask(movieService, this).execute("popular");
         }
 
         void loadTopRated() {
-            new FetchMoviesTask(movieService).execute("top_rated");
+            new FetchMoviesTask(movieService, this).execute("top_rated");
         }
 
         void loadUpcoming() {
-            new FetchMoviesTask(movieService).execute("upcoming");
+            new FetchMoviesTask(movieService, this).execute("upcoming");
         }
 
-        public class FetchMoviesTask extends AsyncTask<String, Void, MovieList> {
-
-            private IMovieService movieService;
-
-            FetchMoviesTask(IMovieService movieService) {
-                this.movieService = movieService;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                showLoadingIndicator();
-            }
-
-            @Override
-            protected MovieList doInBackground(String... params) {
-                String sortBy = params[0];
-                if (!isOnline()) return null;
-                MovieList movies = null;
-                try {
-                    movies = movieService.getMovies(sortBy).execute().body();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    showLoadingError();
-                }
-                return movies;
-            }
-
-            @Override
-            protected void onPostExecute(MovieList movieList) {
-                if (movieList != null) {
-                    setMovies(movieList);
-                    showMovieList();
-                } else {
-                    showLoadingError();
-                }
-            }
-
-            private boolean isOnline() {
-                ConnectivityManager cm =
-                        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo netInfo = cm.getActiveNetworkInfo();
-                return netInfo != null && netInfo.isConnectedOrConnecting();
-            }
+        private boolean isOnline() {
+            ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            return netInfo != null && netInfo.isConnectedOrConnecting();
         }
+
 
         class ViewHolder extends RecyclerView.ViewHolder {
             final View view;
@@ -282,6 +266,5 @@ public class MovieListActivity extends AppCompatActivity {
 
         }
     }
-
-
 }
+
