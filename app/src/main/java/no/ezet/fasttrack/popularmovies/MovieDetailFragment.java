@@ -9,9 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import javax.inject.Inject;
+
 import no.ezet.fasttrack.popularmovies.databinding.MovieDetailContentBinding;
 import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.service.DaggerMovieComponent;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
+import no.ezet.fasttrack.popularmovies.service.MovieModule;
 
 /**
  * A fragment representing a single Movie detail screen.
@@ -25,14 +29,12 @@ public class MovieDetailFragment extends Fragment {
      * represents.
      */
     public static final String EXTRA_MOVIE = MovieDetailFragment.class.getPackage() + "movie";
+    @SuppressWarnings("unused")
     private static final String TAG = MovieDetailFragment.class.getSimpleName();
-
+    @Inject
+    ImageService imageService;
     private Movie movie;
-    private ImageService imageService;
-
     private ImageView posterImage;
-
-    private CollapsingToolbarLayout appBarLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -44,13 +46,12 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imageService = ImageService.getImageService(getContext());
-
+        DaggerMovieComponent.builder().movieModule(new MovieModule(getContext())).build().inject(this);
         if (getArguments().containsKey(EXTRA_MOVIE)) {
             movie = getArguments().getParcelable(EXTRA_MOVIE);
 
             Activity activity = this.getActivity();
-            appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setTitle(movie.getOriginalTitle());
             }

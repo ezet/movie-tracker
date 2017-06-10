@@ -17,10 +17,15 @@ import android.view.*;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import javax.inject.Inject;
+
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.MovieList;
+import no.ezet.fasttrack.popularmovies.service.DaggerMovieComponent;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
+import no.ezet.fasttrack.popularmovies.service.MovieModule;
 import no.ezet.fasttrack.popularmovies.service.MovieServiceFactory;
 
 /**
@@ -44,6 +49,8 @@ public class MovieListActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private boolean twoPane;
 
+    @Inject ImageService imageService;
+
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
@@ -54,6 +61,7 @@ public class MovieListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
+        DaggerMovieComponent.builder().movieModule(new MovieModule(this)).build().inject(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -127,7 +135,6 @@ public class MovieListActivity extends AppCompatActivity {
         recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
         errorTextView.setVisibility(View.VISIBLE);
-
     }
 
     private void showMovieList() {
@@ -145,7 +152,7 @@ public class MovieListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(this, calculateNoOfColumns(getBaseContext())));
-        adapter = new MovieListRecyclerViewAdapter(ImageService.getImageService(this));
+        adapter = new MovieListRecyclerViewAdapter(imageService);
         recyclerView.setAdapter(adapter);
     }
 
