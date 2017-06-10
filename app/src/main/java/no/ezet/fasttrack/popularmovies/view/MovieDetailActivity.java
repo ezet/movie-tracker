@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies;
+package no.ezet.fasttrack.popularmovies.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+
+import no.ezet.fasttrack.popularmovies.R;
 
 
 /**

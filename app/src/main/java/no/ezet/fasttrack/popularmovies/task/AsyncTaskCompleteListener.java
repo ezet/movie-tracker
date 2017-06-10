@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies;
+package no.ezet.fasttrack.popularmovies.task;
 
 public interface AsyncTaskCompleteListener<T> {
 

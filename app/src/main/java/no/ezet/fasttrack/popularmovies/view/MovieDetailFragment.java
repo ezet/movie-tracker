@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies;
+package no.ezet.fasttrack.popularmovies.view;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,11 +11,11 @@ import android.widget.ImageView;
 
 import javax.inject.Inject;
 
+import no.ezet.fasttrack.popularmovies.App;
+import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.databinding.MovieDetailContentBinding;
-import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.service.DaggerMovieComponent;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
-import no.ezet.fasttrack.popularmovies.service.MovieModule;
+import no.ezet.fasttrack.popularmovies.viewmodel.Movie;
 
 /**
  * A fragment representing a single Movie detail screen.
@@ -46,7 +46,7 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DaggerMovieComponent.builder().movieModule(new MovieModule(getContext())).build().inject(this);
+        App.getInstance().getMovieComponent().inject(this);
         if (getArguments().containsKey(EXTRA_MOVIE)) {
             movie = getArguments().getParcelable(EXTRA_MOVIE);
 

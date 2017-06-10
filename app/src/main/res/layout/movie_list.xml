@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    tools:context="no.ezet.fasttrack.popularmovies.MovieListActivity">
+    tools:context="no.ezet.fasttrack.popularmovies.view.MovieListActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/movie_list"

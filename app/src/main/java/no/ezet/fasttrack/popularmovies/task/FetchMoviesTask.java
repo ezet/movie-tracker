@@ -1,8 +1,8 @@
-package no.ezet.fasttrack.popularmovies;
+package no.ezet.fasttrack.popularmovies.task;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import no.ezet.fasttrack.popularmovies.model.MovieList;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieList;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, MovieList> {
     private IMovieService movieService;
     private AsyncTaskCompleteListener<MovieList> listener;
 
-    FetchMoviesTask(IMovieService movieService, AsyncTaskCompleteListener<MovieList> listener) {
+    public FetchMoviesTask(IMovieService movieService, AsyncTaskCompleteListener<MovieList> listener) {
         this.movieService = movieService;
         this.listener = listener;
     }

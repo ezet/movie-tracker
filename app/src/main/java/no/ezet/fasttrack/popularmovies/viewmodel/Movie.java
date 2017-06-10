@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies.model;
+package no.ezet.fasttrack.popularmovies.viewmodel;
 
 import android.os.Parcel;
 import android.os.Parcelable;

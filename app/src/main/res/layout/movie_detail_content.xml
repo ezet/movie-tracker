@@ -1,9 +1,10 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
             name="movie"
-            type="no.ezet.fasttrack.popularmovies.model.Movie" />
+            type="no.ezet.fasttrack.popularmovies.viewmodel.Movie" />
     </data>
 
     <LinearLayout
@@ -20,14 +21,20 @@
                 style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/detail_release_date" />
+                android:text="@string/detail_release_date"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:layout_marginRight="@dimen/text_margin" />
 
             <TextView
                 android:id="@+id/tv_movie_release_date"
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{movie.releaseDate}" />
+                android:text="@{movie.releaseDate}"
+                tools:text="24.10.1985"
+
+
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -38,14 +45,19 @@
                 style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/detail_rating" />
+                android:text="@string/detail_rating"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:layout_marginRight="@dimen/text_margin"
+                />
 
             <TextView
                 android:id="@+id/tv_movie_rating"
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(movie.voteAverage)}" />
+                android:text="@{String.valueOf(safeUnbox(movie.voteAverage))}"
+                tools:text="5.0"
+                />
 
         </LinearLayout>
 

@@ -1,6 +1,6 @@
 package no.ezet.fasttrack.popularmovies.service;
 
-import no.ezet.fasttrack.popularmovies.model.MovieList;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieList;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

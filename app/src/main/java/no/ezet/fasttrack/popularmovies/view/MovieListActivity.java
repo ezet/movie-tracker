@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies;
+package no.ezet.fasttrack.popularmovies.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,20 +13,25 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.model.MovieList;
-import no.ezet.fasttrack.popularmovies.service.DaggerMovieComponent;
+import no.ezet.fasttrack.popularmovies.App;
+import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
-import no.ezet.fasttrack.popularmovies.service.MovieModule;
-import no.ezet.fasttrack.popularmovies.service.MovieServiceFactory;
+import no.ezet.fasttrack.popularmovies.task.AsyncTaskCompleteListener;
+import no.ezet.fasttrack.popularmovies.task.FetchMoviesTask;
+import no.ezet.fasttrack.popularmovies.viewmodel.Movie;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieList;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -39,8 +44,7 @@ import no.ezet.fasttrack.popularmovies.service.MovieServiceFactory;
 public class MovieListActivity extends AppCompatActivity {
 
 
-    private static final String API_KEY = "f1b9458c5a22388abc326bc55eab3216";
-    private static final String BASE_URL = "https://api.themoviedb.org/3/";
+
 
     private RecyclerView recyclerView;
     private MovieListRecyclerViewAdapter adapter;
@@ -50,6 +54,7 @@ public class MovieListActivity extends AppCompatActivity {
     private boolean twoPane;
 
     @Inject ImageService imageService;
+    @Inject IMovieService movieService;
 
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -61,7 +66,7 @@ public class MovieListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
-        DaggerMovieComponent.builder().movieModule(new MovieModule(this)).build().inject(this);
+        App.getInstance().getMovieComponent().inject(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -152,7 +157,7 @@ public class MovieListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(this, calculateNoOfColumns(getBaseContext())));
-        adapter = new MovieListRecyclerViewAdapter(imageService);
+        adapter = new MovieListRecyclerViewAdapter(imageService, movieService);
         recyclerView.setAdapter(adapter);
     }
 
@@ -164,9 +169,9 @@ public class MovieListActivity extends AppCompatActivity {
         private MovieList movies;
 
 
-        MovieListRecyclerViewAdapter(ImageService imageService) {
+        MovieListRecyclerViewAdapter(ImageService imageService, IMovieService movieService) {
             this.imageService = imageService;
-            movieService = MovieServiceFactory.getMovieService(BASE_URL, API_KEY);
+            this.movieService = movieService;
         }
 
         @Override

@@ -1,10 +1,14 @@
 package no.ezet.fasttrack.popularmovies.service;
 
-import dagger.Component;
-import no.ezet.fasttrack.popularmovies.MovieDetailFragment;
-import no.ezet.fasttrack.popularmovies.MovieListActivity;
+import javax.inject.Singleton;
 
-@Component(modules = {MovieModule.class})
+import dagger.Component;
+import no.ezet.fasttrack.popularmovies.AppModule;
+import no.ezet.fasttrack.popularmovies.view.MovieDetailFragment;
+import no.ezet.fasttrack.popularmovies.view.MovieListActivity;
+
+@Singleton
+@Component(modules = {MovieModule.class, AppModule.class})
 public interface MovieComponent {
 
     void inject(MovieListActivity activity);
