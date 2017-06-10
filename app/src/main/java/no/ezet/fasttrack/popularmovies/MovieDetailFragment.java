@@ -8,7 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+
+import no.ezet.fasttrack.popularmovies.databinding.MovieDetailContentBinding;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 
@@ -59,16 +60,12 @@ public class MovieDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.movie_detail_content, container, false);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        MovieDetailContentBinding binding = MovieDetailContentBinding.inflate(inflater, container, false);
         if (movie != null) {
-            ((TextView) rootView.findViewById(R.id.tv_movie_overview)).setText(movie.getOverview());
-            ((TextView) rootView.findViewById(R.id.tv_movie_release_date)).setText(movie.getReleaseDate());
-            ((TextView) rootView.findViewById(R.id.tv_movie_rating)).setText(String.valueOf(movie.getVoteAverage()));
+            binding.setMovie(movie);
             imageService.loadImage(movie.getBackdropPath(), ImageService.SIZE_W342, posterImage);
         }
-        return rootView;
+        return binding.getRoot();
     }
 }

@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:layout_gravity="fill"
     android:scaleType="centerCrop"
-    />
+
+    android:contentDescription="Poster Image" />

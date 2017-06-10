@@ -34,7 +34,7 @@ import no.ezet.fasttrack.popularmovies.service.MovieServiceFactory;
 public class MovieListActivity extends AppCompatActivity {
 
 
-    private static final String API_KEY = "";
+    private static final String API_KEY = "f1b9458c5a22388abc326bc55eab3216";
     private static final String BASE_URL = "https://api.themoviedb.org/3/";
 
     private RecyclerView recyclerView;
@@ -47,8 +47,7 @@ public class MovieListActivity extends AppCompatActivity {
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        int noOfColumns = (int) (dpWidth / 180);
-        return noOfColumns;
+        return (int) (dpWidth / 180);
     }
 
     @Override
@@ -139,13 +138,8 @@ public class MovieListActivity extends AppCompatActivity {
 
     private void initFloatingActionButton() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
         fab.setVisibility(View.INVISIBLE);
     }
 
@@ -182,23 +176,20 @@ public class MovieListActivity extends AppCompatActivity {
             loadImage(holder.movie.getPosterPath(), holder.posterImage);
 
 
-            holder.view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (twoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putParcelable(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
-                        MovieDetailFragment fragment = new MovieDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.movie_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, MovieDetailActivity.class);
-                        intent.putExtra(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
-                        context.startActivity(intent);
-                    }
+            holder.view.setOnClickListener(v -> {
+                if (twoPane) {
+                    Bundle arguments = new Bundle();
+                    arguments.putParcelable(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
+                    MovieDetailFragment fragment = new MovieDetailFragment();
+                    fragment.setArguments(arguments);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.movie_detail_container, fragment)
+                            .commit();
+                } else {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, MovieDetailActivity.class);
+                    intent.putExtra(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
+                    context.startActivity(intent);
                 }
             });
         }
