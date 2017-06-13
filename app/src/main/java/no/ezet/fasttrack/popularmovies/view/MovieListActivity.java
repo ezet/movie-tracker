@@ -1,11 +1,19 @@
 package no.ezet.fasttrack.popularmovies.view;
 
+import android.arch.lifecycle.LifecycleActivity;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,16 +30,20 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
 import no.ezet.fasttrack.popularmovies.App;
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.model.MovieList;
+import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
-import no.ezet.fasttrack.popularmovies.task.AsyncTaskCompleteListener;
-import no.ezet.fasttrack.popularmovies.task.FetchMoviesTask;
-import no.ezet.fasttrack.popularmovies.viewmodel.Movie;
-import no.ezet.fasttrack.popularmovies.viewmodel.MovieList;
+import no.ezet.fasttrack.popularmovies.task.RepositoryListener;
+import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
+import timber.log.Timber;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -41,20 +53,21 @@ import no.ezet.fasttrack.popularmovies.viewmodel.MovieList;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MovieListActivity extends AppCompatActivity {
+public class MovieListActivity extends AppCompatActivity implements LifecycleRegistryOwner, Observer<List<Movie>> {
 
 
-
-
+    @Inject
+    ImageService imageService;
+    @Inject
+    MovieRepository movieRepository;
     private RecyclerView recyclerView;
     private MovieListRecyclerViewAdapter adapter;
     private ProgressBar progressBar;
     private TextView errorTextView;
     private Toolbar toolbar;
     private boolean twoPane;
-
-    @Inject ImageService imageService;
-    @Inject IMovieService movieService;
+    private MoviesViewModel moviesViewModel;
+    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -66,7 +79,12 @@ public class MovieListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
-        App.getInstance().getMovieComponent().inject(this);
+        AndroidInjection.inject(this);
+
+        moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
+
+        moviesViewModel.getMovies("").observe(this, this);
+
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -157,21 +175,31 @@ public class MovieListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(this, calculateNoOfColumns(getBaseContext())));
-        adapter = new MovieListRecyclerViewAdapter(imageService, movieService);
+        adapter = new MovieListRecyclerViewAdapter(imageService, movieRepository);
         recyclerView.setAdapter(adapter);
     }
 
-    public class MovieListRecyclerViewAdapter
-            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> implements AsyncTaskCompleteListener<MovieList> {
+    @Override
+    public void onChanged(@Nullable List<Movie> movies) {
 
-        private IMovieService movieService;
+    }
+
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
+    }
+
+    public class MovieListRecyclerViewAdapter
+            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> implements RepositoryListener<MovieList>, Observer<List<Movie>> {
+
+        private MovieRepository movieRepository;
         private ImageService imageService;
         private MovieList movies;
 
 
-        MovieListRecyclerViewAdapter(ImageService imageService, IMovieService movieService) {
+        MovieListRecyclerViewAdapter(ImageService imageService, MovieRepository movieRepository) {
             this.imageService = imageService;
-            this.movieService = movieService;
+            this.movieRepository = movieRepository;
         }
 
         @Override
@@ -215,7 +243,7 @@ public class MovieListActivity extends AppCompatActivity {
         @Override
         public void onPostExecute(MovieList movieList) {
             if (movieList != null) {
-                setMovies(movieList);
+//                setMovies(movieList);
                 showMovieList();
             } else {
                 showLoadingError();
@@ -237,22 +265,29 @@ public class MovieListActivity extends AppCompatActivity {
         }
 
         void loadPopular() {
-            new FetchMoviesTask(movieService, this).execute("popular");
+//            movieRepository.getMovies("popular", this);
+            moviesViewModel.getMovies("popular").observe(MovieListActivity.this, this);
         }
 
         void loadTopRated() {
-            new FetchMoviesTask(movieService, this).execute("top_rated");
+            movieRepository.getMovies("top_rated", this);
         }
 
         void loadUpcoming() {
-            new FetchMoviesTask(movieService, this).execute("upcoming");
+            movieRepository.getMovies("upcoming", this);
         }
 
+        @SuppressWarnings("unused")
         private boolean isOnline() {
             ConnectivityManager cm =
                     (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo netInfo = cm.getActiveNetworkInfo();
             return netInfo != null && netInfo.isConnectedOrConnecting();
+        }
+
+        @Override
+        public void onChanged(@Nullable List<Movie> movies) {
+            Timber.d("onChanged");
         }
 
 

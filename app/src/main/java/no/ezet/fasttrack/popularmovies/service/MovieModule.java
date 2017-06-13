@@ -21,29 +21,6 @@ public class MovieModule {
     private static final String apiKey = "f1b9458c5a22388abc326bc55eab3216";
     private static final String baseUrl = "https://api.themoviedb.org/3/";
 
-    @Singleton
-    @Provides
-    public ImageService provideImageService(Picasso picasso) {
-        return new ImageService(BASE_URL, picasso);
-    }
-
-    @Singleton
-    @Provides
-    public Picasso providePicasso(Application application) {
-        return new Picasso.Builder(application).loggingEnabled(true).build();
-    }
-
-    @Singleton
-    @Provides
-    public IMovieService provideMovieService() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(createHttpClient(apiKey))
-                .build();
-        return retrofit.create(IMovieService.class);
-    }
-
     private static OkHttpClient createHttpClient(final String apiKey) {
         OkHttpClient.Builder httpClient =
                 new OkHttpClient.Builder();
@@ -63,6 +40,24 @@ public class MovieModule {
             return chain.proceed(request);
         });
         return httpClient.build();
+    }
+
+    @Singleton
+    @Provides
+    ImageService provideImageService(Picasso picasso) {
+        return new ImageService(BASE_URL, picasso);
+    }
+
+
+    @Singleton
+    @Provides
+    IMovieService provideMovieService() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(createHttpClient(apiKey))
+                .build();
+        return retrofit.create(IMovieService.class);
     }
 
 

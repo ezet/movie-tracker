@@ -8,13 +8,14 @@ import com.squareup.picasso.RequestCreator;
 public class ImageService {
 
 
+    @SuppressWarnings("unused")
     public static final String SIZE_W185 = "w185";
     public static final String SIZE_W342 = "w342";
     private final String baseUrl;
 
     private Picasso picasso;
 
-    public ImageService(String base_url, Picasso picasso) {
+    ImageService(String base_url, Picasso picasso) {
         baseUrl = base_url;
         this.picasso = picasso;
     }

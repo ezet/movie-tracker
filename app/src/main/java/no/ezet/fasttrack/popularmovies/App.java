@@ -1,15 +1,20 @@
 package no.ezet.fasttrack.popularmovies;
 
+import android.app.Activity;
 import android.app.Application;
 
-import no.ezet.fasttrack.popularmovies.service.DaggerMovieComponent;
-import no.ezet.fasttrack.popularmovies.service.MovieComponent;
-import no.ezet.fasttrack.popularmovies.service.MovieModule;
+import javax.inject.Inject;
 
-public class App extends Application {
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
+import timber.log.Timber;
+
+public class App extends Application implements HasActivityInjector {
 
     private static App instance;
-    private MovieComponent movieComponent;
+    @Inject
+    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     public static App getInstance() {
         return instance;
@@ -19,10 +24,14 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        movieComponent = DaggerMovieComponent.builder().appModule(new AppModule(this)).movieModule(new MovieModule()).build();
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+        DaggerAppComponent.builder().application(this).build().inject(this);
     }
 
-    public MovieComponent getMovieComponent() {
-        return movieComponent;
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return dispatchingAndroidInjector;
     }
 }

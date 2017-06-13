@@ -4,7 +4,7 @@
     <data>
         <variable
             name="movie"
-            type="no.ezet.fasttrack.popularmovies.viewmodel.Movie" />
+            type="no.ezet.fasttrack.popularmovies.model.Movie" />
     </data>
 
     <LinearLayout

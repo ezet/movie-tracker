@@ -1,7 +1,7 @@
 package no.ezet.fasttrack.popularmovies.view;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,8 +14,8 @@ import javax.inject.Inject;
 import no.ezet.fasttrack.popularmovies.App;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.databinding.MovieDetailContentBinding;
+import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
-import no.ezet.fasttrack.popularmovies.viewmodel.Movie;
 
 /**
  * A fragment representing a single Movie detail screen.
@@ -44,29 +44,33 @@ public class MovieDetailFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.getInstance().getMovieComponent().inject(this);
+//        App.getInstance().getMovieComponent().inject(this);
+        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
+
         if (getArguments().containsKey(EXTRA_MOVIE)) {
             movie = getArguments().getParcelable(EXTRA_MOVIE);
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(movie.getOriginalTitle());
+                appBarLayout.setTitle(movie != null ? movie.getOriginalTitle() : null);
             }
-
-            posterImage = (ImageView) activity.findViewById(R.id.iv_backdrop_image);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MovieDetailContentBinding binding = MovieDetailContentBinding.inflate(inflater, container, false);
+        binding.setMovie(movie);
+        posterImage = (ImageView) getActivity().findViewById(R.id.iv_backdrop_image);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         if (movie != null) {
-            binding.setMovie(movie);
             imageService.loadImage(movie.getBackdropPath(), ImageService.SIZE_W342, posterImage);
         }
-        return binding.getRoot();
     }
 }
