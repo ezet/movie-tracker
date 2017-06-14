@@ -5,9 +5,10 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public abstract class IMovieService {
+public interface IMovieService {
 
     @GET("movie/{sortBy}")
-    public abstract Call<MovieList> getMovies(@Path("sortBy") String sortBy);
+    Call<MovieList> getMovies(@Path("sortBy") String sortBy);
+
 
 }

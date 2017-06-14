@@ -2,66 +2,12 @@ package no.ezet.fasttrack.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.gson.annotations.Expose;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 public class Movie implements Parcelable {
-
-    @SerializedName("poster_path")
-    @Expose
-    private String posterPath;
-    @SerializedName("adult")
-    @Expose
-    private Boolean adult;
-    @SerializedName("overview")
-    @Expose
-    private String overview;
-    @SerializedName("release_date")
-    @Expose
-    private String releaseDate;
-    @SerializedName("genre_ids")
-    @Expose
-    private List<Integer> genreIds = null;
-    @SerializedName("id")
-    @Expose
-    private Integer id;
-    @SerializedName("original_title")
-    @Expose
-    private String originalTitle;
-    @SerializedName("original_language")
-    @Expose
-    private String originalLanguage;
-    @SerializedName("title")
-    @Expose
-    private String title;
-    @SerializedName("backdrop_path")
-    @Expose
-    private String backdropPath;
-    @SerializedName("popularity")
-    @Expose
-    private Double popularity;
-    @SerializedName("vote_count")
-    @Expose
-    private Integer voteCount;
-    @SerializedName("video")
-    @Expose
-    private Boolean video;
-    @SerializedName("vote_average")
-    @Expose
-    private Double voteAverage;
-
-    protected Movie(Parcel in) {
-        posterPath = in.readString();
-        overview = in.readString();
-        releaseDate = in.readString();
-        originalTitle = in.readString();
-        originalLanguage = in.readString();
-        title = in.readString();
-        backdropPath = in.readString();
-        voteAverage = in.readDouble();
-    }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
@@ -74,6 +20,57 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
+    @SerializedName("poster_path")
+    private String posterPath;
+    @SerializedName("adult")
+    private Boolean adult;
+    @SerializedName("overview")
+
+    private String overview;
+    @SerializedName("release_date")
+
+    private String releaseDate;
+    @SerializedName("genre_ids")
+
+    private List<Integer> genreIds = null;
+    @SerializedName("id")
+
+    private Integer id;
+    @SerializedName("original_title")
+
+    private String originalTitle;
+    @SerializedName("original_language")
+
+    private String originalLanguage;
+    @SerializedName("title")
+
+    private String title;
+    @SerializedName("backdrop_path")
+
+    private String backdropPath;
+    @SerializedName("popularity")
+
+    private Double popularity;
+    @SerializedName("vote_count")
+
+    private Integer voteCount;
+    @SerializedName("video")
+
+    private Boolean video;
+    @SerializedName("vote_average")
+
+    private Double voteAverage;
+
+    protected Movie(Parcel in) {
+        posterPath = in.readString();
+        overview = in.readString();
+        releaseDate = in.readString();
+        originalTitle = in.readString();
+        originalLanguage = in.readString();
+        title = in.readString();
+        backdropPath = in.readString();
+        voteAverage = in.readDouble();
+    }
 
     public String getPosterPath() {
         return posterPath;
@@ -183,14 +180,13 @@ public class Movie implements Parcelable {
         return voteAverage;
     }
 
-    public String getVoteAverageString() {
-        return String.valueOf(voteAverage);
-    }
-
     public void setVoteAverage(Double voteAverage) {
         this.voteAverage = voteAverage;
     }
 
+    public String getVoteAverageString() {
+        return String.valueOf(voteAverage);
+    }
 
     @Override
     public int describeContents() {

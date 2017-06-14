@@ -1,21 +1,17 @@
 package no.ezet.fasttrack.popularmovies.view;
 
-import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,20 +26,20 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import no.ezet.fasttrack.popularmovies.App;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.MovieList;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
-import no.ezet.fasttrack.popularmovies.task.RepositoryListener;
 import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
-import timber.log.Timber;
+
+import static no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel.POPULAR;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -53,13 +49,18 @@ import timber.log.Timber;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MovieListActivity extends AppCompatActivity implements LifecycleRegistryOwner, Observer<List<Movie>> {
+public class MovieListActivity extends AppCompatActivity implements LifecycleRegistryOwner, Observer<Boolean>, HasSupportFragmentInjector {
 
 
+    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
     @Inject
     ImageService imageService;
     @Inject
     MovieRepository movieRepository;
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
     private RecyclerView recyclerView;
     private MovieListRecyclerViewAdapter adapter;
     private ProgressBar progressBar;
@@ -67,7 +68,6 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
     private Toolbar toolbar;
     private boolean twoPane;
     private MoviesViewModel moviesViewModel;
-    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -77,13 +77,11 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
-        AndroidInjection.inject(this);
 
-        moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
-
-        moviesViewModel.getMovies("").observe(this, this);
+        moviesViewModel = ViewModelProviders.of(this, viewModelFactory).get(MoviesViewModel.class);
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -91,18 +89,27 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
         toolbar.setTitle(getTitle());
 
         initFloatingActionButton();
+        moviesViewModel.getIsLoading().observe(this, loading -> {
+                    if (loading != null && loading) showLoadingIndicator();
+                    else showMovieList();
+                }
+        );
+
 
         recyclerView = (RecyclerView) findViewById(R.id.movie_list);
+
         progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         errorTextView = (TextView) findViewById(R.id.tv_error_message);
 
         setupRecyclerView(recyclerView);
-        loadPopular();
 
         if (findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
+
+        loadPopular();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,12 +183,8 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(this, calculateNoOfColumns(getBaseContext())));
         adapter = new MovieListRecyclerViewAdapter(imageService, movieRepository);
+
         recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onChanged(@Nullable List<Movie> movies) {
-
     }
 
     @Override
@@ -189,8 +192,22 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
         return lifecycleRegistry;
     }
 
+    @Override
+    public void onChanged(@Nullable Boolean aBoolean) {
+        if (aBoolean != null && aBoolean) {
+            showLoadingIndicator();
+        } else {
+            showMovieList();
+        }
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingAndroidInjector;
+    }
+
     public class MovieListRecyclerViewAdapter
-            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> implements RepositoryListener<MovieList>, Observer<List<Movie>> {
+            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> implements Observer<MovieList> {
 
         private MovieRepository movieRepository;
         private ImageService imageService;
@@ -217,19 +234,20 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
 
 
             holder.view.setOnClickListener(v -> {
+                Bundle arguments = new Bundle();
+                arguments.putParcelable(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
+                MovieDetailFragment fragment = new MovieDetailFragment();
+                fragment.setArguments(arguments);
                 if (twoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putParcelable(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
-                    MovieDetailFragment fragment = new MovieDetailFragment();
-                    fragment.setArguments(arguments);
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.movie_detail_container, fragment)
-                            .commit();
+                            .commitAllowingStateLoss();
                 } else {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, MovieDetailActivity.class);
-                    intent.putExtra(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
-                    context.startActivity(intent);
+//                    Context context = v.getContext();
+//                    Intent intent = new Intent(context, MovieDetailActivity.class);
+//                    intent.putExtra(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
+//                    context.startActivity(intent);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.root_view, fragment).commitAllowingStateLoss();
                 }
             });
         }
@@ -240,54 +258,28 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
             return movies.getMovies().size();
         }
 
-        @Override
-        public void onPostExecute(MovieList movieList) {
-            if (movieList != null) {
-//                setMovies(movieList);
-                showMovieList();
-            } else {
-                showLoadingError();
-            }
-        }
-
-        @Override
-        public void onPreExecute() {
-            showLoadingIndicator();
-        }
 
         private void loadImage(String relPath, ImageView imageView) {
             imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
         }
 
-        private void setMovies(MovieList movies) {
-            this.movies = movies;
-            notifyDataSetChanged();
-        }
-
         void loadPopular() {
-//            movieRepository.getMovies("popular", this);
-            moviesViewModel.getMovies("popular").observe(MovieListActivity.this, this);
+            moviesViewModel.getMovies(POPULAR).observe(MovieListActivity.this, this);
         }
 
         void loadTopRated() {
-            movieRepository.getMovies("top_rated", this);
+            moviesViewModel.getMovies(MoviesViewModel.TOP_RATED).observe(MovieListActivity.this, this);
         }
 
         void loadUpcoming() {
-            movieRepository.getMovies("upcoming", this);
+            moviesViewModel.getMovies(MoviesViewModel.UPCOMING).observe(MovieListActivity.this, this);
         }
 
-        @SuppressWarnings("unused")
-        private boolean isOnline() {
-            ConnectivityManager cm =
-                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = cm.getActiveNetworkInfo();
-            return netInfo != null && netInfo.isConnectedOrConnecting();
-        }
 
         @Override
-        public void onChanged(@Nullable List<Movie> movies) {
-            Timber.d("onChanged");
+        public void onChanged(@Nullable MovieList movies) {
+            this.movies = movies;
+            notifyDataSetChanged();
         }
 
 

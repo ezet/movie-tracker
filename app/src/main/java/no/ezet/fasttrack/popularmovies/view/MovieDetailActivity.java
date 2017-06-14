@@ -28,7 +28,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-
         initFloatingActionButton();
 
         ActionBar actionBar = getSupportActionBar();
