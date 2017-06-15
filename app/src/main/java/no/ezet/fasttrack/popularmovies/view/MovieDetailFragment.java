@@ -23,7 +23,7 @@ import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
 
 /**
  * A fragment representing a single Movie detail screen.
- * This fragment is either contained in a {@link MovieListActivity}
+ * This fragment is either contained in a {@link MainActivity}
  * in two-pane mode (on tablets) or a {@link MovieDetailActivity}
  * on handsets.
  */
@@ -33,8 +33,7 @@ public class MovieDetailFragment extends LifecycleFragment {
      * represents.
      */
     public static final String EXTRA_MOVIE = MovieDetailFragment.class.getPackage() + "movie";
-    @SuppressWarnings("unused")
-    private static final String TAG = MovieDetailFragment.class.getSimpleName();
+
     @Inject
     ImageService imageService;
 
@@ -48,12 +47,12 @@ public class MovieDetailFragment extends LifecycleFragment {
     private Movie movie;
     private ImageView backdropImage;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public MovieDetailFragment() {
-    }
+//    /**
+//     * Mandatory empty constructor for the fragment manager to instantiate the
+//     * fragment (e.g. upon screen orientation changes).
+//     */
+//    public MovieDetailFragment() {
+//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

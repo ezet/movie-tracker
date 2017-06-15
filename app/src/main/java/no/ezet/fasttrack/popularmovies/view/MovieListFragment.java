@@ -1,7 +1,6 @@
 package no.ezet.fasttrack.popularmovies.view;
 
-import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
@@ -9,9 +8,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +28,7 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
+import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.MovieList;
@@ -49,18 +46,15 @@ import static no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel.POPULAR;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MovieListActivity extends AppCompatActivity implements LifecycleRegistryOwner, Observer<Boolean>, HasSupportFragmentInjector {
+public class MovieListFragment extends LifecycleFragment implements Observer<Boolean> {
 
-
-    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
     @Inject
     ImageService imageService;
     @Inject
     MovieRepository movieRepository;
     @Inject
     ViewModelProvider.Factory viewModelFactory;
-    @Inject
-    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
+
     private RecyclerView recyclerView;
     private MovieListRecyclerViewAdapter adapter;
     private ProgressBar progressBar;
@@ -76,45 +70,55 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        AndroidInjection.inject(this);
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_list);
+        setHasOptionsMenu(true);
+    }
 
-        moviesViewModel = ViewModelProviders.of(this, viewModelFactory).get(MoviesViewModel.class);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+
+        moviesViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(MoviesViewModel.class);
 
         initFloatingActionButton();
+
         moviesViewModel.getIsLoading().observe(this, loading -> {
                     if (loading != null && loading) showLoadingIndicator();
                     else showMovieList();
                 }
         );
 
+        recyclerView = (RecyclerView) getActivity().findViewById(R.id.movie_list);
 
-        recyclerView = (RecyclerView) findViewById(R.id.movie_list);
-
-        progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-        errorTextView = (TextView) findViewById(R.id.tv_error_message);
+        progressBar = (ProgressBar) getActivity().findViewById(R.id.pb_loading_indicator);
+        errorTextView = (TextView) getActivity().findViewById(R.id.tv_error_message);
 
         setupRecyclerView(recyclerView);
 
-        if (findViewById(R.id.movie_detail_container) != null) {
+        if (getActivity().findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
 
         loadPopular();
     }
 
-
+    @Nullable
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.app_bar, menu);
-        return true;
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle(getActivity().getTitle());
+        return rootView;
     }
 
     @Override
@@ -138,6 +142,11 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.app_bar, menu);
     }
 
     private void loadUpcoming() {
@@ -174,22 +183,17 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
     }
 
     private void initFloatingActionButton() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
         fab.setVisibility(View.INVISIBLE);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setLayoutManager(new GridLayoutManager(this, calculateNoOfColumns(getBaseContext())));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
         adapter = new MovieListRecyclerViewAdapter(imageService, movieRepository);
 
         recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    public LifecycleRegistry getLifecycle() {
-        return lifecycleRegistry;
     }
 
     @Override
@@ -199,11 +203,6 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
         } else {
             showMovieList();
         }
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return dispatchingAndroidInjector;
     }
 
     public class MovieListRecyclerViewAdapter
@@ -222,7 +221,7 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.movie_list_content, parent, false);
+                    .inflate(R.layout.movie_list_item, parent, false);
             return new ViewHolder(view);
         }
 
@@ -239,15 +238,13 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
                 MovieDetailFragment fragment = new MovieDetailFragment();
                 fragment.setArguments(arguments);
                 if (twoPane) {
-                    getSupportFragmentManager().beginTransaction()
+                    getFragmentManager().beginTransaction()
                             .replace(R.id.movie_detail_container, fragment)
                             .commitAllowingStateLoss();
                 } else {
-//                    Context context = v.getContext();
-//                    Intent intent = new Intent(context, MovieDetailActivity.class);
-//                    intent.putExtra(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
-//                    context.startActivity(intent);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.root_view, fragment).commitAllowingStateLoss();
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.root_container, fragment).addToBackStack(null)
+                            .commitAllowingStateLoss();
                 }
             });
         }
@@ -264,15 +261,15 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
         }
 
         void loadPopular() {
-            moviesViewModel.getMovies(POPULAR).observe(MovieListActivity.this, this);
+            moviesViewModel.getMovies(POPULAR).observe(MovieListFragment.this, this);
         }
 
         void loadTopRated() {
-            moviesViewModel.getMovies(MoviesViewModel.TOP_RATED).observe(MovieListActivity.this, this);
+            moviesViewModel.getMovies(MoviesViewModel.TOP_RATED).observe(MovieListFragment.this, this);
         }
 
         void loadUpcoming() {
-            moviesViewModel.getMovies(MoviesViewModel.UPCOMING).observe(MovieListActivity.this, this);
+            moviesViewModel.getMovies(MoviesViewModel.UPCOMING).observe(MovieListFragment.this, this);
         }
 
 
@@ -297,4 +294,5 @@ public class MovieListActivity extends AppCompatActivity implements LifecycleReg
         }
     }
 }
+
 

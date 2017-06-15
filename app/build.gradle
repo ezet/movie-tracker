@@ -7,6 +7,7 @@ ext {
     rxJavaVersion = '2.1.0'
     rxAndroidVersion = '2.0.1'
     timberVersion = '4.5.1'
+    supportVersion = '25.4.0'
 }
 
 android {
@@ -43,9 +44,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:recyclerview-v7:25.4.0'
-    compile 'com.android.support:support-v4:25.4.0'
-    compile 'com.android.support:design:25.4.0'
+    compile "com.android.support:recyclerview-v7:$supportVersion"
+    compile "com.android.support:support-v4:$supportVersion"
+    compile "com.android.support:design:$supportVersion"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
