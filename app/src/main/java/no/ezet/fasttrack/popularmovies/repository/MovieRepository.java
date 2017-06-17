@@ -21,7 +21,7 @@ public class MovieRepository {
 
     private static final String QUERY_POPULAR = "popular";
     private static final String QUERY_UPCOMING = "upcoming";
-    private static final String QUERY_TOPRATED = "toprated";
+    private static final String QUERY_TOPRATED = "top_rated";
     private IMovieService movieService;
     private ImageService imageService;
 
@@ -53,7 +53,7 @@ public class MovieRepository {
     private class NetworkBoundResource extends NetworkResource<MovieList, MovieList> {
 
         private String query;
-        private MovieList item;
+        private MovieList movieList;
 
         private NetworkBoundResource(String query) {
             this.query = query;
@@ -61,7 +61,7 @@ public class MovieRepository {
 
         @Override
         protected void saveCallResult(MovieList item) {
-            this.item = item;
+            this.movieList = item;
         }
 
         @Override
@@ -72,7 +72,7 @@ public class MovieRepository {
         @Override
         protected LiveData<MovieList> loadFromDb() {
             MutableLiveData<MovieList> data = new MutableLiveData<>();
-            data.setValue(item);
+            data.setValue(movieList);
             return data;
         }
 

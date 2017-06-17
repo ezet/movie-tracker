@@ -20,6 +20,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
+import timber.log.Timber;
 
 /**
  * An activity representing a list of Movies. This activity

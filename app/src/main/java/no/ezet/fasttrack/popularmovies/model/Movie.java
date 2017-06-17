@@ -1,76 +1,71 @@
 package no.ezet.fasttrack.popularmovies.model;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Movie implements Parcelable {
+@SuppressWarnings("WeakerAccess")
+@org.parceler.Parcel
+public class Movie {
+//public class Movie implements Parcelable {
 
-    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
-        }
+//    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+//        @Override
+//        public Movie createFromParcel(Parcel in) {
+//            return new Movie(in);
+//        }
+//
+//        @Override
+//        public Movie[] newArray(int size) {
+//            return new Movie[size];
+//        }
+//    };
 
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
     @SerializedName("poster_path")
-    private String posterPath;
+    String posterPath;
+
     @SerializedName("adult")
-    private Boolean adult;
+    Boolean adult;
     @SerializedName("overview")
+    String overview;
 
-    private String overview;
     @SerializedName("release_date")
-
-    private String releaseDate;
+    String releaseDate;
     @SerializedName("genre_ids")
-
-    private List<Integer> genreIds = null;
+    List<Integer> genreIds = null;
     @SerializedName("id")
-
-    private Integer id;
+    Integer id;
     @SerializedName("original_title")
-
-    private String originalTitle;
+    String originalTitle;
     @SerializedName("original_language")
-
-    private String originalLanguage;
+    String originalLanguage;
     @SerializedName("title")
-
-    private String title;
+    String title;
     @SerializedName("backdrop_path")
-
-    private String backdropPath;
+    String backdropPath;
     @SerializedName("popularity")
-
-    private Double popularity;
+    Double popularity;
     @SerializedName("vote_count")
-
-    private Integer voteCount;
+    Integer voteCount;
     @SerializedName("video")
-
-    private Boolean video;
+    Boolean video;
     @SerializedName("vote_average")
+    Double voteAverage;
 
-    private Double voteAverage;
 
-    protected Movie(Parcel in) {
-        posterPath = in.readString();
-        overview = in.readString();
-        releaseDate = in.readString();
-        originalTitle = in.readString();
-        originalLanguage = in.readString();
-        title = in.readString();
-        backdropPath = in.readString();
-        voteAverage = in.readDouble();
-    }
+
+//    protected Movie(Parcel in) {
+//        posterPath = in.readString();
+//        overview = in.readString();
+//        releaseDate = in.readString();
+//        originalTitle = in.readString();
+//        originalLanguage = in.readString();
+//        title = in.readString();
+//        backdropPath = in.readString();
+//        voteAverage = in.readDouble();
+//    }
 
     public String getPosterPath() {
         return posterPath;
@@ -188,20 +183,20 @@ public class Movie implements Parcelable {
         return String.valueOf(voteAverage);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(posterPath);
-        dest.writeString(overview);
-        dest.writeString(releaseDate);
-        dest.writeString(originalTitle);
-        dest.writeString(originalLanguage);
-        dest.writeString(title);
-        dest.writeString(backdropPath);
-        dest.writeDouble(voteAverage);
-    }
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(posterPath);
+//        dest.writeString(overview);
+//        dest.writeString(releaseDate);
+//        dest.writeString(originalTitle);
+//        dest.writeString(originalLanguage);
+//        dest.writeString(title);
+//        dest.writeString(backdropPath);
+//        dest.writeDouble(voteAverage);
+//    }
 }

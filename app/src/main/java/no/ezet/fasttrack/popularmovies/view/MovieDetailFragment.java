@@ -4,8 +4,8 @@ import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import org.parceler.Parcels;
 
 import javax.inject.Inject;
 
@@ -49,7 +51,6 @@ public class MovieDetailFragment extends LifecycleFragment {
     private MoviesViewModel viewModel;
 
 
-    private Movie movie;
     private ImageView backdropImage;
     private MovieDetailContentBinding binding;
 
@@ -58,10 +59,22 @@ public class MovieDetailFragment extends LifecycleFragment {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MoviesViewModel.class);
 
-//        if (getArguments().containsKey(EXTRA_MOVIE)) {
-//            movie = getArguments().getParcelable(EXTRA_MOVIE);
-//        }
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState == null) return;
+        if (savedInstanceState.containsKey(EXTRA_MOVIE)) {
+            viewModel.setSelectedMovie(Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_MOVIE)));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_MOVIE, Parcels.wrap(viewModel.getSelectedMovie().getValue()));
     }
 
     private void initFloatingActionButton() {
@@ -85,9 +98,7 @@ public class MovieDetailFragment extends LifecycleFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = MovieDetailContentBinding.inflate(inflater, container, false);
-//        binding.setMovie(movie);
         backdropImage = (ImageView) binding.getRoot().findViewById(R.id.iv_backdrop_image);
-//        viewModel.getSelectedMovie().observe(this, this::bindMovie);
         return binding.getRoot();
     }
 
@@ -106,20 +117,13 @@ public class MovieDetailFragment extends LifecycleFragment {
         initFloatingActionButton();
         viewModel.getSelectedMovie().observe(this, this::bindMovie);
 
-//        if (movie != null) {
-//            imageService.loadImage(movie.getBackdropPath(), ImageService.SIZE_W342, backdropImage);
-//            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
-//            if (appBarLayout != null) {
-//                appBarLayout.setTitle(movie != null ? movie.getOriginalTitle() : null);
-//            }
-//        }
     }
 
     private void bindMovie(Movie movie) {
         imageService.loadImage(movie.getBackdropPath(), ImageService.SIZE_W342, backdropImage);
         CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
         if (appBarLayout != null) {
-            appBarLayout.setTitle(movie != null ? movie.getOriginalTitle() : null);
+            appBarLayout.setTitle(movie.getOriginalTitle());
         }
         binding.setMovie(movie);
     }

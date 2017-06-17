@@ -85,11 +85,10 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
-        moviesViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(MoviesViewModel.class);
-
         initFloatingActionButton();
 
+        moviesViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(MoviesViewModel.class);
+        moviesViewModel.setSelectedMovie(null);
         moviesViewModel.getIsLoading().observe(this, loading -> {
                     if (loading != null && loading) showLoadingIndicator();
                     else showMovieList();
@@ -233,14 +232,8 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
 
             holder.view.setOnClickListener(v -> {
                 MovieDetailFragment fragment = new MovieDetailFragment();
-                Bundle arguments = new Bundle();
-                arguments.putParcelable(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
                 moviesViewModel.setSelectedMovie(holder.movie);
-//                fragment.setArguments(arguments);
-                int target = R.id.root_container;
-                if (twoPane) {
-                    target = R.id.movie_detail_container;
-                }
+                int target = twoPane ? R.id.movie_detail_container : R.id.root_container;
                 getFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .addToBackStack(null)
@@ -261,7 +254,7 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
         }
 
         void loadPopular() {
-            moviesViewModel.getMovies(POPULAR).observe(MovieListFragment.this, this);
+            moviesViewModel.getMovies(MoviesViewModel.POPULAR).observe(MovieListFragment.this, this);
         }
 
         void loadTopRated() {
@@ -290,7 +283,6 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
                 this.view = view;
                 posterImage = (ImageView) view.findViewById(R.id.iv_poster_image);
             }
-
         }
     }
 }
