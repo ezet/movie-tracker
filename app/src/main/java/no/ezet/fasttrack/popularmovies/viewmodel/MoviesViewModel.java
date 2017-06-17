@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -24,11 +23,18 @@ public class MoviesViewModel extends ViewModel {
     private final MediatorLiveData<MovieList> movies = new MediatorLiveData<>();
     private LiveData<Resource<MovieList>> movieResource;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-
     @Inject
     MoviesViewModel(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
         selectedMovie = new MutableLiveData<>();
+    }
+
+    public LiveData<Movie> getSelectedMovie() {
+        return selectedMovie;
+    }
+
+    public void setSelectedMovie(Movie movie) {
+        selectedMovie.setValue(movie);
     }
 
     public LiveData<MovieList> getMovies(int sortBy) {
@@ -56,9 +62,5 @@ public class MoviesViewModel extends ViewModel {
 
     public LiveData<Boolean> getIsLoading() {
         return loading;
-    }
-
-    public void setSelectedMovie(Movie movie) {
-        selectedMovie.setValue(movie);
     }
 }

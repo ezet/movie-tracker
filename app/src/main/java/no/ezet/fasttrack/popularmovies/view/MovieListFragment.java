@@ -8,9 +8,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,7 +42,7 @@ import static no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel.POPULAR;
  * An activity representing a list of Movies. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link MovieDetailActivity} representing
+ * lead to a {@link MovieDetailFragment} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
@@ -84,7 +84,6 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
 
 
         moviesViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(MoviesViewModel.class);
@@ -233,19 +232,20 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
 
 
             holder.view.setOnClickListener(v -> {
+                MovieDetailFragment fragment = new MovieDetailFragment();
                 Bundle arguments = new Bundle();
                 arguments.putParcelable(MovieDetailFragment.EXTRA_MOVIE, holder.movie);
-                MovieDetailFragment fragment = new MovieDetailFragment();
-                fragment.setArguments(arguments);
+                moviesViewModel.setSelectedMovie(holder.movie);
+//                fragment.setArguments(arguments);
+                int target = R.id.root_container;
                 if (twoPane) {
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.movie_detail_container, fragment)
-                            .commitAllowingStateLoss();
-                } else {
-                    getFragmentManager().beginTransaction()
-                            .replace(R.id.root_container, fragment).addToBackStack(null)
-                            .commitAllowingStateLoss();
+                    target = R.id.movie_detail_container;
                 }
+                getFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .replace(target, fragment)
+                        .commitAllowingStateLoss();
             });
         }
 

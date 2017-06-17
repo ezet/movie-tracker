@@ -1,10 +1,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="no.ezet.fasttrack.popularmovies.view.MovieDetailActivity">
-
+    tools:context="no.ezet.fasttrack.popularmovies.view.MovieDetailFragment">
     <data>
-
         <variable
             name="movie"
             type="no.ezet.fasttrack.popularmovies.model.Movie" />
@@ -26,7 +24,6 @@
                 android:id="@+id/toolbar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
                 app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
@@ -37,8 +34,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:contentDescription="@string/backdrop_image"
-                    android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
+                    android:fitsSystemWindows="true"
                     app:layout_collapseMode="parallax" />
 
                 <android.support.v7.widget.Toolbar
