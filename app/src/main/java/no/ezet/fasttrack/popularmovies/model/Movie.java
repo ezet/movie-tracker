@@ -1,7 +1,5 @@
 package no.ezet.fasttrack.popularmovies.model;
 
-import android.os.Parcel;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -9,19 +7,6 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess")
 @org.parceler.Parcel
 public class Movie {
-//public class Movie implements Parcelable {
-
-//    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-//        @Override
-//        public Movie createFromParcel(Parcel in) {
-//            return new Movie(in);
-//        }
-//
-//        @Override
-//        public Movie[] newArray(int size) {
-//            return new Movie[size];
-//        }
-//    };
 
     @SerializedName("poster_path")
     String posterPath;
@@ -54,18 +39,6 @@ public class Movie {
     @SerializedName("vote_average")
     Double voteAverage;
 
-
-
-//    protected Movie(Parcel in) {
-//        posterPath = in.readString();
-//        overview = in.readString();
-//        releaseDate = in.readString();
-//        originalTitle = in.readString();
-//        originalLanguage = in.readString();
-//        title = in.readString();
-//        backdropPath = in.readString();
-//        voteAverage = in.readDouble();
-//    }
 
     public String getPosterPath() {
         return posterPath;
@@ -183,20 +156,4 @@ public class Movie {
         return String.valueOf(voteAverage);
     }
 
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeString(posterPath);
-//        dest.writeString(overview);
-//        dest.writeString(releaseDate);
-//        dest.writeString(originalTitle);
-//        dest.writeString(originalLanguage);
-//        dest.writeString(title);
-//        dest.writeString(backdropPath);
-//        dest.writeDouble(voteAverage);
-//    }
 }
