@@ -3,22 +3,26 @@ package no.ezet.fasttrack.popularmovies.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
 import java.util.List;
 
 @SuppressWarnings("unused")
+
+@Parcel
 public class MovieList {
 
     @SerializedName("page")
-    private Integer page;
+    Integer page;
 
     @SerializedName("results")
-    private List<Movie> results = null;
+    List<Movie> results = null;
 
     @SerializedName("total_results")
-    private Integer totalResults;
+    Integer totalResults;
 
     @SerializedName("total_pages")
-    private Integer totalPages;
+    Integer totalPages;
 
     public Integer getPage() {
         return page;

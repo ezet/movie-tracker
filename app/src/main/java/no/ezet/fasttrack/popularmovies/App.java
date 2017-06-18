@@ -3,6 +3,8 @@ package no.ezet.fasttrack.popularmovies;
 import android.app.Activity;
 import android.app.Application;
 
+import org.parceler.Parcels;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
@@ -24,6 +26,7 @@ public class App extends Application implements HasActivityInjector {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+
     }
 
     @Override

@@ -7,8 +7,8 @@ import retrofit2.http.Path;
 
 public interface IMovieService {
 
-    @GET("movie/{sortBy}")
-    Call<MovieList> getMovies(@Path("sortBy") String sortBy);
+    @GET("movie/{setSortBy}")
+    Call<MovieList> getMovies(@Path("setSortBy") String sortBy);
 
 
 }

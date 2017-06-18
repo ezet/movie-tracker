@@ -36,8 +36,6 @@ import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
 
-import static no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel.POPULAR;
-
 /**
  * An activity representing a list of Movies. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -46,6 +44,7 @@ import static no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel.POPULAR;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
+@SuppressWarnings("ConstantConditions")
 public class MovieListFragment extends LifecycleFragment implements Observer<Boolean> {
 
     @Inject
@@ -61,7 +60,7 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
     private TextView errorTextView;
     private Toolbar toolbar;
     private boolean twoPane;
-    private MoviesViewModel moviesViewModel;
+    private MoviesViewModel viewModel;
 
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -82,18 +81,30 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        viewModel.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        viewModel.onViewStateRestored(savedInstanceState);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         initFloatingActionButton();
 
-        moviesViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(MoviesViewModel.class);
-        moviesViewModel.setSelectedMovie(null);
-        moviesViewModel.getIsLoading().observe(this, loading -> {
+        viewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(MoviesViewModel.class);
+        viewModel.getIsLoading().observe(this, loading -> {
                     if (loading != null && loading) showLoadingIndicator();
                     else showMovieList();
                 }
         );
+        viewModel.getTitleResourceId().observe(this, integer -> toolbar.setSubtitle(integer));
+        viewModel.setSelectedMovie(null);
 
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.movie_list);
 
@@ -105,8 +116,6 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
         if (getActivity().findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
-
-        loadPopular();
     }
 
     @Nullable
@@ -145,20 +154,35 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.app_bar, menu);
+        if (viewModel.getSortBy().getValue() != null) {
+            int menuItemId = 0;
+            switch (viewModel.getSortBy().getValue()) {
+                case MoviesViewModel.POPULAR:
+                    menuItemId = R.id.action_popular;
+                    break;
+                case MoviesViewModel.UPCOMING:
+                    menuItemId = R.id.action_upcoming;
+                    break;
+                case MoviesViewModel.TOP_RATED:
+                    menuItemId = R.id.action_top_rated;
+                    break;
+            }
+            menu.findItem(menuItemId).setChecked(true);
+        }
     }
 
     private void loadUpcoming() {
-        adapter.loadUpcoming();
+        viewModel.setSortBy(MoviesViewModel.UPCOMING);
         toolbar.setSubtitle(R.string.upcoming);
     }
 
     private void loadTopRated() {
-        adapter.loadTopRated();
+        viewModel.setSortBy(MoviesViewModel.TOP_RATED);
         toolbar.setSubtitle(R.string.top_rated);
     }
 
     private void loadPopular() {
-        adapter.loadPopular();
+        viewModel.setSortBy(MoviesViewModel.POPULAR);
         toolbar.setSubtitle(R.string.popular);
     }
 
@@ -189,8 +213,8 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
-        adapter = new MovieListRecyclerViewAdapter(imageService, movieRepository);
-
+        adapter = new MovieListRecyclerViewAdapter(imageService);
+        viewModel.getMovies().observe(this, adapter);
         recyclerView.setAdapter(adapter);
     }
 
@@ -206,14 +230,12 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
     public class MovieListRecyclerViewAdapter
             extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> implements Observer<MovieList> {
 
-        private MovieRepository movieRepository;
         private ImageService imageService;
         private MovieList movies;
 
 
-        MovieListRecyclerViewAdapter(ImageService imageService, MovieRepository movieRepository) {
+        MovieListRecyclerViewAdapter(ImageService imageService) {
             this.imageService = imageService;
-            this.movieRepository = movieRepository;
         }
 
         @Override
@@ -232,7 +254,7 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
 
             holder.view.setOnClickListener(v -> {
                 MovieDetailFragment fragment = new MovieDetailFragment();
-                moviesViewModel.setSelectedMovie(holder.movie);
+                viewModel.setSelectedMovie(holder.movie);
                 int target = twoPane ? R.id.movie_detail_container : R.id.root_container;
                 getFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -253,25 +275,11 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
             imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
         }
 
-        void loadPopular() {
-            moviesViewModel.getMovies(MoviesViewModel.POPULAR).observe(MovieListFragment.this, this);
-        }
-
-        void loadTopRated() {
-            moviesViewModel.getMovies(MoviesViewModel.TOP_RATED).observe(MovieListFragment.this, this);
-        }
-
-        void loadUpcoming() {
-            moviesViewModel.getMovies(MoviesViewModel.UPCOMING).observe(MovieListFragment.this, this);
-        }
-
-
         @Override
         public void onChanged(@Nullable MovieList movies) {
             this.movies = movies;
             notifyDataSetChanged();
         }
-
 
         class ViewHolder extends RecyclerView.ViewHolder {
             final View view;
