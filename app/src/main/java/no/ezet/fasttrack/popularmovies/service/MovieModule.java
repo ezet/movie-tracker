@@ -1,7 +1,9 @@
 package no.ezet.fasttrack.popularmovies.service;
 
-import android.app.Application;
-
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.FieldNamingStrategy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
@@ -11,6 +13,7 @@ import dagger.Provides;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -22,8 +25,11 @@ public class MovieModule {
     private static final String baseUrl = "https://api.themoviedb.org/3/";
 
     private static OkHttpClient createHttpClient(final String apiKey) {
+
         OkHttpClient.Builder httpClient =
                 new OkHttpClient.Builder();
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE);
+        httpClient.addInterceptor(loggingInterceptor);
         httpClient.addInterceptor(chain -> {
             Request original = chain.request();
             HttpUrl originalHttpUrl = original.url();
@@ -52,9 +58,10 @@ public class MovieModule {
     @Singleton
     @Provides
     IMovieService provideMovieService() {
+        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(createHttpClient(apiKey))
                 .build();
         return retrofit.create(IMovieService.class);

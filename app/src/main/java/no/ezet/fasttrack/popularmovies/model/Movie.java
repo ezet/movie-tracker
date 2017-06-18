@@ -1,42 +1,24 @@
 package no.ezet.fasttrack.popularmovies.model;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 @org.parceler.Parcel
 public class Movie {
 
-    @SerializedName("poster_path")
     String posterPath;
-
-    @SerializedName("adult")
     Boolean adult;
-    @SerializedName("overview")
     String overview;
-
-    @SerializedName("release_date")
     String releaseDate;
-    @SerializedName("genre_ids")
     List<Integer> genreIds = null;
-    @SerializedName("id")
     Integer id;
-    @SerializedName("original_title")
     String originalTitle;
-    @SerializedName("original_language")
     String originalLanguage;
-    @SerializedName("title")
     String title;
-    @SerializedName("backdrop_path")
     String backdropPath;
-    @SerializedName("popularity")
     Double popularity;
-    @SerializedName("vote_count")
     Integer voteCount;
-    @SerializedName("video")
     Boolean video;
-    @SerializedName("vote_average")
     Double voteAverage;
 
 

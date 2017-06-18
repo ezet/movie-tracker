@@ -8,4 +8,6 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="progressbar_height">42dp</dimen>
     <dimen name="progressbar_width">42dp</dimen>
+    <dimen name="trailer_height_for_detail">16dp</dimen>
+    <dimen name="trailer_width_for_detail">16dp</dimen>
 </resources>

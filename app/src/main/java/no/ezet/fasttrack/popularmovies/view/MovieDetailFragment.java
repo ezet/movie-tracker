@@ -5,13 +5,14 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.databinding.MovieDetailContentBinding;
 import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
 import timber.log.Timber;
@@ -47,18 +49,21 @@ public class MovieDetailFragment extends LifecycleFragment {
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
+    @Inject
+    IMovieService movieService;
+
 
     private MoviesViewModel viewModel;
 
 
     private ImageView backdropImage;
     private MovieDetailContentBinding binding;
+    private RecyclerView reviewList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MoviesViewModel.class);
-
         setHasOptionsMenu(true);
     }
 
@@ -99,7 +104,15 @@ public class MovieDetailFragment extends LifecycleFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = MovieDetailContentBinding.inflate(inflater, container, false);
         backdropImage = (ImageView) binding.getRoot().findViewById(R.id.iv_backdrop_image);
+        reviewList = (RecyclerView) binding.getRoot().findViewById(R.id.review_list);
         return binding.getRoot();
+    }
+
+    private void setupReviewList(RecyclerView recyclerView) {
+        ReviewListAdapter reviewListAdapter = new ReviewListAdapter((movieReview, adapterPosition) -> Timber.d("setupReviewList: "));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(reviewListAdapter);
+        viewModel.getReviews().observe(this, reviewListAdapter::setReviews);
     }
 
     @Override
@@ -113,10 +126,10 @@ public class MovieDetailFragment extends LifecycleFragment {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
         initFloatingActionButton();
-        viewModel.getSelectedMovie().observe(this, this::bindMovie);
+        setupReviewList(reviewList);
 
+        viewModel.getSelectedMovie().observe(this, this::bindMovie);
     }
 
     private void bindMovie(Movie movie) {

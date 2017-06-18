@@ -45,17 +45,14 @@ import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
  * item details side-by-side using two vertical panes.
  */
 @SuppressWarnings("ConstantConditions")
-public class MovieListFragment extends LifecycleFragment implements Observer<Boolean> {
+public class MovieListFragment extends LifecycleFragment {
 
     @Inject
     ImageService imageService;
     @Inject
-    MovieRepository movieRepository;
-    @Inject
     ViewModelProvider.Factory viewModelFactory;
 
     private RecyclerView recyclerView;
-    private MovieListRecyclerViewAdapter adapter;
     private ProgressBar progressBar;
     private TextView errorTextView;
     private Toolbar toolbar;
@@ -213,22 +210,13 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
-        adapter = new MovieListRecyclerViewAdapter(imageService);
-        viewModel.getMovies().observe(this, adapter);
+        MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService);
+        viewModel.getMovies().observe(this, adapter::setMovies);
         recyclerView.setAdapter(adapter);
     }
 
-    @Override
-    public void onChanged(@Nullable Boolean aBoolean) {
-        if (aBoolean != null && aBoolean) {
-            showLoadingIndicator();
-        } else {
-            showMovieList();
-        }
-    }
-
     public class MovieListRecyclerViewAdapter
-            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> implements Observer<MovieList> {
+            extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> {
 
         private ImageService imageService;
         private MovieList movies;
@@ -250,7 +238,6 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.movie = movies.getMovies().get(position);
             loadImage(holder.movie.getPosterPath(), holder.posterImage);
-
 
             holder.view.setOnClickListener(v -> {
                 MovieDetailFragment fragment = new MovieDetailFragment();
@@ -275,9 +262,8 @@ public class MovieListFragment extends LifecycleFragment implements Observer<Boo
             imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
         }
 
-        @Override
-        public void onChanged(@Nullable MovieList movies) {
-            this.movies = movies;
+        void setMovies(MovieList movieList) {
+            this.movies = movieList;
             notifyDataSetChanged();
         }
 

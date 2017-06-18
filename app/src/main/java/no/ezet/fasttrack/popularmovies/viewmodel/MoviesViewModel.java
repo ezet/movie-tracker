@@ -7,13 +7,22 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.os.Bundle;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import no.ezet.fasttrack.popularmovies.R;
+import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.MovieList;
+import no.ezet.fasttrack.popularmovies.model.MovieReview;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
+import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
 public class MoviesViewModel extends ViewModel {
 
@@ -24,16 +33,19 @@ public class MoviesViewModel extends ViewModel {
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
     private final MutableLiveData<Movie> selectedMovie = new MutableLiveData<>();
     private final MovieRepository movieRepository;
+    private final IMovieService movieService;
     private final MediatorLiveData<MovieList> movies = new MediatorLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Integer> currentSortBy = new MutableLiveData<>();
     private final LiveData<Integer> titleResourceId;
     private LiveData<Resource<MovieList>> movieResource;
+    private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
 
 
     @Inject
-    MoviesViewModel(MovieRepository movieRepository) {
+    MoviesViewModel(MovieRepository movieRepository, IMovieService movieService) {
         this.movieRepository = movieRepository;
+        this.movieService = movieService;
         movies.addSource(currentSortBy, this::loadMovies);
         currentSortBy.setValue(0);
         titleResourceId = Transformations.map(currentSortBy, integer -> {
@@ -108,5 +120,22 @@ public class MoviesViewModel extends ViewModel {
 
     public LiveData<Integer> getTitleResourceId() {
         return titleResourceId;
+    }
+
+    public LiveData<List<MovieReview>> getReviews() {
+        movieService.getReviews(selectedMovie.getValue().getId()).enqueue(new Callback<ApiList<MovieReview>>() {
+            @Override
+            public void onResponse(Call<ApiList<MovieReview>> call, Response<ApiList<MovieReview>> response) {
+                if (response.isSuccessful()) reviews.setValue(response.body().results);
+            }
+
+            @Override
+            public void onFailure(Call<ApiList<MovieReview>> call, Throwable t) {
+                Timber.d("onFailure: ");
+
+            }
+        });
+
+        return reviews;
     }
 }

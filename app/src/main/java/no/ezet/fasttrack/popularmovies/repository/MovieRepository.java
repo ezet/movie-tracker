@@ -79,7 +79,7 @@ public class MovieRepository {
         @Override
         protected LiveData<NetworkResponse<MovieList>> createCall() {
             final MutableLiveData<NetworkResponse<MovieList>> livedata = new MutableLiveData<>();
-            movieService.getMovies(query).enqueue(new Callback<MovieList>() {
+            movieService.getVideos(query).enqueue(new Callback<MovieList>() {
                 @Override
                 public void onResponse(@NonNull Call<MovieList> call, @NonNull Response<MovieList> response) {
                     Timber.d("onResponse");
