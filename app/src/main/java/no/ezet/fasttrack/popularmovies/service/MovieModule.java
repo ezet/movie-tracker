@@ -1,7 +1,6 @@
 package no.ezet.fasttrack.popularmovies.service;
 
 import com.google.gson.FieldNamingPolicy;
-import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
@@ -20,9 +19,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class MovieModule {
 
-    private static final String BASE_URL = "http://image.tmdb.org/t/p/";
-    private static final String apiKey = "f1b9458c5a22388abc326bc55eab3216";
-    private static final String baseUrl = "https://api.themoviedb.org/3/";
+    private static final String IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String API_KEY = "f1b9458c5a22388abc326bc55eab3216";
+    private static final String API_URL = "https://api.themoviedb.org/3/";
 
     private static OkHttpClient createHttpClient(final String apiKey) {
 
@@ -51,18 +50,17 @@ public class MovieModule {
     @Singleton
     @Provides
     ImageService provideImageService(Picasso picasso) {
-        return new ImageService(BASE_URL, picasso);
+        return new ImageService(IMAGE_URL, picasso);
     }
-
 
     @Singleton
     @Provides
     IMovieService provideMovieService() {
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(createHttpClient(apiKey))
+                .client(createHttpClient(API_KEY))
                 .build();
         return retrofit.create(IMovieService.class);
     }

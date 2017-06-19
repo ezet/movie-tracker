@@ -16,6 +16,7 @@ import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.MovieList;
 import no.ezet.fasttrack.popularmovies.model.MovieReview;
+import no.ezet.fasttrack.popularmovies.model.MovieTrailer;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
@@ -40,6 +41,7 @@ public class MoviesViewModel extends ViewModel {
     private final LiveData<Integer> titleResourceId;
     private LiveData<Resource<MovieList>> movieResource;
     private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
+    private MediatorLiveData<List<MovieTrailer>> trailers = new MediatorLiveData<>();
 
 
     @Inject
@@ -137,5 +139,20 @@ public class MoviesViewModel extends ViewModel {
         });
 
         return reviews;
+    }
+
+    public LiveData<List<MovieTrailer>> getTrailers() {
+        movieService.getVideos(selectedMovie.getValue().getId()).enqueue(new Callback<ApiList<MovieTrailer>>() {
+            @Override
+            public void onResponse(Call<ApiList<MovieTrailer>> call, Response<ApiList<MovieTrailer>> response) {
+                if (response.isSuccessful()) trailers.setValue(response.body().results);
+            }
+
+            @Override
+            public void onFailure(Call<ApiList<MovieTrailer>> call, Throwable t) {
+
+            }
+        });
+        return trailers;
     }
 }

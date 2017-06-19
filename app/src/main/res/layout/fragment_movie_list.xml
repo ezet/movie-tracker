@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="no.ezet.fasttrack.popularmovies.view.MainActivity">
+    tools:context="no.ezet.fasttrack.popularmovies.itemView.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -30,7 +30,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="no.ezet.fasttrack.popularmovies.view.MainActivity">
+            tools:context="no.ezet.fasttrack.popularmovies.itemView.MainActivity">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/movie_list"

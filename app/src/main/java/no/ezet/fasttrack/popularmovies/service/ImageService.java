@@ -5,6 +5,8 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import javax.inject.Inject;
+
 public class ImageService {
 
 
@@ -15,6 +17,7 @@ public class ImageService {
 
     private Picasso picasso;
 
+    @Inject
     ImageService(String base_url, Picasso picasso) {
         baseUrl = base_url;
         this.picasso = picasso;

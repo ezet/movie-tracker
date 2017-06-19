@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import no.ezet.fasttrack.popularmovies.R;
@@ -14,11 +15,11 @@ import no.ezet.fasttrack.popularmovies.model.MovieReview;
 public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolder> {
 
 
-    private List<MovieReview> reviews;
-    private ReviewClickListener reviewClickListener;
+    private List<MovieReview> reviews = new ArrayList<>();
+    private ItemClickListener itemClickListener;
 
-    public ReviewListAdapter(ReviewClickListener reviewClickListener) {
-        this.reviewClickListener = reviewClickListener;
+    ReviewListAdapter(ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -29,9 +30,9 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         viewHolder.bind(reviews.get(i));
-        viewHolder.itemView.setOnClickListener(v -> reviewClickListener.read(viewHolder.movieReview, viewHolder.getAdapterPosition()));
+        viewHolder.itemView.setOnClickListener(v -> itemClickListener.read(viewHolder.movieReview, viewHolder.getAdapterPosition()));
     }
 
     @Override
@@ -39,25 +40,25 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
         return reviews == null ? 0 : reviews.size();
     }
 
-    public void setReviews(List<MovieReview> reviews) {
+    void setReviews(List<MovieReview> reviews) {
+//        this.reviews.clear();
+//        this.reviews.addAll(reviews);
         this.reviews = reviews;
         notifyDataSetChanged();
     }
 
-    interface ReviewClickListener {
+    interface ItemClickListener {
         void read(MovieReview movieReview, int adapterPosition);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        final View itemView;
         final TextView reviewContent;
         final TextView reviewAuthor;
         MovieReview movieReview;
 
         ViewHolder(View itemView) {
             super(itemView);
-            this.itemView = itemView;
             reviewContent = (TextView) itemView.findViewById(R.id.review_content);
             reviewAuthor = (TextView) itemView.findViewById(R.id.review_author);
         }

@@ -1,20 +1,23 @@
 package no.ezet.fasttrack.popularmovies.view;
 
 import android.arch.lifecycle.LifecycleFragment;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,7 +35,6 @@ import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.MovieList;
-import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
 
@@ -69,6 +71,7 @@ public class MovieListFragment extends LifecycleFragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+        postponeEnterTransition();
     }
 
     @Override
@@ -113,6 +116,7 @@ public class MovieListFragment extends LifecycleFragment {
         if (getActivity().findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
+        startPostponedEnterTransition();
     }
 
     @Nullable
@@ -236,15 +240,21 @@ public class MovieListFragment extends LifecycleFragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.movie = movies.getMovies().get(position);
-            loadImage(holder.movie.getPosterPath(), holder.posterImage);
-
-            holder.view.setOnClickListener(v -> {
+            final Movie movie = movies.getMovies().get(position);
+            loadImage(movie.getPosterPath(), holder.posterImage);
+            holder.itemView.setOnClickListener(v -> {
+                viewModel.setSelectedMovie(movie);
                 MovieDetailFragment fragment = new MovieDetailFragment();
-                viewModel.setSelectedMovie(holder.movie);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    fragment.setEnterTransition(new Fade());
+                    fragment.setSharedElementEnterTransition(new ChangeBounds().setDuration(100));
+                }
+                ViewCompat.setTransitionName(holder.itemView, "transition");
+
                 int target = twoPane ? R.id.movie_detail_container : R.id.root_container;
                 getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .addSharedElement(holder.itemView, "transition")
                         .addToBackStack(null)
                         .replace(target, fragment)
                         .commitAllowingStateLoss();
@@ -268,14 +278,11 @@ public class MovieListFragment extends LifecycleFragment {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            final View view;
             final ImageView posterImage;
-            Movie movie;
 
-            ViewHolder(View view) {
-                super(view);
-                this.view = view;
-                posterImage = (ImageView) view.findViewById(R.id.iv_poster_image);
+            ViewHolder(View itemView) {
+                super(itemView);
+                posterImage = (ImageView) itemView.findViewById(R.id.iv_poster_image);
             }
         }
     }

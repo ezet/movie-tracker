@@ -7,4 +7,4 @@
     android:layout_gravity="fill"
     android:scaleType="centerCrop"
 
-    android:contentDescription="Poster Image" />
+    android:contentDescription="@string/cdesc_poster_image" />

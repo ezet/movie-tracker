@@ -1,6 +1,6 @@
 package no.ezet.fasttrack.popularmovies.model;
 
-public class VideoResponse {
+public class MovieTrailer {
 
     public final String id;
 
@@ -14,7 +14,7 @@ public class VideoResponse {
 
     public final String type;
 
-    public VideoResponse(String id, String key, String name, String site, int size, String type) {
+    public MovieTrailer(String id, String key, String name, String site, int size, String type) {
         this.id = id;
         this.key = key;
         this.name = name;

@@ -9,4 +9,8 @@
     <string name="top_rated">Top rated</string>
     <string name="upcoming">Upcoming</string>
     <string name="backdrop_image">Backdrop image</string>
+    <string name="cdesc_trailer_thumbnail">trailer thumbnail</string>
+    <string name="cdesc_play_button_icon">play button icon</string>
+    <string name="cdesc_poster_image">poster image</string>
+    <string name="cdesc_movie_portrait">movie portrait</string>
 </resources>

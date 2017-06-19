@@ -2,10 +2,10 @@ package no.ezet.fasttrack.popularmovies.model;
 
 public class MovieReview {
 
-    public String id;
-    public String author;
-    public String content;
-    public String url;
+    public final String id;
+    public final String author;
+    public final String content;
+    public final String url;
 
 
     public MovieReview(String id, String author, String content, String url) {
