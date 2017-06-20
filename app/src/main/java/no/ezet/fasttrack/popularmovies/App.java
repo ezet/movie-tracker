@@ -3,8 +3,6 @@ package no.ezet.fasttrack.popularmovies;
 import android.app.Activity;
 import android.app.Application;
 
-import org.parceler.Parcels;
-
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;

@@ -22,17 +22,7 @@ public abstract class NetworkResource<ResultType, RequestType> {
     @MainThread
     public NetworkResource() {
         result.setValue(Resource.loading(null));
-        LiveData<ResultType> dbSource = loadFromDb();
-        result.addSource(dbSource, data -> {
-            if (shouldFetch(data)) {
-                result.removeSource(dbSource);
-                fetchFromNetwork(dbSource);
-            } else {
-//                result.addSource(dbSource,
-//                        newData -> result.setValue(Resource.success(newData)));
-                result.setValue(Resource.success(data));
-            }
-        });
+
     }
 
     private void fetchFromNetwork(final LiveData<ResultType> dbSource) {
@@ -104,6 +94,17 @@ public abstract class NetworkResource<ResultType, RequestType> {
     }
 
     public final LiveData<Resource<ResultType>> getAsLiveData() {
+        LiveData<ResultType> dbSource = loadFromDb();
+        result.addSource(dbSource, data -> {
+            if (shouldFetch(data)) {
+                result.removeSource(dbSource);
+                fetchFromNetwork(dbSource);
+            } else {
+//                result.addSource(dbSource,
+//                        newData -> result.setValue(Resource.success(newData)));
+                result.setValue(Resource.success(data));
+            }
+        });
         return result;
     }
 

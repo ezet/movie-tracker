@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.model.MovieList;
 import no.ezet.fasttrack.popularmovies.model.MovieReview;
 import no.ezet.fasttrack.popularmovies.model.MovieTrailer;
 import no.ezet.fasttrack.popularmovies.network.Resource;
@@ -35,11 +34,11 @@ public class MoviesViewModel extends ViewModel {
     private final MutableLiveData<Movie> selectedMovie = new MutableLiveData<>();
     private final MovieRepository movieRepository;
     private final IMovieService movieService;
-    private final MediatorLiveData<MovieList> movies = new MediatorLiveData<>();
+    private final MediatorLiveData<List<Movie>> movies = new MediatorLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Integer> currentSortBy = new MutableLiveData<>();
     private final LiveData<Integer> titleResourceId;
-    private LiveData<Resource<MovieList>> movieResource;
+    private LiveData<Resource<List<Movie>>> movieResource;
     private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
     private MediatorLiveData<List<MovieTrailer>> trailers = new MediatorLiveData<>();
 
@@ -73,14 +72,14 @@ public class MoviesViewModel extends ViewModel {
         selectedMovie.setValue(movie);
     }
 
-    public LiveData<MovieList> getMovies() {
+    public LiveData<List<Movie>> getMovies() {
         if (currentSortBy.getValue() != null) {
             loadMovies(currentSortBy.getValue());
         }
         return movies;
     }
 
-    private LiveData<MovieList> loadMovies(int sortBy) {
+    private LiveData<List<Movie>> loadMovies(int sortBy) {
         movies.removeSource(movieResource);
         loading.setValue(true);
         switch (sortBy) {
@@ -94,12 +93,12 @@ public class MoviesViewModel extends ViewModel {
                 movieResource = movieRepository.getTopRatedMovies();
                 break;
         }
-        movies.addSource(movieResource, movieListResource -> {
-            if (movieListResource == null) return;
-            if (movieListResource.status == Resource.SUCCESS) {
-                movies.setValue(movieListResource.data);
+        movies.addSource(movieResource, resource -> {
+            if (resource == null) return;
+            if (resource.status == Resource.SUCCESS) {
+                movies.setValue(resource.data);
             }
-            if (movieListResource.status != Resource.LOADING) loading.setValue(false);
+            if (resource.status != Resource.LOADING) loading.setValue(false);
         });
         return this.movies;
     }

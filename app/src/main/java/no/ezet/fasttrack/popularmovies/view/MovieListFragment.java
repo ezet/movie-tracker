@@ -29,12 +29,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.model.MovieList;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
 
@@ -223,7 +224,7 @@ public class MovieListFragment extends LifecycleFragment {
             extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> {
 
         private ImageService imageService;
-        private MovieList movies;
+        private List<Movie> movies;
 
 
         MovieListRecyclerViewAdapter(ImageService imageService) {
@@ -240,7 +241,7 @@ public class MovieListFragment extends LifecycleFragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            final Movie movie = movies.getMovies().get(position);
+            final Movie movie = movies.get(position);
             loadImage(movie.getPosterPath(), holder.posterImage);
             holder.itemView.setOnClickListener(v -> {
                 viewModel.setSelectedMovie(movie);
@@ -264,7 +265,7 @@ public class MovieListFragment extends LifecycleFragment {
         @Override
         public int getItemCount() {
             if (movies == null) return 0;
-            return movies.getMovies().size();
+            return movies.size();
         }
 
 
@@ -272,7 +273,7 @@ public class MovieListFragment extends LifecycleFragment {
             imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
         }
 
-        void setMovies(MovieList movieList) {
+        void setMovies(List<Movie> movieList) {
             this.movies = movieList;
             notifyDataSetChanged();
         }
