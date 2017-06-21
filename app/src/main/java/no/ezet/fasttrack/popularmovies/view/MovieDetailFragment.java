@@ -22,8 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.parceler.Parcels;
-
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
@@ -42,7 +40,7 @@ import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
  */
 public class MovieDetailFragment extends LifecycleFragment {
 
-    public static final String EXTRA_MOVIE = MovieDetailFragment.class.getPackage() + "movie";
+    public static final String SELECTED_MOVIE_ID = MovieDetailFragment.class.getPackage() + "movie";
 
     @Inject
     ImageService imageService;
@@ -79,9 +77,6 @@ public class MovieDetailFragment extends LifecycleFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_MOVIE)) {
-            viewModel.setSelectedMovie(Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_MOVIE)));
-        }
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.detail_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -100,7 +95,8 @@ public class MovieDetailFragment extends LifecycleFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EXTRA_MOVIE, Parcels.wrap(viewModel.getSelectedMovie().getValue()));
+        // TODO: 20.06.2017 refactor
+        outState.putInt(SELECTED_MOVIE_ID, viewModel.getSelectedMovie().getValue().getId());
     }
 
     @Override

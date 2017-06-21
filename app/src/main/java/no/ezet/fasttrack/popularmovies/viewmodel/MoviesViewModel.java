@@ -30,10 +30,12 @@ public class MoviesViewModel extends ViewModel {
     public static final int UPCOMING = 1;
     public static final int TOP_RATED = 2;
     private static final String CURRENT_SORT_BY = "CURRENT_SORT_BY";
+    private static final String SELECTED_MOVIE_ID = "SELECTED_MOVIE_ID";
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
-    private final MutableLiveData<Movie> selectedMovie = new MutableLiveData<>();
+    private final MediatorLiveData<Movie> selectedMovie = new MediatorLiveData<>();
     private final MovieRepository movieRepository;
     private final IMovieService movieService;
+    private int selectedMovieId;
     private final MediatorLiveData<List<Movie>> movies = new MediatorLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Integer> currentSortBy = new MutableLiveData<>();
@@ -72,6 +74,14 @@ public class MoviesViewModel extends ViewModel {
         selectedMovie.setValue(movie);
     }
 
+    public void setSelectedMovie(int id) {
+        this.selectedMovieId = id;
+        selectedMovie.addSource(movieRepository.getMovie(id), movieResource1 -> {
+            if (movieResource1 != null && movieResource1.status == Resource.SUCCESS)
+                selectedMovie.setValue(movieResource1.data);
+        });
+    }
+
     public LiveData<List<Movie>> getMovies() {
         if (currentSortBy.getValue() != null) {
             loadMovies(currentSortBy.getValue());
@@ -107,16 +117,15 @@ public class MoviesViewModel extends ViewModel {
         return loading;
     }
 
-    public void onViewStateRestored(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState == null) return;
+        setSelectedMovie(savedInstanceState.getInt(SELECTED_MOVIE_ID));
         currentSortBy.setValue(savedInstanceState.getInt(CURRENT_SORT_BY));
     }
-
 
     public void onSaveInstanceState(Bundle outState) {
         if (currentSortBy.getValue() == null) return;
         outState.putInt(CURRENT_SORT_BY, currentSortBy.getValue());
-
     }
 
     public LiveData<Integer> getTitleResourceId() {
@@ -124,7 +133,8 @@ public class MoviesViewModel extends ViewModel {
     }
 
     public LiveData<List<MovieReview>> getReviews() {
-        movieService.getReviews(selectedMovie.getValue().getId()).enqueue(new Callback<ApiList<MovieReview>>() {
+        if (selectedMovieId == 0) throw new IllegalArgumentException();
+        movieService.getReviews(selectedMovieId).enqueue(new Callback<ApiList<MovieReview>>() {
             @Override
             public void onResponse(Call<ApiList<MovieReview>> call, Response<ApiList<MovieReview>> response) {
                 if (response.isSuccessful()) reviews.setValue(response.body().results);
@@ -141,7 +151,8 @@ public class MoviesViewModel extends ViewModel {
     }
 
     public LiveData<List<MovieTrailer>> getTrailers() {
-        movieService.getVideos(selectedMovie.getValue().getId()).enqueue(new Callback<ApiList<MovieTrailer>>() {
+        if (selectedMovieId == 0) throw new IllegalArgumentException();
+        movieService.getVideos(selectedMovieId).enqueue(new Callback<ApiList<MovieTrailer>>() {
             @Override
             public void onResponse(Call<ApiList<MovieTrailer>> call, Response<ApiList<MovieTrailer>> response) {
                 if (response.isSuccessful()) trailers.setValue(response.body().results);

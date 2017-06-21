@@ -81,17 +81,6 @@ public class MovieListFragment extends LifecycleFragment {
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        viewModel.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        viewModel.onViewStateRestored(savedInstanceState);
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -105,7 +94,8 @@ public class MovieListFragment extends LifecycleFragment {
                 }
         );
         viewModel.getTitleResourceId().observe(this, integer -> toolbar.setSubtitle(integer));
-        viewModel.setSelectedMovie(null);
+        viewModel.onRestoreInstanceState(savedInstanceState);
+//        viewModel.setSelectedMovie(null);
 
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.movie_list);
 
@@ -128,6 +118,12 @@ public class MovieListFragment extends LifecycleFragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setTitle(getActivity().getTitle());
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        viewModel.onSaveInstanceState(outState);
     }
 
     @Override
@@ -244,7 +240,7 @@ public class MovieListFragment extends LifecycleFragment {
             final Movie movie = movies.get(position);
             loadImage(movie.getPosterPath(), holder.posterImage);
             holder.itemView.setOnClickListener(v -> {
-                viewModel.setSelectedMovie(movie);
+                viewModel.setSelectedMovie(movie.getId());
                 MovieDetailFragment fragment = new MovieDetailFragment();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     fragment.setEnterTransition(new Fade());

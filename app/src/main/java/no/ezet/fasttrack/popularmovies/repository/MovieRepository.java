@@ -2,6 +2,7 @@ package no.ezet.fasttrack.popularmovies.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class MovieRepository {
 
     private static final String QUERY_POPULAR = "popular";
     private static final String QUERY_UPCOMING = "upcoming";
-    private static final String QUERY_TOPRATED = "top_rated";
+    private static final String QUERY_TOP_RATED = "top_rated";
     private final IMovieService movieService;
     private final MovieDao movieDao;
 
@@ -32,6 +33,11 @@ public class MovieRepository {
     MovieRepository(IMovieService movieService, MovieDao movieDao) {
         this.movieService = movieService;
         this.movieDao = movieDao;
+    }
+
+    @NonNull
+    public LiveData<Resource<Movie>> getMovie(int id) {
+        return Transformations.map(movieDao.getById(id), Resource::success);
     }
 
     @NonNull
@@ -46,21 +52,21 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getTopRatedMovies() {
-        return getMovies(QUERY_TOPRATED);
+        return getMovies(QUERY_TOP_RATED);
     }
 
     private LiveData<Resource<List<Movie>>> getMovies(String query) {
-        return new NetworkBoundResource(query, movieDao, movieService).getAsLiveData();
+        return new MovieListResource(query, movieDao, movieService).getAsLiveData();
     }
 
-    private class NetworkBoundResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
+    private static class MovieListResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
 
         private MovieDao movieDao;
         private IMovieService movieService;
         private String query;
-        private boolean cached = false;
+        private static boolean cached = false;
 
-        private NetworkBoundResource(String query, MovieDao movieDao, IMovieService movieService) {
+        private MovieListResource(String query, MovieDao movieDao, IMovieService movieService) {
             this.query = query;
             this.movieDao = movieDao;
             this.movieService = movieService;
@@ -77,7 +83,7 @@ public class MovieRepository {
                     case QUERY_UPCOMING:
                         movie.setType(Movie.UPCOMING);
                         break;
-                    case QUERY_TOPRATED:
+                    case QUERY_TOP_RATED:
                         movie.setType(Movie.TOP_RATED);
                         break;
                 }
@@ -99,7 +105,7 @@ public class MovieRepository {
                     return movieDao.getPopular();
                 case QUERY_UPCOMING:
                     return movieDao.getUpcoming();
-                case QUERY_TOPRATED:
+                case QUERY_TOP_RATED:
                     return movieDao.getTopRated();
                 default:
                     throw new IllegalArgumentException("Cannot load: " + query);
@@ -109,21 +115,21 @@ public class MovieRepository {
         @Override
         protected LiveData<NetworkResponse<ApiList<Movie>>> createCall() {
             Timber.d("createCall: ");
-            final MutableLiveData<NetworkResponse<ApiList<Movie>>> livedata = new MutableLiveData<>();
+            final MutableLiveData<NetworkResponse<ApiList<Movie>>> networkResponse = new MutableLiveData<>();
             movieService.getVideos(query).enqueue(new Callback<ApiList<Movie>>() {
                 @Override
                 public void onResponse(@NonNull Call<ApiList<Movie>> call, @NonNull Response<ApiList<Movie>> response) {
                     Timber.d("onResponse");
-                    livedata.setValue(new NetworkResponse<>(response));
+                    networkResponse.setValue(new NetworkResponse<>(response));
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<ApiList<Movie>> call, @NonNull Throwable t) {
                     Timber.d("onFailure");
-                    livedata.setValue(new NetworkResponse<>(t));
+                    networkResponse.setValue(new NetworkResponse<>(t));
                 }
             });
-            return livedata;
+            return networkResponse;
         }
     }
 

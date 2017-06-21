@@ -29,13 +29,11 @@ public abstract class MovieDao {
     public abstract LiveData<List<Movie>> getTopRated();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insert(Movie... movies);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insert(List<Movie> movies);
 
-//    @Query("")
-//    LiveData<List<Movie>> getById(int... ids);
+    @Query("SELECT * FROM movie " +
+            "WHERE id = :id")
+    public abstract LiveData<Movie> getById(int id);
 
 
 }
