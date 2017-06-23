@@ -4,12 +4,16 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.persistence.room.Insert;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.view.View;
 
 import javax.inject.Inject;
 
@@ -18,8 +22,8 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import no.ezet.fasttrack.popularmovies.R;
+import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
-import no.ezet.fasttrack.popularmovies.viewmodel.ViewModelFactory;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -29,16 +33,20 @@ import no.ezet.fasttrack.popularmovies.viewmodel.ViewModelFactory;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MainActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector {
+public class MainActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector, MovieListFragment.FragmentListener {
 
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
-    private MoviesViewModel moviesViewModel;
-
     @Inject
     ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    NavigationController navigationController;
+
+    private MoviesViewModel moviesViewModel;
+    private boolean twoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +54,12 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         moviesViewModel = ViewModelProviders.of(this, viewModelFactory).get(MoviesViewModel.class);
+        if (findViewById(R.id.movie_detail_container) != null) {
+            twoPane = true;
+        }
 
         if (savedInstanceState == null) {
-            MovieListFragment fragment = new MovieListFragment();
+            MovieListFragment fragment = MovieListFragment.create();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.root_container, fragment)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -78,5 +89,22 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
         return dispatchingAndroidInjector;
     }
 
+    @Override
+    public void onItemClick(View view, Movie movie) {
+        MovieDetailFragment fragment = MovieDetailFragment.create(movie.getId());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            fragment.setEnterTransition(new Fade());
+            fragment.setSharedElementEnterTransition(new ChangeBounds().setDuration(100));
+        }
+        ViewCompat.setTransitionName(view, "transition");
+
+        int target = twoPane ? R.id.movie_detail_container : R.id.root_container;
+        getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addSharedElement(view, "transition")
+                .addToBackStack(null)
+                .replace(target, fragment)
+                .commitAllowingStateLoss();
+    }
 }
 

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -33,14 +34,14 @@ import no.ezet.fasttrack.popularmovies.model.MovieTrailer;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.service.VideoService;
-import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieDetailsViewModel;
 
 /**
  * A fragment representing a single Movie detail screen.
  */
 public class MovieDetailFragment extends LifecycleFragment {
 
-    public static final String SELECTED_MOVIE_ID = MovieDetailFragment.class.getPackage() + "movie";
+    public static final String MOVIE_ID = "MOVIE_ID";
 
     @Inject
     ImageService imageService;
@@ -54,12 +55,21 @@ public class MovieDetailFragment extends LifecycleFragment {
     @Inject
     VideoService videoService;
 
-    private MoviesViewModel viewModel;
+    private MovieDetailsViewModel viewModel;
     private ImageView backdropImage;
     private MovieDetailContentBinding binding;
     private RecyclerView reviewList;
     private RecyclerView trailerList;
     private ImageView portrait;
+
+    @NonNull
+    public static MovieDetailFragment create(Integer movieId) {
+        MovieDetailFragment fragment = new MovieDetailFragment();
+        Bundle args = new Bundle();
+        args.putInt(MOVIE_ID, movieId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -68,15 +78,24 @@ public class MovieDetailFragment extends LifecycleFragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(this.getActivity(), viewModelFactory).get(MoviesViewModel.class);
-        setHasOptionsMenu(true);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = MovieDetailContentBinding.inflate(inflater, container, false);
+        backdropImage = (ImageView) binding.getRoot().findViewById(R.id.iv_backdrop_image);
+        reviewList = (RecyclerView) binding.getRoot().findViewById(R.id.review_list);
+        trailerList = (RecyclerView) binding.getRoot().findViewById(R.id.trailer_list);
+        portrait = (ImageView) binding.getRoot().findViewById(R.id.movie_portrait);
+        return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieDetailsViewModel.class);
+        setHasOptionsMenu(true);
+        Bundle args = getArguments();
+        if (args != null && args.containsKey(MOVIE_ID)) {
+            viewModel.setSelectedMovie(args.getInt(MOVIE_ID));
+        }
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.detail_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -85,18 +104,15 @@ public class MovieDetailFragment extends LifecycleFragment {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        initFloatingActionButton();
+        initFavoriteButton();
         setupReviewList(reviewList);
         setupTrailerList(trailerList);
 
-        viewModel.getSelectedMovie().observe(this, this::bindMovie);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // TODO: 20.06.2017 refactor
-        outState.putInt(SELECTED_MOVIE_ID, viewModel.getSelectedMovie().getValue().getId());
+        viewModel.getSelectedMovie().observe(this, movie -> {
+            if (movie != null) {
+                bindMovie(movie);
+            }
+        });
     }
 
     @Override
@@ -109,15 +125,6 @@ public class MovieDetailFragment extends LifecycleFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = MovieDetailContentBinding.inflate(inflater, container, false);
-        backdropImage = (ImageView) binding.getRoot().findViewById(R.id.iv_backdrop_image);
-        reviewList = (RecyclerView) binding.getRoot().findViewById(R.id.review_list);
-        trailerList = (RecyclerView) binding.getRoot().findViewById(R.id.trailer_list);
-        portrait = (ImageView) binding.getRoot().findViewById(R.id.movie_portrait);
-        return binding.getRoot();
-    }
 
     private void setupReviewList(RecyclerView recyclerView) {
         ReviewListAdapter reviewListAdapter = new ReviewListAdapter((movieReview, i) -> openReview(movieReview));
@@ -142,7 +149,7 @@ public class MovieDetailFragment extends LifecycleFragment {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(base + movieTrailer.key)));
     }
 
-    private void bindMovie(Movie movie) {
+    private void bindMovie(@NonNull Movie movie) {
         imageService.loadImage(movie.getPosterPath(), ImageService.SIZE_W342, portrait);
         imageService.loadImage(movie.getBackdropPath(), ImageService.SIZE_W342, backdropImage);
         CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
@@ -152,7 +159,7 @@ public class MovieDetailFragment extends LifecycleFragment {
         binding.setMovie(movie);
     }
 
-    private void initFloatingActionButton() {
+    private void initFavoriteButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)

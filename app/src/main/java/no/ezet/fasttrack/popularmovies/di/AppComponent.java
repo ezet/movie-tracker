@@ -11,8 +11,6 @@ import dagger.android.AndroidInjectionModule;
 import no.ezet.fasttrack.popularmovies.App;
 import no.ezet.fasttrack.popularmovies.service.MovieModule;
 
-// TODO: 13.06.2017 Make MovieModule a component
-
 @Singleton
 @Component(modules = {AndroidInjectionModule.class, AppModule.class, ActivityModule.class, MovieModule.class})
 public interface AppComponent {

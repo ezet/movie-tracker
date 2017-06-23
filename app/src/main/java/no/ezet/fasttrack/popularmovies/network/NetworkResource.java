@@ -93,6 +93,7 @@ public abstract class NetworkResource<ResultType, RequestType> {
 
     }
 
+    @NonNull
     public final LiveData<Resource<ResultType>> getAsLiveData() {
         LiveData<ResultType> dbSource = loadFromDb();
         result.addSource(dbSource, data -> {

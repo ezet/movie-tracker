@@ -1,20 +1,26 @@
 package no.ezet.fasttrack.popularmovies.di;
 
+import android.app.Activity;
+
+import dagger.Binds;
 import dagger.Module;
-import dagger.android.ContributesAndroidInjector;
+import dagger.android.ActivityKey;
+import dagger.android.AndroidInjector;
+import dagger.multibindings.IntoMap;
 import no.ezet.fasttrack.popularmovies.view.MainActivity;
-import no.ezet.fasttrack.popularmovies.view.MovieDetailFragment;
-import no.ezet.fasttrack.popularmovies.view.MovieListFragment;
 
-@Module
+//@Module
+//abstract class ActivityModule {
+
+//    @ContributesAndroidInjector(modules = FragmentModule.class)
+//    abstract MainActivity contributeMainActivity();
+//}
+
+@Module(subcomponents = MainActivitySubcomponent.class)
 abstract class ActivityModule {
-
-    @ContributesAndroidInjector()
-    abstract MainActivity contributeMovieListActivity();
-
-    @ContributesAndroidInjector
-    abstract MovieDetailFragment contributeMovieDetailFragment();
-
-    @ContributesAndroidInjector
-    abstract MovieListFragment contributeMovieListFragment();
+    @Binds
+    @IntoMap
+    @ActivityKey(MainActivity.class)
+    abstract AndroidInjector.Factory<? extends Activity>
+    bindMainActivityInjectorFactory(MainActivitySubcomponent.Builder builder);
 }

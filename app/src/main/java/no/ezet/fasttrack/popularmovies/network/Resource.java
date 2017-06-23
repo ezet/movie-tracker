@@ -27,14 +27,17 @@ public class Resource<T> {
         this.message = message;
     }
 
+    @NonNull
     public static <T> Resource<T> success(@NonNull T data) {
         return new Resource<>(SUCCESS, data, null);
     }
 
+    @NonNull
     public static <T> Resource<T> error(@Nullable String msg, @Nullable T data) {
         return new Resource<>(ERROR, data, msg);
     }
 
+    @NonNull
     public static <T> Resource<T> loading(@Nullable T data) {
         return new Resource<>(LOADING, data, null);
     }

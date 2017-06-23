@@ -15,7 +15,7 @@ import no.ezet.fasttrack.popularmovies.service.VideoService;
 
 public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder> {
 
-    private List<MovieTrailer> videos = new ArrayList<>();
+    private final List<MovieTrailer> videos = new ArrayList<>();
     private final VideoService videoService;
     private ItemClickListener itemClickListener;
 
@@ -40,13 +40,12 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
 
     @Override
     public int getItemCount() {
-        return videos == null ? 0 : videos.size();
+        return videos.size();
     }
 
     void setVideos(List<MovieTrailer> videos) {
-        this.videos = videos;
-//        this.videos.clear();
-//        this.videos.addAll(videos);
+        this.videos.clear();
+        this.videos.addAll(videos);
         notifyDataSetChanged();
     }
 
@@ -54,7 +53,7 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
         void onClick(MovieTrailer movieTrailer, int adapterPosition);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         final ImageView trailerThumbnail;
         MovieTrailer movieTrailer;

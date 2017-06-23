@@ -55,16 +55,17 @@ public class MovieRepository {
         return getMovies(QUERY_TOP_RATED);
     }
 
+    @NonNull
     private LiveData<Resource<List<Movie>>> getMovies(String query) {
         return new MovieListResource(query, movieDao, movieService).getAsLiveData();
     }
 
     private static class MovieListResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
 
+        private static boolean[] cached = new boolean[3];
         private MovieDao movieDao;
         private IMovieService movieService;
         private String query;
-        private static boolean cached = false;
 
         private MovieListResource(String query, MovieDao movieDao, IMovieService movieService) {
             this.query = query;
@@ -88,13 +89,14 @@ public class MovieRepository {
                         break;
                 }
             }
+
+            cached[movies.results.get(0).getType()] = true;
             movieDao.insert(movies.results);
-            cached = true;
         }
 
         @Override
         protected boolean shouldFetch(List<Movie> data) {
-            return !cached;
+            return data.size() == 0 || !cached[data.get(0).getType()];
         }
 
         @Override

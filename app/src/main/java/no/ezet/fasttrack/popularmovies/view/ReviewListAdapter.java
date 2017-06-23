@@ -15,7 +15,7 @@ import no.ezet.fasttrack.popularmovies.model.MovieReview;
 public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolder> {
 
 
-    private List<MovieReview> reviews = new ArrayList<>();
+    private final List<MovieReview> reviews = new ArrayList<>();
     private ItemClickListener itemClickListener;
 
     ReviewListAdapter(ItemClickListener itemClickListener) {
@@ -37,13 +37,12 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return reviews == null ? 0 : reviews.size();
+        return reviews.size();
     }
 
     void setReviews(List<MovieReview> reviews) {
-//        this.reviews.clear();
-//        this.reviews.addAll(reviews);
-        this.reviews = reviews;
+        this.reviews.clear();
+        this.reviews.addAll(reviews);
         notifyDataSetChanged();
     }
 
