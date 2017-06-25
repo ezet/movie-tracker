@@ -25,6 +25,7 @@ android {
         dataBinding {
             enabled = true
         }
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -78,4 +79,5 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
 
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }

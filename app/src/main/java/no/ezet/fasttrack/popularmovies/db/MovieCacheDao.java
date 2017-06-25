@@ -11,7 +11,10 @@ import java.util.List;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 
 @Dao
-public abstract class MovieDao {
+public abstract class MovieCacheDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract List<Long> insert(List<Movie> movies);
 
     @Query("SELECT * FROM movie " +
             "WHERE type = " + Movie.POPULAR + " " +
@@ -28,12 +31,8 @@ public abstract class MovieDao {
             "LIMIT 20")
     public abstract LiveData<List<Movie>> getTopRated();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insert(List<Movie> movies);
-
     @Query("SELECT * FROM movie " +
             "WHERE id = :id")
     public abstract LiveData<Movie> getById(int id);
-
 
 }

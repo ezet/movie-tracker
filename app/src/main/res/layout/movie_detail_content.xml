@@ -102,8 +102,6 @@
                             android:layout_height="wrap_content"
                             android:text="@{movie.releaseDate}"
                             tools:text="24.10.1985"
-
-
                             />
                     </LinearLayout>
 
@@ -171,9 +169,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
             android:layout_margin="@dimen/fab_margin"
+            app:backgroundTint="@color/colorPrimaryDark"
             app:layout_anchor="@+id/movie_detail_container"
             app:layout_anchorGravity="top|end"
-            app:srcCompat="@android:drawable/stat_notify_chat" />
+            app:srcCompat="@drawable/ic_star_black_24dp" />
 
 
     </android.support.design.widget.CoordinatorLayout>

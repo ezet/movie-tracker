@@ -18,7 +18,7 @@ public class Movie {
     public static final int TOP_RATED = 2;
 
     @PrimaryKey
-    private Integer id;
+    private int id;
     private String posterPath;
     private Boolean adult;
     private String overview;
@@ -75,11 +75,11 @@ public class Movie {
         this.genreIds = genreIds;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -7,8 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
@@ -32,10 +30,9 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieListItem;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListViewModel;
-import no.ezet.fasttrack.popularmovies.viewmodel.MoviesViewModel;
 import timber.log.Timber;
 
 /**
@@ -58,15 +55,14 @@ public class MovieListFragment extends LifecycleFragment {
 //    @Inject
     FragmentListener listener;
 
-    @Inject
-    NavigationController navigationController;
+//    @Inject
+//    NavigationController navigationController;
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView errorTextView;
     private Toolbar toolbar;
     private MovieListViewModel viewModel;
-
 
     public static MovieListFragment create() {
         return new MovieListFragment();
@@ -94,22 +90,17 @@ public class MovieListFragment extends LifecycleFragment {
         setHasOptionsMenu(true);
     }
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        Timber.d("onActivityCreated: ");
         super.onActivityCreated(savedInstanceState);
 
-        initFloatingActionButton();
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieListViewModel.class);
+        viewModel.onRestoreInstanceState(savedInstanceState);
         viewModel.getIsLoading().observe(this, loading -> {
                     if (loading != null && loading) showLoadingIndicator();
                     else showMovieList();
                 }
         );
-        viewModel.getTitleResourceId().observe(this, integer -> toolbar.setSubtitle(integer));
-        viewModel.onRestoreInstanceState(savedInstanceState);
 
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.movie_list);
 
@@ -117,7 +108,6 @@ public class MovieListFragment extends LifecycleFragment {
         errorTextView = (TextView) getActivity().findViewById(R.id.tv_error_message);
 
         setupRecyclerView(recyclerView);
-
         startPostponedEnterTransition();
     }
 
@@ -144,7 +134,6 @@ public class MovieListFragment extends LifecycleFragment {
         super.onDestroyView();
         viewModel.getMovies().removeObservers(this);
         viewModel.getIsLoading().removeObservers(this);
-        viewModel.getTitleResourceId().removeObservers(this);
     }
 
     @Override
@@ -164,64 +153,96 @@ public class MovieListFragment extends LifecycleFragment {
                 loadUpcoming();
                 break;
             }
+            case R.id.action_favorites: {
+                loadFavorites();
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.app_bar, menu);
         int menuItemId = 0;
         switch (viewModel.getSortBy()) {
-            case MoviesViewModel.POPULAR:
+            case MovieListViewModel.POPULAR:
                 menuItemId = R.id.action_popular;
                 break;
-            case MoviesViewModel.UPCOMING:
+            case MovieListViewModel.UPCOMING:
                 menuItemId = R.id.action_upcoming;
                 break;
-            case MoviesViewModel.TOP_RATED:
+            case MovieListViewModel.TOP_RATED:
                 menuItemId = R.id.action_top_rated;
                 break;
+            case MovieListViewModel.FAVORITES:
+                menuItemId = R.id.action_favorites;
         }
         menu.findItem(menuItemId).setChecked(true);
     }
 
-
-    private void initFloatingActionButton() {
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
-        fab.setVisibility(View.INVISIBLE);
-    }
-
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
-        MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService, listener);
-        viewModel.getMovies().observe(this, adapter::setMovies);
+        final MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService, listener);
+        viewModel.getMovies().observe(this, movieList -> {
+            setSubTitle();
+            adapter.setMovies(movieList);
+        });
         recyclerView.setAdapter(adapter);
     }
 
+    private void setSubTitle() {
+        switch (viewModel.getSortBy()) {
+            case MovieListViewModel.POPULAR:
+                toolbar.setSubtitle(R.string.popular);
+                break;
+            case MovieListViewModel.UPCOMING:
+                toolbar.setSubtitle(R.string.upcoming);
+                break;
+            case MovieListViewModel.TOP_RATED:
+                toolbar.setSubtitle(R.string.top_rated);
+                break;
+            case MovieListViewModel.FAVORITES:
+                toolbar.setSubtitle(R.string.favorites);
+        }
+
+    }
+
     private void loadUpcoming() {
-        viewModel.setSortBy(MoviesViewModel.UPCOMING);
-        toolbar.setSubtitle(R.string.upcoming);
+        viewModel.setSortBy(MovieListViewModel.UPCOMING);
+
     }
 
     private void loadTopRated() {
-        viewModel.setSortBy(MoviesViewModel.TOP_RATED);
-        toolbar.setSubtitle(R.string.top_rated);
+        viewModel.setSortBy(MovieListViewModel.TOP_RATED);
+
     }
 
     private void loadPopular() {
-        viewModel.setSortBy(MoviesViewModel.POPULAR);
-        toolbar.setSubtitle(R.string.popular);
+        viewModel.setSortBy(MovieListViewModel.POPULAR);
+
+    }
+
+    private void loadFavorites() {
+        viewModel.setSortBy(MovieListViewModel.FAVORITES);
+
     }
 
     public void showLoadingIndicator() {
+        Timber.d("showLoadingIndicator: ");
         errorTextView.setVisibility(View.INVISIBLE);
-        recyclerView.setVisibility(View.INVISIBLE);
+//        recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+
+    private void showMovieList() {
+        Timber.d("showMovieList: ");
+        progressBar.setVisibility(View.INVISIBLE);
+        errorTextView.setVisibility(View.INVISIBLE);
+//        recyclerView.setVisibility(View.VISIBLE);
     }
 
     public void showLoadingError() {
@@ -230,24 +251,15 @@ public class MovieListFragment extends LifecycleFragment {
         errorTextView.setVisibility(View.VISIBLE);
     }
 
-    private void showMovieList() {
-        progressBar.setVisibility(View.INVISIBLE);
-        errorTextView.setVisibility(View.INVISIBLE);
-        recyclerView.setVisibility(View.VISIBLE);
-    }
-
-
-
-
     public interface FragmentListener {
 
-        void onItemClick(View f, Movie movie);
+        void onItemClick(View f, MovieListItem movie);
     }
 
     private static class MovieListRecyclerViewAdapter
             extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> {
 
-        private final List<Movie> movies = new ArrayList<>();
+        private final List<MovieListItem> movies = new ArrayList<>();
         private ImageService imageService;
         private FragmentListener listener;
         private int counter;
@@ -255,12 +267,12 @@ public class MovieListFragment extends LifecycleFragment {
         MovieListRecyclerViewAdapter(ImageService imageService, FragmentListener listener) {
             this.imageService = imageService;
             this.listener = listener;
-            setHasStableIds(true);
+//            setHasStableIds(true);
         }
 
         @Override
         public long getItemId(int position) {
-            return movies.get(position).getId().hashCode();
+            return movies.get(position).id;
         }
 
         @Override
@@ -272,8 +284,8 @@ public class MovieListFragment extends LifecycleFragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            final Movie movie = movies.get(position);
-            loadImage(movie.getPosterPath(), holder.posterImage);
+            final MovieListItem movie = movies.get(position);
+            loadImage(movie.posterPath, holder.posterImage);
             holder.itemView.setOnClickListener((View view) -> listener.onItemClick(view, movie));
         }
 
@@ -286,13 +298,13 @@ public class MovieListFragment extends LifecycleFragment {
             imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
         }
 
-        void setMovies(List<Movie> movieList) {
+        void setMovies(List<MovieListItem> movieList) {
             Timber.d("setMovies: " + counter++);
-//            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(this.movies, movieList));
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(this.movies, movieList));
             this.movies.clear();
             this.movies.addAll(movieList);
-//            diffResult.dispatchUpdatesTo(this);
-            notifyDataSetChanged();
+            diffResult.dispatchUpdatesTo(this);
+//            notifyDataSetChanged();
         }
 
         static class ViewHolder extends RecyclerView.ViewHolder {
@@ -306,10 +318,10 @@ public class MovieListFragment extends LifecycleFragment {
 
         public class DiffCallback extends DiffUtil.Callback {
 
-            private final List<Movie> newList;
-            private final List<Movie> oldList;
+            private final List<MovieListItem> newList;
+            private final List<MovieListItem> oldList;
 
-            DiffCallback(List<Movie> oldList, List<Movie> newList) {
+            DiffCallback(List<MovieListItem> oldList, List<MovieListItem> newList) {
                 this.newList = newList;
                 this.oldList = oldList;
             }
@@ -331,7 +343,7 @@ public class MovieListFragment extends LifecycleFragment {
 
             @Override
             public boolean areContentsTheSame(int oldPosition, int newPosition) {
-                return newList.get(newPosition).getPosterPath().equals(oldList.get(oldPosition).getPosterPath());
+                return newList.get(newPosition).posterPath.equals(oldList.get(oldPosition).posterPath);
             }
         }
     }

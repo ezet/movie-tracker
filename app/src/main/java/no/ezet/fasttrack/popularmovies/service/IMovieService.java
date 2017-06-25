@@ -11,7 +11,7 @@ import retrofit2.http.Path;
 public interface IMovieService {
 
     @GET("movie/{sortBy}")
-    Call<ApiList<Movie>> getVideos(@Path("sortBy") String sortBy);
+    Call<ApiList<Movie>> getMovies(@Path("sortBy") String sortBy);
 
     @GET("movie/{movieId}/videos")
     Call<ApiList<MovieTrailer>> getVideos(@Path("movieId") int movieId);

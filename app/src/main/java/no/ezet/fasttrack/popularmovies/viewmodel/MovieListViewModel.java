@@ -6,38 +6,37 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.R;
+import no.ezet.fasttrack.popularmovies.model.Favorite;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
+import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import timber.log.Timber;
+
 
 public class MovieListViewModel extends ViewModel {
 
     public static final int POPULAR = 0;
     public static final int UPCOMING = 1;
     public static final int TOP_RATED = 2;
-    public static final int DEFAULT_SORT_BY = 0;
-    private static final String CURRENT_SORT_BY = "CURRENT_SORT_BY";
+    public static final int FAVORITES = 3;
+    private static final String STATE_CURRENT_SORT = "STATE_CURRENT_SORT";
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
     private final MovieRepository movieRepository;
-    private final IMovieService movieService;
-    private final MediatorLiveData<List<Movie>> movies = new MediatorLiveData<>();
+    private final FavoriteRepository favoriteRepository;
+    private final MediatorLiveData<List<MovieListItem>> movies = new MediatorLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private final MutableLiveData<Integer> titleResourceId = new MutableLiveData<>();
-    private int currentSortBy = DEFAULT_SORT_BY;
-
+    private int currentSortBy = -1;
 
     @Inject
-    MovieListViewModel(MovieRepository movieRepository, IMovieService movieService) {
+    MovieListViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository) {
         this.movieRepository = movieRepository;
-        this.movieService = movieService;
-        setSortBy(DEFAULT_SORT_BY);
+        this.favoriteRepository = favoriteRepository;
     }
 
     public int getSortBy() {
@@ -46,74 +45,84 @@ public class MovieListViewModel extends ViewModel {
 
     public void setSortBy(int sortBy) {
         currentSortBy = sortBy;
-        setTitle(sortBy);
         loadMovies(sortBy);
     }
 
-    private void setTitle(int sortBy) {
-        switch (sortBy) {
-            case POPULAR:
-                titleResourceId.setValue(R.string.popular);
-                break;
-            case UPCOMING:
-                titleResourceId.setValue(R.string.upcoming);
-                break;
-            case TOP_RATED:
-                titleResourceId.setValue(R.string.top_rated);
-                break;
-        }
-    }
 
-    public LiveData<List<Movie>> getMovies() {
+    public LiveData<List<MovieListItem>> getMovies() {
         Timber.d("getMovies: ");
         return movies;
     }
 
     private void loadMovies(int sortBy) {
         loading.setValue(true);
-        LiveData<Resource<List<Movie>>> movieListSource = null;
         switch (sortBy) {
             case POPULAR:
-                movieListSource = movieRepository.getPopularMovies();
+                loadMovies(movieRepository.getPopularMovies());
                 break;
             case UPCOMING:
-                movieListSource = movieRepository.getUpcomingMovies();
+                loadMovies(movieRepository.getUpcomingMovies());
                 break;
             case TOP_RATED:
-                movieListSource = movieRepository.getTopRatedMovies();
+                loadMovies(movieRepository.getTopRatedMovies());
                 break;
+            case MovieListViewModel.FAVORITES:
+                loadFavorites(favoriteRepository.getAll());
         }
-        LiveData<Resource<List<Movie>>> finalMovieListSource = movieListSource;
-        movies.addSource(finalMovieListSource, resource -> {
+    }
+
+    private void loadMovies(LiveData<Resource<List<Movie>>> liveData) {
+        movies.addSource(liveData, resource -> {
             //noinspection ConstantConditions
-            Timber.d("loadMovies: " + resource.status);
             if (resource.status != Resource.LOADING) {
-                movies.removeSource(finalMovieListSource);
+                movies.removeSource(liveData);
                 loading.setValue(false);
             }
             if (resource.status == Resource.SUCCESS) {
-                movies.setValue(resource.data);
+                List<MovieListItem> list = new ArrayList<>();
+                for (Movie item : resource.data) {
+                    list.add(MovieListItem.create(item));
+                }
+                movies.setValue(list);
+            }
+        });
+
+    }
+
+    private void loadFavorites(LiveData<Resource<List<Favorite>>> liveData) {
+        movies.addSource(liveData, resource -> {
+            //noinspection ConstantConditions
+            if (resource.status != Resource.LOADING) {
+                movies.removeSource(liveData);
+                loading.setValue(false);
+            }
+            if (resource.status == Resource.SUCCESS) {
+                List<MovieListItem> list = new ArrayList<>();
+                for (Favorite item : resource.data) {
+                    list.add(MovieListItem.create(item));
+                }
+                movies.setValue(list);
             }
         });
     }
+
 
     public LiveData<Boolean> getIsLoading() {
         return loading;
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-//        if (savedInstanceState != null && savedInstanceState.containsKey(CURRENT_SORT_BY)) {
-//            setSortBy(savedInstanceState.getInt(CURRENT_SORT_BY));
-//        } else {
-//            setSortBy(DEFAULT_SORT_BY);
-//        }
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_CURRENT_SORT)) {
+            Timber.d("onRestoreInstanceState: loading saved state");
+            setSortBy(savedInstanceState.getInt(STATE_CURRENT_SORT));
+        } else if (currentSortBy == -1) {
+            setSortBy(0);
+        }
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(CURRENT_SORT_BY, currentSortBy);
+        Timber.d("onSaveInstanceState: ");
+        outState.putInt(STATE_CURRENT_SORT, currentSortBy);
     }
 
-    public LiveData<Integer> getTitleResourceId() {
-        return titleResourceId;
-    }
 }

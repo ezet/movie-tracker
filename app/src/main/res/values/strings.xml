@@ -13,4 +13,11 @@
     <string name="cdesc_play_button_icon">play button icon</string>
     <string name="cdesc_poster_image">poster image</string>
     <string name="cdesc_movie_portrait">movie portrait</string>
+    <string name="favorites">Favorites</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

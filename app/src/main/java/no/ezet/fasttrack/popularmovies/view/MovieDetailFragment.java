@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -61,6 +62,7 @@ public class MovieDetailFragment extends LifecycleFragment {
     private RecyclerView reviewList;
     private RecyclerView trailerList;
     private ImageView portrait;
+    private boolean initialized;
 
     @NonNull
     public static MovieDetailFragment create(Integer movieId) {
@@ -159,10 +161,27 @@ public class MovieDetailFragment extends LifecycleFragment {
         binding.setMovie(movie);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void initFavoriteButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        fab.setVisibility(View.INVISIBLE);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
+        viewModel.getFavorite().observe(this, isFavorite -> {
+            if (isFavorite) {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_black_24dp));
+                if (initialized) {
+                    Snackbar.make(getView(), "Added to favorites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            } else {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_border_black_24dp));
+                if (initialized) {
+                    Snackbar.make(getView(), "Removed from favorites", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            }
+            initialized = true;
+        });
+        fab.setOnClickListener(view -> {
+            viewModel.toggleFavorite();
+        });
     }
 }
