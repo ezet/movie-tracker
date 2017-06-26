@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -28,7 +29,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.databinding.MovieDetailContentBinding;
+import no.ezet.fasttrack.popularmovies.databinding.FragmentMovieDetailsBinding;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.MovieReview;
 import no.ezet.fasttrack.popularmovies.model.MovieTrailer;
@@ -42,7 +43,7 @@ import no.ezet.fasttrack.popularmovies.viewmodel.MovieDetailsViewModel;
  */
 public class MovieDetailFragment extends LifecycleFragment {
 
-    public static final String MOVIE_ID = "MOVIE_ID";
+    public static final String ARG_MOVIE_ID = "ARG_MOVIE_ID";
 
     @Inject
     ImageService imageService;
@@ -58,7 +59,7 @@ public class MovieDetailFragment extends LifecycleFragment {
 
     private MovieDetailsViewModel viewModel;
     private ImageView backdropImage;
-    private MovieDetailContentBinding binding;
+    private FragmentMovieDetailsBinding binding;
     private RecyclerView reviewList;
     private RecyclerView trailerList;
     private ImageView portrait;
@@ -68,7 +69,7 @@ public class MovieDetailFragment extends LifecycleFragment {
     public static MovieDetailFragment create(Integer movieId) {
         MovieDetailFragment fragment = new MovieDetailFragment();
         Bundle args = new Bundle();
-        args.putInt(MOVIE_ID, movieId);
+        args.putInt(ARG_MOVIE_ID, movieId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,8 +82,9 @@ public class MovieDetailFragment extends LifecycleFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = MovieDetailContentBinding.inflate(inflater, container, false);
-        backdropImage = (ImageView) binding.getRoot().findViewById(R.id.iv_backdrop_image);
+        binding = FragmentMovieDetailsBinding.inflate(inflater, container, false);
+//        backdropImage = (ImageView) binding.getRoot().findViewById(R.id.iv_backdrop_image);
+        backdropImage = (ImageView) container.getRootView().findViewById(R.id.iv_backdrop_image);
         reviewList = (RecyclerView) binding.getRoot().findViewById(R.id.review_list);
         trailerList = (RecyclerView) binding.getRoot().findViewById(R.id.trailer_list);
         portrait = (ImageView) binding.getRoot().findViewById(R.id.movie_portrait);
@@ -95,8 +97,8 @@ public class MovieDetailFragment extends LifecycleFragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieDetailsViewModel.class);
         setHasOptionsMenu(true);
         Bundle args = getArguments();
-        if (args != null && args.containsKey(MOVIE_ID)) {
-            viewModel.setSelectedMovie(args.getInt(MOVIE_ID));
+        if (args != null && args.containsKey(ARG_MOVIE_ID)) {
+            viewModel.setSelectedMovie(args.getInt(ARG_MOVIE_ID));
         }
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.detail_toolbar);
@@ -116,17 +118,6 @@ public class MovieDetailFragment extends LifecycleFragment {
             }
         });
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            getFragmentManager().popBackStack();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
 
     private void setupReviewList(RecyclerView recyclerView) {
         ReviewListAdapter reviewListAdapter = new ReviewListAdapter((movieReview, i) -> openReview(movieReview));
@@ -180,8 +171,6 @@ public class MovieDetailFragment extends LifecycleFragment {
             }
             initialized = true;
         });
-        fab.setOnClickListener(view -> {
-            viewModel.toggleFavorite();
-        });
+        fab.setOnClickListener(view -> viewModel.toggleFavorite());
     }
 }

@@ -16,7 +16,6 @@ import no.ezet.fasttrack.popularmovies.service.MovieModule;
 public interface AppComponent {
     void inject(App application);
 
-
     @Component.Builder
     interface Builder {
         @BindsInstance

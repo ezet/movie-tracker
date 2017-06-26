@@ -18,9 +18,11 @@
         <item
             android:id="@+id/action_upcoming"
             android:title="@string/upcoming"/>
-        <item
-            android:id="@+id/action_favorites"
-            android:title="@string/favorites"/>
     </group>
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 
 </menu>

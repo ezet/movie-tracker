@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.DiffUtil;
@@ -44,38 +45,35 @@ import timber.log.Timber;
  * item details side-by-side using two vertical panes.
  */
 @SuppressWarnings("ConstantConditions")
-public class MovieListFragment extends LifecycleFragment {
+public abstract class MovieListBaseFragment extends LifecycleFragment {
 
     @Inject
     ImageService imageService;
+
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
     // TODO: 22.06.2017 Manage with DI
 //    @Inject
-    MovieListBaseFragment.FragmentListener listener;
+    FragmentListener listener;
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView errorTextView;
-    private MovieListViewModel viewModel;
-
-    public static MovieListFragment create() {
-        return new MovieListFragment();
-    }
-
+    protected MovieListViewModel viewModel;
 
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return (int) (dpWidth / 180);
     }
+    protected abstract Class<? extends MovieListViewModel> getViewModelClass();
 
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
-        this.listener = (MovieListBaseFragment.FragmentListener) getActivity();
+        this.listener = (FragmentListener) getActivity();
         postponeEnterTransition();
     }
 
@@ -90,7 +88,7 @@ public class MovieListFragment extends LifecycleFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieListViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass());
         viewModel.onRestoreInstanceState(savedInstanceState);
         viewModel.getIsLoading().observe(this, loading -> {
                     if (loading != null && loading) showLoadingIndicator();
@@ -99,7 +97,6 @@ public class MovieListFragment extends LifecycleFragment {
         );
 
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.movie_list);
-
         progressBar = (ProgressBar) getActivity().findViewById(R.id.pb_loading_indicator);
         errorTextView = (TextView) getActivity().findViewById(R.id.tv_error_message);
 
@@ -110,10 +107,7 @@ public class MovieListFragment extends LifecycleFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Timber.d("onCreateView: ");
-        View rootView = inflater.inflate(R.layout.fragment_movie_list, container, false);
-
-        return rootView;
+        return inflater.inflate(R.layout.fragment_movie_list, container, false);
     }
 
     @Override
@@ -124,7 +118,6 @@ public class MovieListFragment extends LifecycleFragment {
 
     @Override
     public void onDestroyView() {
-        Timber.d("onDestroyView: ");
         super.onDestroyView();
         viewModel.getMovies().removeObservers(this);
         viewModel.getIsLoading().removeObservers(this);
@@ -136,15 +129,15 @@ public class MovieListFragment extends LifecycleFragment {
         item.setChecked(true);
         switch (item.getItemId()) {
             case R.id.action_popular: {
-                loadPopular();
+//                loadPopular();
                 break;
             }
             case R.id.action_top_rated: {
-                loadTopRated();
+//                loadTopRated();
                 break;
             }
             case R.id.action_upcoming: {
-                loadUpcoming();
+//                loadUpcoming();
                 break;
             }
             case R.id.action_settings:
@@ -171,7 +164,7 @@ public class MovieListFragment extends LifecycleFragment {
                 menuItemId = R.id.action_top_rated;
                 break;
         }
-        menu.findItem(menuItemId).setChecked(true);
+//        menu.findItem(menuItemId).setChecked(true);
     }
 
 
@@ -185,35 +178,13 @@ public class MovieListFragment extends LifecycleFragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private void setSubTitle() {
+    protected void setSubTitle() {
         ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        switch (viewModel.getSortBy()) {
-            case MovieListViewModel.POPULAR:
-                toolbar.setSubtitle(R.string.popular);
-                break;
-            case MovieListViewModel.UPCOMING:
-                toolbar.setSubtitle(R.string.upcoming);
-                break;
-            case MovieListViewModel.TOP_RATED:
-                toolbar.setSubtitle(R.string.top_rated);
-                break;
-        }
+        toolbar.setSubtitle(getSubtitle());
     }
 
-    private void loadUpcoming() {
-        viewModel.setSortBy(MovieListViewModel.UPCOMING);
-
-    }
-
-    private void loadTopRated() {
-        viewModel.setSortBy(MovieListViewModel.TOP_RATED);
-
-    }
-
-    private void loadPopular() {
-        viewModel.setSortBy(MovieListViewModel.POPULAR);
-
-    }
+    @StringRes
+    protected abstract int getSubtitle();
 
     public void showLoadingIndicator() {
         Timber.d("showLoadingIndicator: ");
@@ -236,15 +207,20 @@ public class MovieListFragment extends LifecycleFragment {
         errorTextView.setVisibility(View.VISIBLE);
     }
 
+    public interface FragmentListener {
+
+        void onItemClick(View f, MovieListItem movie);
+    }
+
     private static class MovieListRecyclerViewAdapter
             extends RecyclerView.Adapter<MovieListRecyclerViewAdapter.ViewHolder> {
 
         private final List<MovieListItem> movies = new ArrayList<>();
         private ImageService imageService;
-        private MovieListBaseFragment.FragmentListener listener;
+        private FragmentListener listener;
         private int counter;
 
-        MovieListRecyclerViewAdapter(ImageService imageService, MovieListBaseFragment.FragmentListener listener) {
+        MovieListRecyclerViewAdapter(ImageService imageService, FragmentListener listener) {
             this.imageService = imageService;
             this.listener = listener;
             setHasStableIds(true);
