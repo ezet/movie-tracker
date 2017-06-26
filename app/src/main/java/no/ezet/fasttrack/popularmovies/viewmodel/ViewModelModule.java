@@ -11,11 +11,6 @@ import dagger.multibindings.IntoMap;
 @Module
 public abstract class ViewModelModule {
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(MoviesViewModel.class)
-//    abstract ViewModel bindMoviesViewModel(MoviesViewModel viewModel);
-
     @Binds
     @IntoMap
     @ViewModelKey(MovieListViewModel.class)

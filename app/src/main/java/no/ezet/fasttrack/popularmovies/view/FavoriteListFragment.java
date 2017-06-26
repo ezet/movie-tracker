@@ -5,7 +5,7 @@ import android.view.MenuInflater;
 
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.viewmodel.FavoriteListViewModel;
-import no.ezet.fasttrack.popularmovies.viewmodel.MovieListViewModel;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieListBaseViewModel;
 
 /**
  * An activity representing a list of Movies. This activity
@@ -23,7 +23,7 @@ public class FavoriteListFragment extends MovieListBaseFragment {
     }
 
     @Override
-    protected Class<? extends MovieListViewModel> getViewModelClass() {
+    protected Class<? extends MovieListBaseViewModel> getViewModelClass() {
         return FavoriteListViewModel.class;
     }
 

@@ -15,9 +15,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -32,8 +29,8 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieListBaseViewModel;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListItem;
-import no.ezet.fasttrack.popularmovies.viewmodel.MovieListViewModel;
 import timber.log.Timber;
 
 /**
@@ -44,30 +41,27 @@ import timber.log.Timber;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-@SuppressWarnings("ConstantConditions")
 public abstract class MovieListBaseFragment extends LifecycleFragment {
 
+    protected MovieListBaseViewModel viewModel;
     @Inject
     ImageService imageService;
-
     @Inject
     ViewModelProvider.Factory viewModelFactory;
-
     // TODO: 22.06.2017 Manage with DI
 //    @Inject
     FragmentListener listener;
-
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView errorTextView;
-    protected MovieListViewModel viewModel;
 
     private static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return (int) (dpWidth / 180);
     }
-    protected abstract Class<? extends MovieListViewModel> getViewModelClass();
+
+    protected abstract Class<? extends MovieListBaseViewModel> getViewModelClass();
 
     @Override
     public void onAttach(Context context) {
@@ -79,7 +73,6 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Timber.d("onCreate: ");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -123,51 +116,6 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
         viewModel.getIsLoading().removeObservers(this);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.isChecked()) return true;
-        item.setChecked(true);
-        switch (item.getItemId()) {
-            case R.id.action_popular: {
-//                loadPopular();
-                break;
-            }
-            case R.id.action_top_rated: {
-//                loadTopRated();
-                break;
-            }
-            case R.id.action_upcoming: {
-//                loadUpcoming();
-                break;
-            }
-            case R.id.action_settings:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.lists_menu, menu);
-        int menuItemId = 0;
-        switch (viewModel.getSortBy()) {
-            case MovieListViewModel.POPULAR:
-                menuItemId = R.id.action_popular;
-                break;
-            case MovieListViewModel.UPCOMING:
-                menuItemId = R.id.action_upcoming;
-                break;
-            case MovieListViewModel.TOP_RATED:
-                menuItemId = R.id.action_top_rated;
-                break;
-        }
-//        menu.findItem(menuItemId).setChecked(true);
-    }
-
-
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
         final MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService, listener);
@@ -180,7 +128,9 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
 
     protected void setSubTitle() {
         ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        toolbar.setSubtitle(getSubtitle());
+        if (toolbar != null) {
+            toolbar.setSubtitle(getSubtitle());
+        }
     }
 
     @StringRes
@@ -189,7 +139,6 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
     public void showLoadingIndicator() {
         Timber.d("showLoadingIndicator: ");
         errorTextView.setVisibility(View.INVISIBLE);
-//        recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -198,7 +147,6 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
         Timber.d("showMovieList: ");
         progressBar.setVisibility(View.INVISIBLE);
         errorTextView.setVisibility(View.INVISIBLE);
-//        recyclerView.setVisibility(View.VISIBLE);
     }
 
     public void showLoadingError() {
@@ -260,7 +208,6 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
             this.movies.clear();
             this.movies.addAll(movieList);
             diffResult.dispatchUpdatesTo(this);
-//            notifyDataSetChanged();
         }
 
         static class ViewHolder extends RecyclerView.ViewHolder {
@@ -272,7 +219,7 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
             }
         }
 
-        public class DiffCallback extends DiffUtil.Callback {
+        public static class DiffCallback extends DiffUtil.Callback {
 
             private final List<MovieListItem> newList;
             private final List<MovieListItem> oldList;
