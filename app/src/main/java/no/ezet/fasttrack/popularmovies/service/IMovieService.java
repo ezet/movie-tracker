@@ -28,5 +28,8 @@ public interface IMovieService {
     @GET("movie/{movieId}")
     Call<Movie> getDetailsWithAppend(@Path("movieId") int movieId, @Query("append_to_response") String resources);
 
+    @GET("search/movie/")
+    Call<ApiList<Movie>> search(@Query("query") String query);
+
 
 }
