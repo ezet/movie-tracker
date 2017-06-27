@@ -73,7 +73,6 @@ public class MovieDetailsViewModel extends ViewModel {
                 favorite.setValue(favoriteResource.data != null);
             }
         });
-
     }
 
     public LiveData<List<MovieReview>> getReviews() {

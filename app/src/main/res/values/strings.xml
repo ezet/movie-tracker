@@ -30,4 +30,5 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="detail_popularity">Popularity:</string>
     <string name="detail_original_language">Original Language:</string>
+    <string name="detail_genres">Genres:</string>
 </resources>
