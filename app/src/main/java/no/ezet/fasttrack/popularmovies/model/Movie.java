@@ -4,19 +4,31 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
-import org.parceler.Parcel;
-
 import java.util.List;
 
+import no.ezet.fasttrack.popularmovies.db.MovieReview;
+import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
+
 @SuppressWarnings("WeakerAccess")
-@Parcel(Parcel.Serialization.BEAN)
 @Entity
 public class Movie {
 
     public static final int POPULAR = 0;
     public static final int UPCOMING = 1;
     public static final int TOP_RATED = 2;
-
+    public int budget;
+    public String homepage;
+    public String imdbId;
+    public String status;
+    public String tagline;
+    public int revenue;
+    public int runtime;
+    @Ignore
+    public ApiList<MovieTrailer> videos;
+    @Ignore
+    public ApiList<MovieReview> reviews;
+    @Ignore
+    public List<Genre> genres;
     @PrimaryKey
     private int id;
     private String posterPath;
@@ -34,6 +46,16 @@ public class Movie {
     private Boolean video;
     private Double voteAverage;
     private int Type;
+
+    public String getGenresAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Genre genre : genres) {
+            stringBuilder.append(genre.name);
+            stringBuilder.append(", ");
+        }
+        stringBuilder.delete(stringBuilder.lastIndexOf(","), stringBuilder.length());
+        return stringBuilder.toString();
+    }
 
     public String getPosterPath() {
         return posterPath;
@@ -157,5 +179,16 @@ public class Movie {
 
     public void setType(int type) {
         Type = type;
+    }
+
+    public static class Genre {
+
+        public final int id;
+        public final String name;
+
+        public Genre(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
     }
 }

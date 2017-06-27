@@ -2,7 +2,6 @@ package no.ezet.fasttrack.popularmovies.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -33,8 +32,22 @@ public class MovieRepository {
     }
 
     @NonNull
-    public LiveData<Resource<Movie>> getMovie(int id) {
-        return Transformations.map(movieCacheDao.getById(id), Resource::success);
+    public LiveData<Resource<Movie>> getMovieDetails(int id) {
+        MutableLiveData<Resource<Movie>> liveData = new MutableLiveData<>();
+        movieService.getDetailsWithAppend(id, "videos,reviews,images").enqueue(new Callback<Movie>() {
+            @Override
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
+                Timber.d("onResponse: ");
+                liveData.setValue(Resource.success(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<Movie> call, Throwable t) {
+                liveData.setValue(Resource.error(t.getMessage(), null));
+                Timber.d("onFailure: ");
+            }
+        });
+        return liveData;
     }
 
     @NonNull

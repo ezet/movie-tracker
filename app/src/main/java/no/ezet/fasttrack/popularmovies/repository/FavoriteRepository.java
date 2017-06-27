@@ -6,13 +6,11 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
 import no.ezet.fasttrack.popularmovies.db.FavoriteDao;
-import no.ezet.fasttrack.popularmovies.model.Favorite;
+import no.ezet.fasttrack.popularmovies.db.Favorite;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 

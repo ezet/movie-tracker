@@ -1,19 +1,15 @@
 package no.ezet.fasttrack.popularmovies.viewmodel;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.model.Favorite;
+import no.ezet.fasttrack.popularmovies.db.Favorite;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
-import timber.log.Timber;
 
 
 public class FavoriteListViewModel extends MovieListBaseViewModel {

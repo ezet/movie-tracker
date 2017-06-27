@@ -1,6 +1,6 @@
 package no.ezet.fasttrack.popularmovies.viewmodel;
 
-import no.ezet.fasttrack.popularmovies.model.Favorite;
+import no.ezet.fasttrack.popularmovies.db.Favorite;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 
 public class MovieListItem {

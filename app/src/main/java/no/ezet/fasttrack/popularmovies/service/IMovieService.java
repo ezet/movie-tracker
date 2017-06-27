@@ -1,12 +1,15 @@
 package no.ezet.fasttrack.popularmovies.service;
 
+import android.arch.lifecycle.LiveData;
+
 import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.model.MovieReview;
-import no.ezet.fasttrack.popularmovies.model.MovieTrailer;
+import no.ezet.fasttrack.popularmovies.db.MovieReview;
+import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface IMovieService {
 
@@ -18,5 +21,12 @@ public interface IMovieService {
 
     @GET("movie/{movieId}/reviews")
     Call<ApiList<MovieReview>> getReviews(@Path("movieId") int movieId);
+
+    @GET("movie/{movieId}")
+    Call<ApiList<MovieReview>> getDetails(@Path("movieId") int movieId);
+
+    @GET("movie/{movieId}")
+    Call<Movie> getDetailsWithAppend(@Path("movieId") int movieId, @Query("append_to_response") String resources);
+
 
 }

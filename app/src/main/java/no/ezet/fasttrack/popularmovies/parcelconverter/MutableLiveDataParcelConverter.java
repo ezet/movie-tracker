@@ -1,3 +1,4 @@
+/*
 package no.ezet.fasttrack.popularmovies.parcelconverter;
 
 import android.arch.lifecycle.LiveData;
@@ -21,3 +22,4 @@ public class MutableLiveDataParcelConverter<T> implements ParcelConverter<Mutabl
         return liveData;
     }
 }
+*/

@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="no.ezet.fasttrack.popularmovies.itemView.MovieDetailFragment">
+    tools:context="no.ezet.fasttrack.popularmovies.view.MovieDetailFragment">
 
     <data>
         <variable
@@ -20,21 +20,20 @@
             android:id="@+id/movie_portrait"
             android:layout_width="100dp"
             android:layout_height="150dp"
-            android:contentDescription="@string/cdesc_movie_portrait"
-            android:transitionName="transition"
+            android:contentDescription="@string/cd_movie_portrait"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_vertical_margin"
             android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/movie_portrait"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="200dp"
-            android:id="@+id/linearLayout">
+            tools:layout_height="200dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -49,7 +48,6 @@
                     android:text="@string/detail_release_date" />
 
                 <TextView
-                    android:id="@+id/tv_movie_release_date"
                     style="@style/TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -70,12 +68,60 @@
                     android:text="@string/detail_rating" />
 
                 <TextView
-                    android:id="@+id/tv_movie_rating"
                     style="@style/TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{String.valueOf(safeUnbox(movie.voteAverage))}"
                     tools:text="5.0" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text='@{" (" + String.valueOf(safeUnbox(movie.voteCount)) + " votes)"}'
+                    tools:text="5.0" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:layout_marginRight="@dimen/text_margin"
+                    android:text="@string/detail_popularity" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{String.valueOf(safeUnbox(movie.popularity))}"
+                    tools:text="5.0" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:layout_marginRight="@dimen/text_margin"
+                    android:text="@string/detail_original_language" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{movie.originalLanguage}"
+                    tools:text="English" />
 
             </LinearLayout>
 
@@ -89,6 +135,7 @@
             android:layout_marginTop="@dimen/text_margin"
             android:text="@{movie.overview}"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/movie_portrait"
             tools:text="@tools:sample/lorem" />
 
@@ -107,11 +154,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/trailer_list"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:listitem="@layout/review_list_item" />
-
-
-
 
     </android.support.constraint.ConstraintLayout>
 

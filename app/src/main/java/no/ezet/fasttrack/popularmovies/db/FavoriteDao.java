@@ -9,8 +9,6 @@ import android.support.annotation.WorkerThread;
 
 import java.util.List;
 
-import no.ezet.fasttrack.popularmovies.model.Favorite;
-
 @Dao
 @WorkerThread
 public abstract class FavoriteDao {
