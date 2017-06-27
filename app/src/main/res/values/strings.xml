@@ -1,40 +1,40 @@
 <resources>
     <string name="app_name">Movies</string>
     <string name="msg_error">An error has occurred</string>
+
     <string name="title_movie_list">Movies</string>
     <string name="title_movie_detail">Movie Detail</string>
-    <string name="detail_release_date">Release date: </string>
-    <string name="detail_rating">Rating: </string>
-    <string name="popular">Popular</string>
-    <string name="top_rated">Top rated</string>
-    <string name="upcoming">Upcoming</string>
-    <string name="backdrop_image">Backdrop image</string>
-    <string name="cdesc_trailer_thumbnail">trailer thumbnail</string>
-    <string name="cdesc_play_button_icon">play button icon</string>
-    <string name="cdesc_poster_image">poster image</string>
-    <string name="cd_movie_portrait">movie portrait</string>
-    <string name="favorites">Favorites</string>
-    <string name="title_activity_main2">Main2Activity</string>
+
+
+    <string name="title_popular">Popular</string>
+    <string name="title_top_rated">Top rated</string>
+    <string name="title_upcoming">Upcoming</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="title_search">Search</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="feedback_email">lars.dahl@gmail.com</string>
-    <string name="cd_application_logo">application logo</string>
+    <string name="action_search">Search</string>
     <string name="nav_favorites">Favorites</string>
     <string name="nav_settings">Settings</string>
     <string name="nav_discover">Discover</string>
     <string name="nav_search">Search</string>
-    <string name="title_item_list">Items</string>
-    <string name="title_item_detail">Item Detail</string>
+
     <string name="detail_popularity">Popularity:</string>
     <string name="detail_original_language">Original Language:</string>
     <string name="detail_genres">Genres:</string>
-    <string name="action_search">Search</string>
-    <string name="search_hint">search...</string>
-    <string name="title_search">Search</string>
+    <string name="detail_release_date">Release date:</string>
+    <string name="detail_rating">Rating:</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cd_backdrop_image">Backdrop image</string>
+    <string name="cd_trailer_thumbnail">trailer thumbnail</string>
+    <string name="cd_play_button_icon">play button icon</string>
+    <string name="cd_poster_image">poster image</string>
+    <string name="cd_movie_portrait">movie portrait</string>
+    <string name="cd_application_logo">application logo</string>
+
+    <string name="feedback_email">lars.dahl@gmail.com</string>
+    <string name="search_hint">search…</string>
 </resources>

@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -195,13 +194,13 @@ public class MovieListFragment extends LifecycleFragment {
         ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         switch (viewModel.getSortBy()) {
             case MovieListViewModel.POPULAR:
-                toolbar.setSubtitle(R.string.popular);
+                toolbar.setSubtitle(R.string.title_popular);
                 break;
             case MovieListViewModel.UPCOMING:
-                toolbar.setSubtitle(R.string.upcoming);
+                toolbar.setSubtitle(R.string.title_upcoming);
                 break;
             case MovieListViewModel.TOP_RATED:
-                toolbar.setSubtitle(R.string.top_rated);
+                toolbar.setSubtitle(R.string.title_top_rated);
                 break;
         }
     }

@@ -29,7 +29,7 @@ public class FavoriteListFragment extends MovieListBaseFragment {
 
     @Override
     protected int getSubtitle() {
-        return R.string.favorites;
+        return R.string.title_favorites;
     }
 
     @Override

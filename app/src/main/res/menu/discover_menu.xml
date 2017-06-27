@@ -7,14 +7,14 @@
         app:showAsAction="never">
         <item
             android:id="@+id/action_popular"
-            android:title="@string/popular" />
+            android:title="@string/title_popular" />
 
         <item
             android:id="@+id/action_top_rated"
-            android:title="@string/top_rated" />
+            android:title="@string/title_top_rated" />
         <item
             android:id="@+id/action_upcoming"
-            android:title="@string/upcoming" />
+            android:title="@string/title_upcoming" />
     </group>
     <item
         android:id="@+id/action_settings"
@@ -23,7 +23,7 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_black_24dp"
+        android:icon="@drawable/ic_search_24dp"
         android:title="@string/action_search"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView"

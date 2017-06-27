@@ -16,13 +16,13 @@
         android:layout_width="@dimen/trailer_width"
         android:layout_height="@dimen/trailer_height"
         android:scaleType="centerCrop"
-        android:contentDescription="@string/cdesc_trailer_thumbnail" />
+        android:contentDescription="@string/cd_trailer_thumbnail" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         app:srcCompat="@drawable/ic_play_circle_outline_black_24dp"
-        android:contentDescription="@string/cdesc_play_button_icon" />
+        android:contentDescription="@string/cd_play_button_icon" />
 
 </FrameLayout>

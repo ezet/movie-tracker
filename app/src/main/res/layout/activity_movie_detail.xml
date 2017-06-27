@@ -25,7 +25,7 @@
                 android:id="@+id/iv_backdrop_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="@string/backdrop_image"
+                android:contentDescription="@string/cd_backdrop_image"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax" />
