@@ -40,7 +40,6 @@ public class MovieDetailActivity extends AppCompatActivity implements LifecycleR
         if (findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
-
         setupFragment();
     }
 

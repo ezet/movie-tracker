@@ -27,6 +27,11 @@ public abstract class ViewModelModule {
     abstract ViewModel bindFavoriteListViewModel(FavoriteListViewModel viewModel);
 
     @Binds
+    @IntoMap
+    @ViewModelKey(SearchMoviesViewModel.class)
+    abstract ViewModel bindSearchMoviesViewModel(SearchMoviesViewModel viewModel);
+
+    @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelFactory factory);
 
 }

@@ -5,6 +5,7 @@ import dagger.android.ContributesAndroidInjector;
 import no.ezet.fasttrack.popularmovies.view.FavoriteListFragment;
 import no.ezet.fasttrack.popularmovies.view.MovieDetailFragment;
 import no.ezet.fasttrack.popularmovies.view.MovieListFragment;
+import no.ezet.fasttrack.popularmovies.view.SearchFragment;
 
 @Module()
 abstract class FragmentModule {
@@ -17,6 +18,9 @@ abstract class FragmentModule {
 
     @ContributesAndroidInjector
     abstract FavoriteListFragment contributeFavoriteListFragment();
+
+    @ContributesAndroidInjector
+    abstract SearchFragment contributeSearchFragment();
 
 //    @Provides
 //    MovieListFragment.FragmentListener provideMovieListFragmentListener(DiscoverActivity activity) {

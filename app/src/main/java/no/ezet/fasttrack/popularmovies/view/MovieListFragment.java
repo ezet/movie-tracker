@@ -124,10 +124,18 @@ public class MovieListFragment extends LifecycleFragment {
 
     @Override
     public void onDestroyView() {
-        Timber.d("onDestroyView: ");
         super.onDestroyView();
+        Timber.d("onDestroyView: ");
         viewModel.getMovies().removeObservers(this);
         viewModel.getIsLoading().removeObservers(this);
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+
     }
 
     @Override

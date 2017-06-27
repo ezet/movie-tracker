@@ -41,9 +41,9 @@ import timber.log.Timber;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public abstract class MovieListBaseFragment extends LifecycleFragment {
+public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> extends LifecycleFragment {
 
-    protected MovieListBaseViewModel viewModel;
+    protected T viewModel;
     @Inject
     ImageService imageService;
     @Inject
@@ -61,13 +61,18 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
         return (int) (dpWidth / 180);
     }
 
-    protected abstract Class<? extends MovieListBaseViewModel> getViewModelClass();
+    protected abstract Class<T> getViewModelClass();
 
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
-        this.listener = (FragmentListener) getActivity();
+        if (context instanceof FragmentListener) {
+            listener = (FragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement FragmentListener");
+        }
         postponeEnterTransition();
     }
 
@@ -82,6 +87,7 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
         super.onActivityCreated(savedInstanceState);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass());
+        setupViewModel(viewModel);
         viewModel.onRestoreInstanceState(savedInstanceState);
         viewModel.getIsLoading().observe(this, loading -> {
                     if (loading != null && loading) showLoadingIndicator();
@@ -116,6 +122,12 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
         viewModel.getIsLoading().removeObservers(this);
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
         final MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService, listener);
@@ -135,6 +147,8 @@ public abstract class MovieListBaseFragment extends LifecycleFragment {
 
     @StringRes
     protected abstract int getSubtitle();
+
+    protected void setupViewModel(T viewModel) {}
 
     public void showLoadingIndicator() {
         Timber.d("showLoadingIndicator: ");

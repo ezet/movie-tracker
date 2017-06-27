@@ -32,13 +32,8 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.model.ApiList;
-import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListItem;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import timber.log.Timber;
 
 /**
@@ -97,17 +92,11 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             Timber.d("handleIntent: " + query);
-            movieService.search(query).enqueue(new Callback<ApiList<Movie>>() {
-                @Override
-                public void onResponse(Call<ApiList<Movie>> call, Response<ApiList<Movie>> response) {
-                    Timber.d("onResponse: ");
-                }
+            SearchFragment searchFragment = SearchFragment.create(query);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.root_container, searchFragment)
+                    .commitAllowingStateLoss();
 
-                @Override
-                public void onFailure(Call<ApiList<Movie>> call, Throwable t) {
-                    Timber.d("onFailure: ");
-                }
-            });
         }
     }
 
@@ -116,7 +105,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.root_container, fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commitAllowingStateLoss();
+                .commit();
     }
 
     @Override

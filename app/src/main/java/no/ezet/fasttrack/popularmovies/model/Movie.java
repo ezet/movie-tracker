@@ -48,6 +48,7 @@ public class Movie {
     private int Type;
 
     public String getGenresAsString() {
+        if (genres.size() == 0) return "";
         StringBuilder stringBuilder = new StringBuilder();
         for (Genre genre : genres) {
             stringBuilder.append(genre.name);
