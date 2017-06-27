@@ -88,7 +88,6 @@ public class MovieListFragment extends LifecycleFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieListViewModel.class);
         viewModel.onRestoreInstanceState(savedInstanceState);
         viewModel.getIsLoading().observe(this, loading -> {

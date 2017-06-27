@@ -9,12 +9,17 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -56,6 +61,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     IMovieService movieService;
 
     private boolean twoPane;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +85,13 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if (savedInstanceState == null) setupFragment();
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setAdapter(new DiscoverPageAdapter(getSupportFragmentManager()));
+
+//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+//        tabLayout.setupWithViewPager(viewPager);
+
+//        if (savedInstanceState == null) setupFragment();
     }
 
     @Override
@@ -207,5 +219,26 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     }
 
 
+    private static class DiscoverPageAdapter extends FragmentPagerAdapter {
+
+        public DiscoverPageAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "title" + position;
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            return MovieListFragment.create();
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    }
 }
 
