@@ -76,8 +76,20 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         if (savedInstanceState == null) setupFragment();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        search(intent);
+    }
+
+    private void search(Intent intent) {
+        if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Timber.d("handleIntent: " + query);
+        }
     }
 
     private void setupFragment() {
