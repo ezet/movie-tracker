@@ -158,7 +158,7 @@ public class MovieListFragment extends LifecycleFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.lists_menu, menu);
+        inflater.inflate(R.menu.discover_menu, menu);
         int menuItemId = 0;
         switch (viewModel.getSortBy()) {
             case MovieListViewModel.POPULAR:

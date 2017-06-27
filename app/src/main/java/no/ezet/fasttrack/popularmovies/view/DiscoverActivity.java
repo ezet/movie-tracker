@@ -85,6 +85,18 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Timber.d("onOptionsItemSelected: ");
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Timber.d("onCreateOptionsMenu: ");
         return super.onCreateOptionsMenu(menu);
