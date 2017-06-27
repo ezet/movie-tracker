@@ -155,10 +155,9 @@ public class MovieListFragment extends LifecycleFragment {
         return true;
     }
 
-
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.discover_menu, menu);
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
         int menuItemId = 0;
         switch (viewModel.getSortBy()) {
             case MovieListViewModel.POPULAR:
@@ -173,7 +172,6 @@ public class MovieListFragment extends LifecycleFragment {
         }
         menu.findItem(menuItemId).setChecked(true);
     }
-
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
