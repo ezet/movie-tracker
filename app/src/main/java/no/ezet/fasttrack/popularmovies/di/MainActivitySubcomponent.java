@@ -3,15 +3,15 @@
 //import dagger.BindsInstance;
 //import dagger.Subcomponent;
 //import dagger.android.AndroidInjector;
-//import no.ezet.fasttrack.popularmovies.view.MainActivity;
+//import no.ezet.fasttrack.popularmovies.view.DiscoverActivity;
 //
 //@Subcomponent(modules = FragmentModule.class)
-//public interface MainActivitySubcomponent extends AndroidInjector<MainActivity> {
+//public interface MainActivitySubcomponent extends AndroidInjector<DiscoverActivity> {
 //
 //    @Subcomponent.Builder
-//    abstract class Builder extends AndroidInjector.Builder<MainActivity> {
+//    abstract class Builder extends AndroidInjector.Builder<DiscoverActivity> {
 ////        @BindsInstance
-////        abstract Builder mainActivity(MainActivity mainActivity);
+////        abstract Builder mainActivity(DiscoverActivity mainActivity);
 //
 //    }
 //}

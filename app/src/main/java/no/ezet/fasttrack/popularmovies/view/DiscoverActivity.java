@@ -39,7 +39,7 @@ import timber.log.Timber;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MainActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector, MovieListBaseFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener {
+public class DiscoverActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector, MovieListBaseFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener {
 
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_discover);
         if (findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         item.setChecked(true);
-        if (id == R.id.nav_lists) {
+        if (id == R.id.nav_discover) {
             MovieListFragment fragment = MovieListFragment.create();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.root_container, fragment)

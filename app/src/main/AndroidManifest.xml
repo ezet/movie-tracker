@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.MainActivity"
+            android:name=".view.DiscoverActivity"
             android:label="@string/title_movie_list"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -29,7 +29,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="no.ezet.fasttrack.popularmovies.view.MainActivity" />
+                android:value="no.ezet.fasttrack.popularmovies.view.DiscoverActivity" />
         </activity>
     </application>
 

@@ -2,14 +2,14 @@ package no.ezet.fasttrack.popularmovies.di;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
-import no.ezet.fasttrack.popularmovies.view.MainActivity;
+import no.ezet.fasttrack.popularmovies.view.DiscoverActivity;
 import no.ezet.fasttrack.popularmovies.view.MovieDetailActivity;
 
 @Module
 abstract class ActivityModule {
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
-    abstract MainActivity contributeMainActivity();
+    abstract DiscoverActivity contributeDiscoverActivity();
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
     abstract MovieDetailActivity contributeMovieDetailActivity();
@@ -19,7 +19,7 @@ abstract class ActivityModule {
 //abstract class ActivityModule {
 //    @Binds
 //    @IntoMap
-//    @ActivityKey(MainActivity.class)
+//    @ActivityKey(DiscoverActivity.class)
 //    abstract AndroidInjector.Factory<? extends Activity>
 //    bindMainActivityInjectorFactory(MainActivitySubcomponent.Builder builder);
 //
