@@ -32,6 +32,11 @@ public abstract class MovieCacheDao {
     public abstract LiveData<List<Movie>> getTopRated();
 
     @Query("SELECT * FROM movie " +
+            "WHERE type = " + Movie.NOW_PLAYING + " " +
+            "LIMIT 20")
+    public abstract LiveData<List<Movie>> getNowPlaying();
+
+    @Query("SELECT * FROM movie " +
             "WHERE id = :id")
     public abstract LiveData<Movie> getById(int id);
 

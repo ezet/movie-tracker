@@ -51,19 +51,25 @@ public class MovieRepository {
     }
 
     @NonNull
-    public LiveData<Resource<List<Movie>>> getPopularMovies() {
+    public LiveData<Resource<List<Movie>>> getPopular() {
         return getMovies(MovieListResource.QUERY_POPULAR);
     }
 
     @NonNull
-    public LiveData<Resource<List<Movie>>> getUpcomingMovies() {
+    public LiveData<Resource<List<Movie>>> getUpcoming() {
         return getMovies(MovieListResource.QUERY_UPCOMING);
     }
 
     @NonNull
-    public LiveData<Resource<List<Movie>>> getTopRatedMovies() {
+    public LiveData<Resource<List<Movie>>> getTopRated() {
         return getMovies(MovieListResource.QUERY_TOP_RATED);
     }
+
+    @NonNull
+    public LiveData<Resource<List<Movie>>> getNowPlaying() {
+        return getMovies(MovieListResource.QUERY_NOW_PLAYING);
+    }
+
 
     @NonNull
     private LiveData<Resource<List<Movie>>> getMovies(String query) {
@@ -75,7 +81,8 @@ public class MovieRepository {
         private static final String QUERY_POPULAR = "popular";
         private static final String QUERY_UPCOMING = "upcoming";
         private static final String QUERY_TOP_RATED = "top_rated";
-        private static boolean[] cached = new boolean[3];
+        private static final String QUERY_NOW_PLAYING = "now_playing";
+        private static boolean[] cached = new boolean[4];
         private MovieCacheDao movieCacheDao;
         private IMovieService movieService;
         private String query;
@@ -88,7 +95,6 @@ public class MovieRepository {
 
         @Override
         protected void saveCallResult(ApiList<Movie> movies) {
-            Timber.d("saveCallResult: ");
             for (Movie movie : movies.results) {
                 switch (query) {
                     case QUERY_POPULAR:
@@ -100,6 +106,9 @@ public class MovieRepository {
                     case QUERY_TOP_RATED:
                         movie.setType(Movie.TOP_RATED);
                         break;
+                    case QUERY_NOW_PLAYING:
+                        movie.setType(Movie.NOW_PLAYING);
+                        break;
                 }
             }
             cached[movies.results.get(0).getType()] = true;
@@ -108,12 +117,11 @@ public class MovieRepository {
 
         @Override
         protected boolean shouldFetch(List<Movie> data) {
-            return data.size() == 0 || !cached[data.get(0).getType()];
+            return data == null || data.size() == 0 || !cached[data.get(0).getType()];
         }
 
         @Override
         protected LiveData<List<Movie>> loadFromDb() {
-            Timber.d("loadFromDb: ");
             switch (query) {
                 case QUERY_POPULAR:
                     return movieCacheDao.getPopular();
@@ -121,6 +129,8 @@ public class MovieRepository {
                     return movieCacheDao.getUpcoming();
                 case QUERY_TOP_RATED:
                     return movieCacheDao.getTopRated();
+                case QUERY_NOW_PLAYING:
+                    return movieCacheDao.getNowPlaying();
                 default:
                     throw new IllegalArgumentException("Cannot execute: " + query);
             }
@@ -128,7 +138,6 @@ public class MovieRepository {
 
         @Override
         protected LiveData<NetworkResponse<ApiList<Movie>>> createCall() {
-            Timber.d("createCall: ");
             final MutableLiveData<NetworkResponse<ApiList<Movie>>> networkResponse = new MutableLiveData<>();
             movieService.getMovies(query).enqueue(new Callback<ApiList<Movie>>() {
                 @Override

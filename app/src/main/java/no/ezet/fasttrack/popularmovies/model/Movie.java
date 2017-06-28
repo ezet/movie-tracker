@@ -16,6 +16,7 @@ public class Movie {
     public static final int POPULAR = 0;
     public static final int UPCOMING = 1;
     public static final int TOP_RATED = 2;
+    public static final int NOW_PLAYING = 3;
     public int budget;
     public String homepage;
     public String imdbId;

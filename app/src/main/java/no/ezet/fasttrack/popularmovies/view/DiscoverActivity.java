@@ -6,6 +6,7 @@ import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -19,7 +20,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -39,6 +39,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListItem;
+import no.ezet.fasttrack.popularmovies.viewmodel.MovieListViewModel;
 import timber.log.Timber;
 
 /**
@@ -86,10 +87,10 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         navigationView.setNavigationItemSelectedListener(this);
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(new DiscoverPageAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new DiscoverPageAdapter(getResources(), getSupportFragmentManager()));
 
-//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-//        tabLayout.setupWithViewPager(viewPager);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
 
 //        if (savedInstanceState == null) setupFragment();
     }
@@ -113,11 +114,11 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     }
 
     private void setupFragment() {
-        MovieListFragment fragment = MovieListFragment.create();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.root_container, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
+//        MovieListFragment fragment = MovieListFragment.create();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.root_container, fragment)
+//                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                .commit();
     }
 
     @Override
@@ -149,11 +150,11 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         int id = item.getItemId();
         item.setChecked(true);
         if (id == R.id.nav_discover) {
-            MovieListFragment fragment = MovieListFragment.create();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.root_container, fragment)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .commitAllowingStateLoss();
+//            MovieListFragment fragment = MovieListFragment.create();
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.root_container, fragment)
+//                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                    .commitAllowingStateLoss();
         } else if (id == R.id.nav_favorites) {
             FavoriteListFragment fragment = FavoriteListFragment.create();
             getSupportFragmentManager().beginTransaction()
@@ -221,23 +222,54 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
 
     private static class DiscoverPageAdapter extends FragmentPagerAdapter {
 
-        public DiscoverPageAdapter(FragmentManager fm) {
+        private final Resources resources;
+
+        DiscoverPageAdapter(Resources resources, FragmentManager fm) {
             super(fm);
+            this.resources = resources;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "title" + position;
+            int resId;
+            switch (position) {
+                case MovieListViewModel.POPULAR:
+                    resId = R.string.title_popular;
+                    break;
+                case MovieListViewModel.UPCOMING:
+                    resId = R.string.title_upcoming;
+                    break;
+                case MovieListViewModel.TOP_RATED:
+                    resId = R.string.title_top_rated;
+                    break;
+                case MovieListViewModel.NOW_PLAYING:
+                    resId = R.string.title_now_playing;
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+            return resources.getString(resId);
         }
 
         @Override
         public Fragment getItem(int i) {
-            return MovieListFragment.create();
+            switch (i) {
+                case MovieListViewModel.POPULAR:
+                    return MovieListFragment.create(MovieListViewModel.POPULAR);
+                case MovieListViewModel.UPCOMING:
+                    return MovieListFragment.create(MovieListViewModel.UPCOMING);
+                case MovieListViewModel.TOP_RATED:
+                    return MovieListFragment.create(MovieListViewModel.TOP_RATED);
+                case MovieListViewModel.NOW_PLAYING:
+                    return MovieListFragment.create(MovieListViewModel.NOW_PLAYING);
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
     }
 }

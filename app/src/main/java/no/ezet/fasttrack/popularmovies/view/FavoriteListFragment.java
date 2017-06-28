@@ -27,14 +27,6 @@ public class FavoriteListFragment extends MovieListBaseFragment {
         return FavoriteListViewModel.class;
     }
 
-    @Override
-    protected int getSubtitle() {
-        return R.string.title_favorites;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    }
 }
 
 

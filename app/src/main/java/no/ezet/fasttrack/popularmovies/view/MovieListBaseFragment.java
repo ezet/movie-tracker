@@ -7,9 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -80,12 +77,6 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass());
         setupViewModel(viewModel);
         viewModel.onRestoreInstanceState(savedInstanceState);
@@ -94,19 +85,18 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
                     else showMovieList();
                 }
         );
-
-        recyclerView = (RecyclerView) getActivity().findViewById(R.id.movie_list);
-        progressBar = (ProgressBar) getActivity().findViewById(R.id.pb_loading_indicator);
-        errorTextView = (TextView) getActivity().findViewById(R.id.tv_error_message);
-
-        setupRecyclerView(recyclerView);
-        startPostponedEnterTransition();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_movie_list, container, false);
+        View root = inflater.inflate(R.layout.fragment_movie_list, container, false);
+        recyclerView = (RecyclerView) root.findViewById(R.id.movie_list);
+        progressBar = (ProgressBar) root.findViewById(R.id.pb_loading_indicator);
+        errorTextView = (TextView) root.findViewById(R.id.tv_error_message);
+        setupRecyclerView(recyclerView);
+        startPostponedEnterTransition();
+        return root;
     }
 
     @Override
@@ -131,31 +121,18 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
         final MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService, listener);
-        viewModel.getMovies().observe(this, movieList -> {
-            setSubTitle();
-            adapter.setMovies(movieList);
-        });
+        viewModel.getMovies().observe(this, adapter::setMovies);
         recyclerView.setAdapter(adapter);
     }
 
-    protected void setSubTitle() {
-        ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (toolbar != null) {
-            toolbar.setSubtitle(getSubtitle());
-        }
+    protected void setupViewModel(T viewModel) {
     }
-
-    @StringRes
-    protected abstract int getSubtitle();
-
-    protected void setupViewModel(T viewModel) {}
 
     public void showLoadingIndicator() {
         Timber.d("showLoadingIndicator: ");
         errorTextView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
-
 
     private void showMovieList() {
         Timber.d("showMovieList: ");
@@ -233,7 +210,7 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
             }
         }
 
-        public static class DiffCallback extends DiffUtil.Callback {
+        private static class DiffCallback extends DiffUtil.Callback {
 
             private final List<MovieListItem> newList;
             private final List<MovieListItem> oldList;

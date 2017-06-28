@@ -37,4 +37,5 @@
 
     <string name="feedback_email">lars.dahl@gmail.com</string>
     <string name="search_hint">search…</string>
+    <string name="title_now_playing">Cinema</string>
 </resources>

@@ -16,14 +16,6 @@ public interface IMovieService {
     @GET("movie/{sortBy}")
     Call<ApiList<Movie>> getMovies(@Path("sortBy") String sortBy);
 
-    @GET("movie/{movieId}/videos")
-    Call<ApiList<MovieTrailer>> getVideos(@Path("movieId") int movieId);
-
-    @GET("movie/{movieId}/reviews")
-    Call<ApiList<MovieReview>> getReviews(@Path("movieId") int movieId);
-
-    @GET("movie/{movieId}")
-    Call<ApiList<MovieReview>> getDetails(@Path("movieId") int movieId);
 
     @GET("movie/{movieId}")
     Call<Movie> getDetailsWithAppend(@Path("movieId") int movieId, @Query("append_to_response") String resources);

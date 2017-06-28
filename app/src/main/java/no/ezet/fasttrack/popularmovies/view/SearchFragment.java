@@ -51,9 +51,4 @@ public class SearchFragment extends MovieListBaseFragment<SearchMoviesViewModel>
         return SearchMoviesViewModel.class;
     }
 
-    @Override
-    protected int getSubtitle() {
-        return R.string.title_search;
-    }
-
 }
