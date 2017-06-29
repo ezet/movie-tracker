@@ -82,9 +82,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         navigationView.setNavigationItemSelectedListener(this);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
 
-        setupFragment();
-
-//        if (savedInstanceState == null) setupFragment();
+        if (savedInstanceState == null) setupDiscoverScreen();
     }
 
     @Override
@@ -105,24 +103,12 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         }
     }
 
-    private void setupFragment() {
+    private void setupDiscoverScreen() {
         DiscoverListsFragment fragment = DiscoverListsFragment.create();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.root_container, fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                Timber.d("onOptionsItemSelected: ");
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
     }
 
     @Override

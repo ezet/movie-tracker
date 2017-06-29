@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bnav_lists"
+        android:icon="@drawable/ic_view_list_black_24dp"
+        android:title="@string/bnav_lists" />
+
+    <item
+        android:id="@+id/bnav_search"
+        android:icon="@drawable/ic_drawer_search"
+        android:title="@string/bnav_filter" />
+
+    <item
+        android:id="@+id/bnav_favorites"
+        android:icon="@drawable/ic_star_white_24dp"
+        android:title="@string/bnav_favorites" />
+
+</menu>

@@ -61,6 +61,6 @@
         app:backgroundTint="@color/colorPrimaryDark"
         app:layout_anchor="@id/movie_detail_container"
         app:layout_anchorGravity="top|end"
-        app:srcCompat="@drawable/ic_star_black_24dp" />
+        app:srcCompat="@drawable/ic_star_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

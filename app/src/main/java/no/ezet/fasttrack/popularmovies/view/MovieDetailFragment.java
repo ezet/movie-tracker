@@ -155,7 +155,7 @@ public class MovieDetailFragment extends LifecycleFragment {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         viewModel.getFavorite().observe(this, isFavorite -> {
             if (isFavorite) {
-                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_black_24dp));
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_white_24dp));
                 if (initialized) {
                     Snackbar.make(getView(), "Added to favorites", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
