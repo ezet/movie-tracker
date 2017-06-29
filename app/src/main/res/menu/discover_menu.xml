@@ -2,20 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group
-        android:checkableBehavior="single"
-        app:showAsAction="never">
-        <item
-            android:id="@+id/action_popular"
-            android:title="@string/title_popular" />
-
-        <item
-            android:id="@+id/action_top_rated"
-            android:title="@string/title_top_rated" />
-        <item
-            android:id="@+id/action_upcoming"
-            android:title="@string/title_upcoming" />
-    </group>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
@@ -25,7 +11,6 @@
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search_24dp"
         android:title="@string/action_search"
-        app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        />
+        app:showAsAction="collapseActionView|ifRoom" />
 </menu>

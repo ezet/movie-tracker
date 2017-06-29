@@ -61,6 +61,9 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     private boolean twoPane;
     private AppBarLayout appBarLayout;
     private BottomNavigationView bottomNavigation;
+    private DiscoverListsFragment discoverListsFragment;
+    private Fragment filterFragment;
+    private FavoriteListFragment favoriteListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,16 +108,24 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     }
 
     private void gotoDiscoverLists() {
-        setRootFragment(DiscoverListsFragment.create());
+        if (discoverListsFragment == null) {
+            discoverListsFragment = DiscoverListsFragment.create();
+        }
+        setRootFragment(discoverListsFragment);
     }
 
     private void gotoFilter() {
-        setRootFragment(FilterFragment.create());
+        if (filterFragment == null) {
+            filterFragment = FilterFragment.create();
+        }
+        setRootFragment(filterFragment);
     }
 
-
     private void gotoFavorites() {
-        setRootFragment(FavoriteListFragment.create());
+        if (favoriteListFragment == null) {
+            favoriteListFragment = FavoriteListFragment.create();
+        }
+        setRootFragment(favoriteListFragment);
     }
 
     private void setRootFragment(Fragment fragment) {
@@ -142,7 +153,6 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
 
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

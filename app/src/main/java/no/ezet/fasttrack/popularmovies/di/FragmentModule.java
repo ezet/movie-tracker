@@ -3,6 +3,7 @@ package no.ezet.fasttrack.popularmovies.di;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 import no.ezet.fasttrack.popularmovies.view.FavoriteListFragment;
+import no.ezet.fasttrack.popularmovies.view.FilterFragment;
 import no.ezet.fasttrack.popularmovies.view.MovieDetailFragment;
 import no.ezet.fasttrack.popularmovies.view.MovieListFragment;
 import no.ezet.fasttrack.popularmovies.view.SearchFragment;
@@ -21,6 +22,9 @@ abstract class FragmentModule {
 
     @ContributesAndroidInjector
     abstract SearchFragment contributeSearchFragment();
+
+    @ContributesAndroidInjector
+    abstract FilterFragment contributeFilterFragment();
 
 //    @Provides
 //    MovieListFragment.FragmentListener provideMovieListFragmentListener(DiscoverActivity activity) {

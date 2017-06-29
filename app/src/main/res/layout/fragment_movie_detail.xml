@@ -163,7 +163,7 @@
                     style="@style/TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{String.valueOf(movie.getAdult())}" />
+                    android:text="@{String.valueOf(safeUnbox(movie.getAdult()))}" />
 
             </LinearLayout>
 

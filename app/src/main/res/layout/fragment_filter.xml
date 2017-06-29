@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/text_margin">
+
+    <TextView
+        android:id="@+id/tv_order_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_order_by" />
+
+    <Spinner
+        android:id="@+id/spinner_order_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_order_by" />
+
+    <Spinner
+        android:id="@+id/spinner_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/spinner_order_by"
+        app:layout_constraintTop_toBottomOf="@id/tv_order_by" />
+
+    <TextView
+        android:id="@+id/tv_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="Year"
+        app:layout_constraintTop_toBottomOf="@id/spinner_order_by" />
+
+    <Spinner
+        android:id="@+id/spinner_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        app:layout_constraintTop_toBottomOf="@id/tv_year" />
+
+    <TextView
+        android:id="@+id/tv_genre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="Genre"
+        app:layout_constraintTop_toBottomOf="@id/spinner_year" />
+
+    <Spinner
+        android:id="@+id/spinner_genre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_genre" />
+
+    <TextView
+        android:id="@+id/tv_keywords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="Keywords"
+        app:layout_constraintTop_toBottomOf="@id/spinner_genre" />
+
+    <EditText
+        android:id="@+id/et_keywords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_keywords"
+        android:hint="enter keywords here..."
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/button_filter_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="Search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button_filter_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="Clear"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_filter_search" />
+
+
+</android.support.constraint.ConstraintLayout>

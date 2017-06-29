@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
 import no.ezet.fasttrack.popularmovies.model.ApiList;
+import no.ezet.fasttrack.popularmovies.model.Genre;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.NetworkResource;
 import no.ezet.fasttrack.popularmovies.network.NetworkResponse;
@@ -36,15 +37,45 @@ public class MovieRepository {
         MutableLiveData<Resource<Movie>> liveData = new MutableLiveData<>();
         movieService.getDetailsWithAppend(id, "videos,reviews,images").enqueue(new Callback<Movie>() {
             @Override
-            public void onResponse(Call<Movie> call, Response<Movie> response) {
-                Timber.d("onResponse: ");
-                liveData.setValue(Resource.success(response.body()));
+            public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
+                Timber.d("onResponse: getMovieDetails()");
+                if (response.body() != null) {
+                    liveData.setValue(Resource.success(response.body()));
+                } else if (response.errorBody() != null) {
+                    //noinspection ConstantConditions
+                    liveData.setValue(Resource.error(response.errorBody().toString(), null));
+                }
             }
 
             @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
+            public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) {
                 liveData.setValue(Resource.error(t.getMessage(), null));
                 Timber.d("onFailure: ");
+            }
+        });
+        return liveData;
+    }
+
+    @NonNull
+    public LiveData<Resource<List<Genre>>> getGenres() {
+        MutableLiveData<Resource<List<Genre>>> liveData = new MutableLiveData<>();
+        movieService.getGenres().enqueue(new Callback<ApiList<Genre>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiList<Genre>> call, @NonNull Response<ApiList<Genre>> response) {
+                Timber.d("onResponse: getGenres()");
+                if (response.body() != null) {
+                    //noinspection ConstantConditions
+                    liveData.setValue(Resource.success(response.body().results));
+                } else if (response.errorBody() != null) {
+                    //noinspection ConstantConditions
+                    liveData.setValue(Resource.error(response.errorBody().toString(), null));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiList<Genre>> call, @NonNull Throwable t) {
+                Timber.d("onFailure: getGenres()");
+                liveData.setValue(Resource.error(t.getMessage(), null));
             }
         });
         return liveData;

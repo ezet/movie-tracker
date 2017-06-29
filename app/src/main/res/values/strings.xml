@@ -45,6 +45,19 @@
     <string name="nav_watchlist">Watchlist</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string-array name="filter_order">
+        <item>Ascending</item>
+        <item>Descending</item>
+    </string-array>
+
+    <string-array name="filter_order_by">
+        <item>Title</item>
+        <item>Popularity</item>
+        <item>Rating</item>
+        <item>Release date</item>
+        <item>Revenue</item>
+    </string-array>
+
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
@@ -119,4 +132,5 @@
     <string name="pref_summary_login">Use official login</string>
     <string name="pref_title_login">Use login</string>
     <string name="detail_adult">Adult</string>
+    <string name="tv_order_by">Order by</string>
 </resources>
