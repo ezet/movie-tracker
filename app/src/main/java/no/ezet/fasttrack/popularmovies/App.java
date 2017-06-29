@@ -2,6 +2,8 @@ package no.ezet.fasttrack.popularmovies;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.squareup.leakcanary.LeakCanary;
 
@@ -18,22 +20,29 @@ public class App extends Application implements HasActivityInjector {
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
+    @Inject
+    SharedPreferences preferences;
+
     @Override
     public void onCreate() {
         super.onCreate();
         if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
             return;
         }
         LeakCanary.install(this);
-        // Normal app init code..
+
         DaggerAppComponent.builder().application(this).build().inject(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+        setDefaultPreferences();
+    }
 
+    private void setDefaultPreferences() {
+        if (preferences.getBoolean(PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false)) {
+            PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
+        }
     }
 
     @Override

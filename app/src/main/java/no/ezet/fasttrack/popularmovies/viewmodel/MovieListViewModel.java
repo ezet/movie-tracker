@@ -8,9 +8,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
+import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import timber.log.Timber;
 
 
@@ -22,16 +24,17 @@ public class MovieListViewModel extends MovieListBaseViewModel {
     public static final int NOW_PLAYING = 3;
     private static final String STATE_CURRENT_SORT = "STATE_CURRENT_SORT";
     private final MovieRepository movieRepository;
-
-    public void setListType(int listType) {
-        this.listType = listType;
-    }
-
+    private final PreferenceService preferences;
     private int listType = -1;
 
     @Inject
-    MovieListViewModel(MovieRepository movieRepository) {
+    MovieListViewModel(MovieRepository movieRepository, PreferenceService preferences) {
         this.movieRepository = movieRepository;
+        this.preferences = preferences;
+    }
+
+    public void setListType(int listType) {
+        this.listType = listType;
     }
 
     @Override
@@ -65,12 +68,13 @@ public class MovieListViewModel extends MovieListBaseViewModel {
             if (resource.status == Resource.SUCCESS) {
                 List<MovieListItem> list = new ArrayList<>();
                 for (Movie item : resource.data) {
-                    list.add(MovieListItem.create(item));
+                    if (!item.getAdult() || preferences.getBoolean(R.string.pkey_adult)) {
+                        list.add(MovieListItem.create(item));
+                    }
                 }
                 movies.setValue(list);
             }
         });
-
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {

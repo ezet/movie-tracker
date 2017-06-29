@@ -73,6 +73,11 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(getViewModelClass());
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setupViewModel(viewModel);
         viewModel.onRestoreInstanceState(savedInstanceState);
         viewModel.getIsLoading().observe(this, loading -> {
@@ -80,11 +85,6 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
                     else showMovieList();
                 }
         );
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_movie_list, container, false);
         recyclerView = (RecyclerView) root.findViewById(R.id.movie_list);
         progressBar = (ProgressBar) root.findViewById(R.id.pb_loading_indicator);

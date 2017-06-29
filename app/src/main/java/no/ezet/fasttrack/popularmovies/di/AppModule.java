@@ -2,6 +2,8 @@ package no.ezet.fasttrack.popularmovies.di;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.squareup.picasso.Picasso;
 
@@ -12,6 +14,7 @@ import dagger.Provides;
 import no.ezet.fasttrack.popularmovies.db.AppDatabase;
 import no.ezet.fasttrack.popularmovies.db.FavoriteDao;
 import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
+import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import no.ezet.fasttrack.popularmovies.viewmodel.ViewModelModule;
 
 @Module(includes = ViewModelModule.class)
@@ -39,6 +42,18 @@ class AppModule {
     @Provides
     FavoriteDao provideFavoriteDao(AppDatabase appDatabase) {
         return appDatabase.favoriteDao();
+    }
+
+    @Singleton
+    @Provides
+    PreferenceService providePreferenceService(Application application) {
+        return new PreferenceService(application);
+    }
+
+    @Singleton
+    @Provides
+    SharedPreferences provideDefaultSharedPreferences(Application application) {
+        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
 

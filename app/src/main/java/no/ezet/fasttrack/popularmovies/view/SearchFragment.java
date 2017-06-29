@@ -33,7 +33,6 @@ public class SearchFragment extends MovieListBaseFragment<SearchMoviesViewModel>
     @Override
     protected void setupViewModel(SearchMoviesViewModel viewModel) {
         viewModel.setQuery(query);
-        super.setupViewModel(viewModel);
     }
 
     @Override

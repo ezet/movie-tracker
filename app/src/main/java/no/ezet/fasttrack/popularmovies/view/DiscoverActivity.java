@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -155,7 +156,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         item.setChecked(true);
@@ -175,7 +176,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         } else if (id == R.id.nav_people) {
 
         } else if (id == R.id.nav_settings) {
-
+            startActivity(new Intent(this, SettingsActivity.class));
 //        } else if (id == R.id.nav_share) {
 //
 //        } else if (id == R.id.nav_send) {

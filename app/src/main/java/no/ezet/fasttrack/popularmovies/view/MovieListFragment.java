@@ -33,8 +33,6 @@ public class MovieListFragment extends MovieListBaseFragment<MovieListViewModel>
     @Override
     protected void setupViewModel(MovieListViewModel viewModel) {
         viewModel.setListType(getArguments().getInt(ARG_MODE));
-        super.setupViewModel(viewModel);
-
     }
 }
 
