@@ -1,21 +1,11 @@
 package no.ezet.fasttrack.popularmovies.view;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.model.ApiList;
-import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.viewmodel.SearchMoviesViewModel;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import timber.log.Timber;
 
 public class SearchFragment extends MovieListBaseFragment<SearchMoviesViewModel> {
 

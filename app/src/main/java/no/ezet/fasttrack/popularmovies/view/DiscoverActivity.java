@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -58,6 +59,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
 
     private boolean twoPane;
     private AppBarLayout appBarLayout;
+    private BottomNavigationView bottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +84,45 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         navigationView.setNavigationItemSelectedListener(this);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
 
-        if (savedInstanceState == null) setupDiscoverScreen();
+        bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigation.setOnNavigationItemSelectedListener(menuItem -> {
+            switch (menuItem.getItemId()) {
+                case R.id.bnav_lists:
+                    gotoDiscoverLists();
+                    break;
+                case R.id.bnav_filter:
+                    gotoFilter();
+                    break;
+                case R.id.bnav_favorites:
+                    gotoFavorites();
+                    break;
+            }
+            return true;
+        });
+
+        if (savedInstanceState == null) gotoDiscoverLists();
     }
+
+    private void gotoDiscoverLists() {
+        setRootFragment(DiscoverListsFragment.create());
+    }
+
+    private void gotoFilter() {
+        setRootFragment(FilterFragment.create());
+    }
+
+
+    private void gotoFavorites() {
+        setRootFragment(FavoriteListFragment.create());
+    }
+
+    private void setRootFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.root_container, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+    }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -103,13 +142,6 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         }
     }
 
-    private void setupDiscoverScreen() {
-        DiscoverListsFragment fragment = DiscoverListsFragment.create();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.root_container, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,20 +159,20 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         item.setChecked(true);
-        if (id == R.id.nav_discover) {
+        if (id == R.id.nav_movies) {
             DiscoverListsFragment fragment = DiscoverListsFragment.create();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.root_container, fragment)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
-        } else if (id == R.id.nav_favorites) {
+        } else if (id == R.id.nav_tv_shows) {
             FavoriteListFragment fragment = FavoriteListFragment.create();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.root_container, fragment)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commitAllowingStateLoss();
 
-        } else if (id == R.id.nav_search) {
+        } else if (id == R.id.nav_people) {
 
         } else if (id == R.id.nav_settings) {
 

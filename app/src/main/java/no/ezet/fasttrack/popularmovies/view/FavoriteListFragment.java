@@ -1,9 +1,5 @@
 package no.ezet.fasttrack.popularmovies.view;
 
-import android.view.Menu;
-import android.view.MenuInflater;
-
-import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.viewmodel.FavoriteListViewModel;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListBaseViewModel;
 
