@@ -13,6 +13,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,9 +29,9 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.databinding.FragmentMovieDetailBinding;
-import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.db.MovieReview;
 import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
+import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.service.VideoService;
@@ -42,6 +43,7 @@ import no.ezet.fasttrack.popularmovies.viewmodel.MovieDetailsViewModel;
 public class MovieDetailFragment extends LifecycleFragment {
 
     public static final String ARG_MOVIE_ID = "ARG_MOVIE_ID";
+    public static final String ARG_POSTER_PATH = "ARG_POSTER_PATH";
 
     @Inject
     ImageService imageService;
@@ -64,10 +66,11 @@ public class MovieDetailFragment extends LifecycleFragment {
     private boolean initialized;
 
     @NonNull
-    public static MovieDetailFragment create(Integer movieId) {
+    public static MovieDetailFragment create(Integer movieId, String posterPath) {
         MovieDetailFragment fragment = new MovieDetailFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_MOVIE_ID, movieId);
+        args.putString(ARG_POSTER_PATH, posterPath);
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,26 +82,36 @@ public class MovieDetailFragment extends LifecycleFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentMovieDetailBinding.inflate(inflater, container, false);
-//        backdropImage = (ImageView) binding.getRoot().findViewById(R.id.iv_backdrop_image);
-        backdropImage = (ImageView) container.getRootView().findViewById(R.id.iv_backdrop_image);
-        reviewList = (RecyclerView) binding.getRoot().findViewById(R.id.review_list);
-        trailerList = (RecyclerView) binding.getRoot().findViewById(R.id.trailer_list);
-        portrait = (ImageView) binding.getRoot().findViewById(R.id.movie_portrait);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieDetailsViewModel.class);
         setHasOptionsMenu(true);
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_MOVIE_ID)) {
             viewModel.setMovie(args.getInt(ARG_MOVIE_ID));
         }
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentMovieDetailBinding.inflate(inflater, container, false);
+        backdropImage = (ImageView) container.getRootView().findViewById(R.id.iv_backdrop_image);
+        reviewList = (RecyclerView) binding.getRoot().findViewById(R.id.review_list);
+        trailerList = (RecyclerView) binding.getRoot().findViewById(R.id.trailer_list);
+        portrait = (ImageView) binding.getRoot().findViewById(R.id.movie_portrait);
+        ViewCompat.setTransitionName(portrait, getString(R.string.transition_portrait));
+        imageService.loadImage(getArguments().getString(ARG_POSTER_PATH), ImageService.SIZE_W342, portrait);
+        viewModel.getMovie().observe(this, movie -> {
+            if (movie != null) {
+                bindMovie(movie);
+            }
+        });
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.detail_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -106,15 +119,10 @@ public class MovieDetailFragment extends LifecycleFragment {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        initFavoriteButton();
-        setupReviewList(reviewList);
-        setupTrailerList(trailerList);
 
-        viewModel.getMovie().observe(this, movie -> {
-            if (movie != null) {
-                bindMovie(movie);
-            }
-        });
+        setupFavoriteButton();
+        setupTrailerList(trailerList);
+//        setupReviewList(reviewList);
     }
 
     private void setupReviewList(RecyclerView recyclerView) {
@@ -141,7 +149,6 @@ public class MovieDetailFragment extends LifecycleFragment {
     }
 
     private void bindMovie(@NonNull Movie movie) {
-        imageService.loadImage(movie.getPosterPath(), ImageService.SIZE_W342, portrait);
         imageService.loadImage(movie.getBackdropPath(), ImageService.SIZE_W342, backdropImage);
         CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
         if (appBarLayout != null) {
@@ -151,7 +158,7 @@ public class MovieDetailFragment extends LifecycleFragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void initFavoriteButton() {
+    private void setupFavoriteButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         viewModel.getFavorite().observe(this, isFavorite -> {
             if (isFavorite) {

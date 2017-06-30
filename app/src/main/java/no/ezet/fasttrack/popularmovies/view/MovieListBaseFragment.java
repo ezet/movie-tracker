@@ -23,7 +23,6 @@ import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListBaseViewModel;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListItem;
-import timber.log.Timber;
 
 /**
  * An activity representing a list of Movies. This activity

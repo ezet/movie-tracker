@@ -25,7 +25,6 @@ public class MovieListFragment extends MovieListBaseFragment<MovieListViewModel>
     public int mode;
 
     public static MovieListFragment create(int mode) {
-        Timber.d("create: " + mode);
         Bundle args = new Bundle();
         args.putInt(ARG_MODE, mode);
         MovieListFragment fragment = new MovieListFragment();
@@ -37,13 +36,11 @@ public class MovieListFragment extends MovieListBaseFragment<MovieListViewModel>
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mode = getArguments().getInt(ARG_MODE);
-        Timber.d("onCreate: " + mode);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Timber.d("onCreateView: " + mode);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

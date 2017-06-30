@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -108,7 +109,6 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     }
 
     private void gotoDiscoverLists() {
-        Timber.d("gotoDiscoverLists: ");
         if (discoverListsFragment == null) discoverListsFragment = DiscoverListsFragment.create();
         setRootFragment(discoverListsFragment);
     }
@@ -130,7 +130,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     private void setRootFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.root_container, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commitAllowingStateLoss();
     }
 
@@ -214,7 +214,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     @Override
     public void onItemClick(View view, MovieListItem movie) {
         if (twoPane) {
-            MovieDetailFragment fragment = MovieDetailFragment.create(movie.id);
+            MovieDetailFragment fragment = MovieDetailFragment.create(movie.id, movie.posterPath);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 fragment.setEnterTransition(new Fade());
                 fragment.setSharedElementEnterTransition(new ChangeBounds().setDuration(100));
@@ -229,7 +229,11 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         } else {
             Intent intent = new Intent(this, MovieDetailActivity.class);
             intent.putExtra(MovieDetailActivity.EXTRA_MOVIE_ID, movie.id);
-            startActivity(intent);
+            intent.putExtra(MovieDetailActivity.EXTRA_POSTER_PATH, movie.posterPath);
+            ViewCompat.setTransitionName(view, getString(R.string.transition_portrait));
+            ActivityOptionsCompat portraitTransition = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, getString(R.string.transition_portrait));
+            startActivity(intent, portraitTransition.toBundle());
+
         }
     }
 

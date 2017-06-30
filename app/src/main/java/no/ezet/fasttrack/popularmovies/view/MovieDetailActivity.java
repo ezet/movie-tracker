@@ -25,6 +25,7 @@ import no.ezet.fasttrack.popularmovies.R;
 public class MovieDetailActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector {
 
     public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
+    public static final String EXTRA_POSTER_PATH = "EXTRA_POSTER_PATH";
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     @Inject
@@ -45,7 +46,8 @@ public class MovieDetailActivity extends AppCompatActivity implements LifecycleR
 
     private void setupFragment() {
         int movieId = getIntent().getIntExtra(EXTRA_MOVIE_ID, 0);
-        MovieDetailFragment fragment = MovieDetailFragment.create(movieId);
+        String posterPath = getIntent().getStringExtra(EXTRA_POSTER_PATH);
+        MovieDetailFragment fragment = MovieDetailFragment.create(movieId, posterPath);
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //            fragment.setEnterTransition(new Fade());
 //            fragment.setSharedElementEnterTransition(new ChangeBounds().setDuration(100));

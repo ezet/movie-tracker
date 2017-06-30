@@ -133,4 +133,5 @@
     <string name="pref_title_login">Use login</string>
     <string name="detail_adult">Adult</string>
     <string name="tv_order_by">Order by</string>
+    <string name="transition_portrait">transition_portrait</string>
 </resources>
