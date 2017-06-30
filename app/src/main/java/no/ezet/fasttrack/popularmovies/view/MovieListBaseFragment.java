@@ -111,6 +111,7 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     public void onDetach() {
         super.onDetach();
         listener = null;
+        recyclerView.setAdapter(null);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -124,13 +125,11 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     }
 
     public void showLoadingIndicator() {
-        Timber.d("showLoadingIndicator: ");
         errorTextView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
     private void showMovieList() {
-        Timber.d("showMovieList: ");
         progressBar.setVisibility(View.INVISIBLE);
         errorTextView.setVisibility(View.INVISIBLE);
     }

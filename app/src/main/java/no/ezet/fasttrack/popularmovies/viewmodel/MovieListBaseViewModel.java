@@ -14,9 +14,13 @@ public abstract class MovieListBaseViewModel extends ViewModel {
     protected final MediatorLiveData<List<MovieListItem>> movies = new MediatorLiveData<>();
     protected final MutableLiveData<Boolean> loading = new MutableLiveData<>();
     protected final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private boolean loaded = false;
 
     public LiveData<List<MovieListItem>> getMovies() {
-        loadMovies();
+        if (!loaded) {
+            loadMovies();
+            loaded = true;
+        }
         return movies;
     }
 

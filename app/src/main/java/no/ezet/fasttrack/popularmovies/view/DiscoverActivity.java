@@ -108,14 +108,13 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     }
 
     private void gotoDiscoverLists() {
-        if (discoverListsFragment == null) {
-            discoverListsFragment = DiscoverListsFragment.create();
-        }
+        Timber.d("gotoDiscoverLists: ");
+        if (discoverListsFragment == null) discoverListsFragment = DiscoverListsFragment.create();
         setRootFragment(discoverListsFragment);
     }
 
     private void gotoFilter() {
-        if (filterFragment == null) {
+        if (filterFragment == null || filterFragment.getView() == null) {
             filterFragment = FilterFragment.create();
         }
         setRootFragment(filterFragment);
@@ -132,9 +131,8 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.root_container, fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
+                .commitAllowingStateLoss();
     }
-
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -177,11 +175,6 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
         } else if (id == R.id.nav_tv_shows) {
-            FavoriteListFragment fragment = FavoriteListFragment.create();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.root_container, fragment)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .commitAllowingStateLoss();
 
         } else if (id == R.id.nav_people) {
 

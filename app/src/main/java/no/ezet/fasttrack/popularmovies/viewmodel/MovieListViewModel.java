@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
@@ -29,6 +28,7 @@ public class MovieListViewModel extends MovieListBaseViewModel {
 
     @Inject
     MovieListViewModel(MovieRepository movieRepository, PreferenceService preferences) {
+        Timber.d("MovieListViewModel: ");
         this.movieRepository = movieRepository;
         this.preferences = preferences;
     }
@@ -59,7 +59,9 @@ public class MovieListViewModel extends MovieListBaseViewModel {
     }
 
     private void loadMovies(LiveData<Resource<List<Movie>>> liveData) {
+        Timber.d("loadMovies: ");
         movies.addSource(liveData, resource -> {
+            Timber.d("loadMovies: callback: status: " + resource.status);
             //noinspection ConstantConditions
             if (resource.status != Resource.LOADING) {
                 movies.removeSource(liveData);
@@ -68,20 +70,11 @@ public class MovieListViewModel extends MovieListBaseViewModel {
             if (resource.status == Resource.SUCCESS) {
                 List<MovieListItem> list = new ArrayList<>();
                 for (Movie item : resource.data) {
-                    if (!item.getAdult() || preferences.getBoolean(R.string.pkey_adult)) {
-                        list.add(MovieListItem.create(item));
-                    }
+                    list.add(MovieListItem.create(item));
                 }
                 movies.setValue(list);
             }
         });
-    }
-
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_CURRENT_SORT)) {
-            Timber.d("onRestoreInstanceState: loading saved state");
-//            setSortBy(savedInstanceState.getInt(STATE_CURRENT_SORT));
-        }
     }
 
 }

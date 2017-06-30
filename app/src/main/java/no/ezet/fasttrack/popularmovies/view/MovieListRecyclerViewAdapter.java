@@ -26,7 +26,7 @@ public class MovieListRecyclerViewAdapter
     MovieListRecyclerViewAdapter(ImageService imageService, MovieListBaseFragment.FragmentListener listener) {
         this.imageService = imageService;
         this.listener = listener;
-//        setHasStableIds(true);
+        setHasStableIds(true);
     }
 
     @Override
@@ -58,6 +58,7 @@ public class MovieListRecyclerViewAdapter
     }
 
     void setMovies(List<MovieListItem> movieList) {
+        Timber.d("setMovies: " + counter++);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(this.movies, movieList));
         this.movies.clear();
         this.movies.addAll(movieList);
