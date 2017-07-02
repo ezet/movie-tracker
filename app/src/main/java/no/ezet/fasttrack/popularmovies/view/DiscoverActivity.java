@@ -40,7 +40,6 @@ import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.api.ApiService;
 import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
-import no.ezet.fasttrack.popularmovies.model.RequestToken;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListItem;
 import timber.log.Timber;
@@ -73,15 +72,15 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     private DiscoverListsFragment discoverListsFragment;
     private Fragment filterFragment;
     private FavoriteListFragment favoriteListFragment;
-    private LiveData<Resource<RequestToken>> requestToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
-        doAuth();
+        supportPostponeEnterTransition();
 
+        doAuth();
 
         if (findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
@@ -241,10 +240,9 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
                 fragment.setEnterTransition(new Fade());
                 fragment.setSharedElementEnterTransition(new ChangeBounds().setDuration(100));
             }
-            ViewCompat.setTransitionName(view, "transition");
             getSupportFragmentManager().beginTransaction()
 //                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .addSharedElement(view, "transition")
+                    .addSharedElement(view, String.valueOf(movie.id))
                     .addToBackStack(null)
                     .replace(R.id.movie_detail_container, fragment)
                     .commitAllowingStateLoss();
@@ -252,11 +250,10 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
             Intent intent = new Intent(this, MovieDetailActivity.class);
             intent.putExtra(MovieDetailActivity.EXTRA_MOVIE_ID, movie.id);
             intent.putExtra(MovieDetailActivity.EXTRA_POSTER_PATH, movie.posterPath);
-            ViewCompat.setTransitionName(view, getString(R.string.transition_portrait));
-            ActivityOptionsCompat portraitTransition = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, getString(R.string.transition_portrait));
-            startActivity(intent, portraitTransition.toBundle());
-
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, String.valueOf(movie.id));
+            startActivity(intent, options.toBundle());
         }
+
     }
 
 

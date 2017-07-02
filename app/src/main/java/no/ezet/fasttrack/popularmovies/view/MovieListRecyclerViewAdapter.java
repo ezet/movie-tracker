@@ -1,5 +1,6 @@
 package no.ezet.fasttrack.popularmovies.view;
 
+import android.support.v4.view.ViewCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class MovieListRecyclerViewAdapter
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final MovieListItem movie = movies.get(position);
         loadImage(movie.posterPath, holder.posterImage);
+        ViewCompat.setTransitionName(holder.itemView, String.valueOf(movie.id));
         holder.itemView.setOnClickListener((View view) -> listener.onItemClick(view, movie));
     }
 

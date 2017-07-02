@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
 import no.ezet.fasttrack.popularmovies.databinding.FragmentMovieDetailBinding;
 import no.ezet.fasttrack.popularmovies.db.MovieReview;
 import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
@@ -52,9 +51,6 @@ public class MovieDetailFragment extends LifecycleFragment {
     ViewModelProvider.Factory viewModelFactory;
 
     @Inject
-    Mdb3Api movieService;
-
-    @Inject
     VideoService videoService;
 
     private MovieDetailsViewModel viewModel;
@@ -64,6 +60,7 @@ public class MovieDetailFragment extends LifecycleFragment {
     private RecyclerView trailerList;
     private ImageView portrait;
     private boolean initialized;
+    private int movieId;
 
     @NonNull
     public static MovieDetailFragment create(Integer movieId, String posterPath) {
@@ -88,7 +85,8 @@ public class MovieDetailFragment extends LifecycleFragment {
         setHasOptionsMenu(true);
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_MOVIE_ID)) {
-            viewModel.setMovie(args.getInt(ARG_MOVIE_ID));
+            movieId = args.getInt(ARG_MOVIE_ID);
+            viewModel.setMovie(movieId);
         }
     }
 
@@ -99,7 +97,7 @@ public class MovieDetailFragment extends LifecycleFragment {
         reviewList = (RecyclerView) binding.getRoot().findViewById(R.id.review_list);
         trailerList = (RecyclerView) binding.getRoot().findViewById(R.id.trailer_list);
         portrait = (ImageView) binding.getRoot().findViewById(R.id.movie_portrait);
-        ViewCompat.setTransitionName(portrait, getString(R.string.transition_portrait));
+        ViewCompat.setTransitionName(portrait, String.valueOf(movieId));
         imageService.loadImage(getArguments().getString(ARG_POSTER_PATH), ImageService.SIZE_W342, portrait);
         viewModel.getMovie().observe(this, movie -> {
             if (movie != null) {
@@ -159,7 +157,7 @@ public class MovieDetailFragment extends LifecycleFragment {
 
     @SuppressWarnings("ConstantConditions")
     private void setupFavoriteButton() {
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
         viewModel.getFavorite().observe(this, isFavorite -> {
             if (isFavorite) {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_white_24dp));
@@ -176,6 +174,10 @@ public class MovieDetailFragment extends LifecycleFragment {
             }
             initialized = true;
         });
-        fab.setOnClickListener(view -> viewModel.toggleFavorite());
+        fab.setOnClickListener(view -> {
+            viewModel.toggleFavorite();
+            ViewCompat.setTransitionName(portrait, null);
+        });
+
     }
 }

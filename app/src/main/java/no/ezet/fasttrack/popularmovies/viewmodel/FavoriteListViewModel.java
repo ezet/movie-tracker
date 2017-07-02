@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import no.ezet.fasttrack.popularmovies.db.Favorite;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
+import timber.log.Timber;
 
 
 public class FavoriteListViewModel extends MovieListBaseViewModel {
@@ -29,9 +30,10 @@ public class FavoriteListViewModel extends MovieListBaseViewModel {
     private void loadFavorites(LiveData<Resource<List<Favorite>>> liveData) {
         loading.setValue(true);
         movies.addSource(liveData, resource -> {
+            Timber.d("loadFavorites: favorites has changed");
             //noinspection ConstantConditions
             if (resource.status != Resource.LOADING) {
-                movies.removeSource(liveData);
+//                movies.removeSource(liveData);
                 loading.setValue(false);
             }
             if (resource.status == Resource.SUCCESS) {
