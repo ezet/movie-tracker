@@ -134,4 +134,10 @@
     <string name="detail_adult">Adult</string>
     <string name="tv_order_by">Order by</string>
     <string name="transition_portrait">transition_portrait</string>
+    <string name="pk_access_token">pk_access_token</string>
+    <string name="pk_request_token_v4">pk_request_token_v4</string>
+    <string name="pk_request_token_v3">pk_request_token_v3</string>
+    <string name="pk_request_token_v3_expires">pk_request_token_v3_expires</string>
+    <string name="pk_account_id">pk_account_id</string>
+    <string name="pk_session_id">pk_session_id</string>
 </resources>

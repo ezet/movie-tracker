@@ -1,7 +1,6 @@
 package no.ezet.fasttrack.popularmovies.viewmodel;
 
 import android.arch.lifecycle.LiveData;
-import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;

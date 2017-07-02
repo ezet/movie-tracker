@@ -22,7 +22,7 @@ import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Genre;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.api.ApiService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,7 +33,7 @@ public class FilterFragment extends LifecycleFragment {
     MovieRepository movieRepository;
 
     @Inject
-    IMovieService movieService;
+    ApiService apiService;
     private Spinner releaseYearSpinner;
     private Spinner genreSpinner;
     private Spinner orderBySpinner;
@@ -88,7 +88,7 @@ public class FilterFragment extends LifecycleFragment {
         sortBy.append(".");
         sortBy.append(orderSpinner.getSelectedItem().toString().equals("Ascending") ? "asc" : "desc");
 
-        movieService.filter(genre, sortBy.toString(), releaseYear).enqueue(new Callback<ApiList<Movie>>() {
+        apiService.filter(genre, sortBy.toString(), releaseYear).enqueue(new Callback<ApiList<Movie>>() {
             @Override
             public void onResponse(Call<ApiList<Movie>> call, Response<ApiList<Movie>> response) {
                 Timber.d("onResponse: ");

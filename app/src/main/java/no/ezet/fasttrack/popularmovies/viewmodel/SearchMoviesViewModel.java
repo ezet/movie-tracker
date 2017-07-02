@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.api.ApiService;
 import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,20 +19,20 @@ import retrofit2.Response;
 
 public class SearchMoviesViewModel extends MovieListBaseViewModel {
 
-    private final IMovieService movieService;
+    private final ApiService apiService;
     private final PreferenceService preferenceService;
     private String query;
 
     @Inject
-    SearchMoviesViewModel(IMovieService movieService, PreferenceService preferenceService) {
-        this.movieService = movieService;
+    SearchMoviesViewModel(ApiService apiService, PreferenceService preferenceService) {
+        this.apiService = apiService;
         this.preferenceService = preferenceService;
     }
 
     @Override
     public void loadMovies() {
         loading.setValue(true);
-        movieService.search(query).enqueue(new Callback<ApiList<Movie>>() {
+        apiService.search(query).enqueue(new Callback<ApiList<Movie>>() {
             @Override
             public void onResponse(@NonNull Call<ApiList<Movie>> call, @NonNull Response<ApiList<Movie>> response) {
                 List<MovieListItem> items = new ArrayList<>();

@@ -28,11 +28,11 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
+import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
 import no.ezet.fasttrack.popularmovies.databinding.FragmentMovieDetailBinding;
 import no.ezet.fasttrack.popularmovies.db.MovieReview;
 import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
 import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.service.VideoService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieDetailsViewModel;
@@ -52,7 +52,7 @@ public class MovieDetailFragment extends LifecycleFragment {
     ViewModelProvider.Factory viewModelFactory;
 
     @Inject
-    IMovieService movieService;
+    Mdb3Api movieService;
 
     @Inject
     VideoService videoService;

@@ -9,10 +9,10 @@ import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
 import no.ezet.fasttrack.popularmovies.App;
-import no.ezet.fasttrack.popularmovies.service.MovieModule;
+import no.ezet.fasttrack.popularmovies.service.ServiceModule;
 
 @Singleton
-@Component(modules = {AndroidInjectionModule.class, AppModule.class, ActivityModule.class, MovieModule.class})
+@Component(modules = {AndroidInjectionModule.class, AppModule.class, ActivityModule.class, ServiceModule.class})
 public interface AppComponent {
     void inject(App application);
 

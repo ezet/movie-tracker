@@ -28,5 +28,20 @@ public class PreferenceService {
         return defaultSharedPreferences.getString(resources.getString(resId), "");
     }
 
+    public void putString(@StringRes int resId, String value) {
+        defaultSharedPreferences.edit().putString(resources.getString(resId), value).apply();
+    }
 
+    public boolean contains(@StringRes int resId) {
+        return defaultSharedPreferences.contains(resources.getString(resId));
+    }
+
+
+    public int getInt(@StringRes int resId) {
+        return defaultSharedPreferences.getInt(resources.getString(resId), 0);
+    }
+
+    public void putInt(@StringRes int resId, int value) {
+        defaultSharedPreferences.edit().putInt(resources.getString(resId), value).apply();
+    }
 }

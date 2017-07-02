@@ -16,7 +16,7 @@ import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
 import timber.log.Timber;
 
 public class MovieDetailsViewModel extends ViewModel {
@@ -32,7 +32,7 @@ public class MovieDetailsViewModel extends ViewModel {
     private MediatorLiveData<Boolean> favorite = new MediatorLiveData<>();
 
     @Inject
-    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, IMovieService movieService) {
+    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, Mdb3Api movieService) {
         this.movieRepository = movieRepository;
         this.favoriteRepository = favoriteRepository;
     }

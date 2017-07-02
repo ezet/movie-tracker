@@ -3,6 +3,7 @@ package no.ezet.fasttrack.popularmovies.view;
 import android.app.SearchManager;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,11 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.api.ApiService;
+import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
+import no.ezet.fasttrack.popularmovies.api.model.Session;
+import no.ezet.fasttrack.popularmovies.model.RequestToken;
+import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListItem;
 import timber.log.Timber;
 
@@ -57,7 +62,10 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     @Inject
     ViewModelProvider.Factory viewModelFactory;
     @Inject
-    IMovieService movieService;
+    Mdb3Api movieService;
+
+    @Inject
+    ApiService apiService;
 
     private boolean twoPane;
     private AppBarLayout appBarLayout;
@@ -65,12 +73,16 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     private DiscoverListsFragment discoverListsFragment;
     private Fragment filterFragment;
     private FavoriteListFragment favoriteListFragment;
+    private LiveData<Resource<RequestToken>> requestToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
+        doAuth();
+
+
         if (findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
@@ -106,6 +118,16 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         });
 
         if (savedInstanceState == null) gotoDiscoverLists();
+    }
+
+    private void doAuth() {
+        LiveData<Resource<Session>> authenticate = apiService.authenticate(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        apiService.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void gotoDiscoverLists() {

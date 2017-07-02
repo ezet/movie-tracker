@@ -15,7 +15,7 @@ import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.NetworkResource;
 import no.ezet.fasttrack.popularmovies.network.NetworkResponse;
 import no.ezet.fasttrack.popularmovies.network.Resource;
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.api.ApiService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,19 +23,19 @@ import timber.log.Timber;
 
 public class MovieRepository {
 
-    private final IMovieService movieService;
+    private final ApiService apiService;
     private final MovieCacheDao movieCacheDao;
 
     @Inject
-    MovieRepository(IMovieService movieService, MovieCacheDao movieCacheDao) {
-        this.movieService = movieService;
+    MovieRepository(ApiService apiService, MovieCacheDao movieCacheDao) {
+        this.apiService = apiService;
         this.movieCacheDao = movieCacheDao;
     }
 
     @NonNull
     public LiveData<Resource<Movie>> getMovieDetails(int id) {
         MutableLiveData<Resource<Movie>> liveData = new MutableLiveData<>();
-        movieService.getDetailsWithAppend(id, "videos,reviews,images").enqueue(new Callback<Movie>() {
+        apiService.getDetailsWithAppend(id, "videos,reviews,images").enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
                 Timber.d("onResponse: getMovieDetails()");
@@ -59,7 +59,7 @@ public class MovieRepository {
     @NonNull
     public LiveData<Resource<List<Genre>>> getGenres() {
         MutableLiveData<Resource<List<Genre>>> liveData = new MutableLiveData<>();
-        movieService.getGenres().enqueue(new Callback<ApiList<Genre>>() {
+        apiService.getGenres().enqueue(new Callback<ApiList<Genre>>() {
             @Override
             public void onResponse(@NonNull Call<ApiList<Genre>> call, @NonNull Response<ApiList<Genre>> response) {
                 Timber.d("onResponse: getGenres()");
@@ -104,7 +104,7 @@ public class MovieRepository {
 
     @NonNull
     private LiveData<Resource<List<Movie>>> getMovies(String query) {
-        return new MovieListResource(query, movieCacheDao, movieService).getAsLiveData();
+        return new MovieListResource(query, movieCacheDao, apiService).getAsLiveData();
     }
 
     private static class MovieListResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
@@ -115,13 +115,13 @@ public class MovieRepository {
         private static final String QUERY_NOW_PLAYING = "now_playing";
         private static boolean[] cached = new boolean[4];
         private MovieCacheDao movieCacheDao;
-        private IMovieService movieService;
+        private ApiService apiService;
         private String query;
 
-        private MovieListResource(String query, MovieCacheDao movieCacheDao, IMovieService movieService) {
+        private MovieListResource(String query, MovieCacheDao movieCacheDao, ApiService apiService) {
             this.query = query;
             this.movieCacheDao = movieCacheDao;
-            this.movieService = movieService;
+            this.apiService = apiService;
         }
 
         @Override
@@ -170,7 +170,7 @@ public class MovieRepository {
         @Override
         protected LiveData<NetworkResponse<ApiList<Movie>>> createCall() {
             final MutableLiveData<NetworkResponse<ApiList<Movie>>> networkResponse = new MutableLiveData<>();
-            movieService.getMovies(query).enqueue(new Callback<ApiList<Movie>>() {
+            apiService.getMovies(query).enqueue(new Callback<ApiList<Movie>>() {
                 @Override
                 public void onResponse(@NonNull Call<ApiList<Movie>> call, @NonNull Response<ApiList<Movie>> response) {
                     Timber.d("onResponse");

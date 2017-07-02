@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.service.IMovieService;
+import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
 import no.ezet.fasttrack.popularmovies.viewmodel.SearchMoviesViewModel;
 
 public class SearchFragment extends MovieListBaseFragment<SearchMoviesViewModel> {
@@ -13,7 +13,7 @@ public class SearchFragment extends MovieListBaseFragment<SearchMoviesViewModel>
     public static final String ARG_QUERY = "ARG_QUERY";
 
     @Inject
-    IMovieService movieService;
+    Mdb3Api movieService;
     private String query;
 
     public static SearchFragment create(String query) {
