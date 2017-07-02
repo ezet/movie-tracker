@@ -16,6 +16,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
@@ -29,6 +30,10 @@ import android.transition.Fade;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -54,6 +59,8 @@ import timber.log.Timber;
  */
 public class DiscoverActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector, MovieListBaseFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener, DiscoverListsFragment.TabLayoutHost {
 
+    public static final String BOTTOM_NAV_TRANSITION_NAME = "BOTTOM_NAV_TRANSITION_NAME";
+    private static final String APP_BAR_TRANSITION_NAME = "APP_BAR_TRANSITION_NAME";
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     @Inject
@@ -99,8 +106,10 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        ViewCompat.setTransitionName(appBarLayout, APP_BAR_TRANSITION_NAME);
 
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        ViewCompat.setTransitionName(bottomNavigation, BOTTOM_NAV_TRANSITION_NAME);
         bottomNavigation.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.bnav_lists:
@@ -247,10 +256,23 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
                     .replace(R.id.movie_detail_container, fragment)
                     .commitAllowingStateLoss();
         } else {
+            List<Pair<View, String>> pairs = new ArrayList<>();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                View statusBar = findViewById(android.R.id.statusBarBackground);
+                if (statusBar != null)
+                    pairs.add(Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME));
+                View navigationBar = findViewById(android.R.id.navigationBarBackground);
+                if (navigationBar != null)
+                    pairs.add(Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME));
+            }
+            pairs.add(Pair.create(view, String.valueOf(movie.id)));
+            pairs.add(Pair.create(bottomNavigation, BOTTOM_NAV_TRANSITION_NAME));
+            pairs.add(Pair.create(appBarLayout, APP_BAR_TRANSITION_NAME));
             Intent intent = new Intent(this, MovieDetailActivity.class);
             intent.putExtra(MovieDetailActivity.EXTRA_MOVIE_ID, movie.id);
             intent.putExtra(MovieDetailActivity.EXTRA_POSTER_PATH, movie.posterPath);
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, String.valueOf(movie.id));
+            Pair<View, String>[] sharedElements = pairs.toArray(new Pair[pairs.size()]);
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedElements);
             startActivity(intent, options.toBundle());
         }
 
