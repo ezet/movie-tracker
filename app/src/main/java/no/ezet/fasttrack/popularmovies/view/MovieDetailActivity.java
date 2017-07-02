@@ -2,9 +2,12 @@ package no.ezet.fasttrack.popularmovies.view;
 
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import javax.inject.Inject;
 
@@ -41,7 +44,22 @@ public class MovieDetailActivity extends AppCompatActivity implements LifecycleR
         if (findViewById(R.id.movie_detail_container) != null) {
             twoPane = true;
         }
+
         setupFragment();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                supportFinishAfterTransition();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupFragment() {

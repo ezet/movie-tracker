@@ -82,7 +82,7 @@ public class MovieDetailFragment extends LifecycleFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieDetailsViewModel.class);
-        setHasOptionsMenu(true);
+//        setHasOptionsMenu(true);
         Bundle args = getArguments();
         if (args != null && args.containsKey(ARG_MOVIE_ID)) {
             movieId = args.getInt(ARG_MOVIE_ID);
@@ -180,4 +180,6 @@ public class MovieDetailFragment extends LifecycleFragment {
         });
 
     }
+
+
 }

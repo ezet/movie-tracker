@@ -33,7 +33,6 @@
         <activity
             android:name=".view.MovieDetailActivity"
             android:label="@string/title_movie_detail"
-            android:launchMode="singleTop"
             android:parentActivityName=".view.MovieDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
