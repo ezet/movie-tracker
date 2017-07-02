@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
 import no.ezet.fasttrack.popularmovies.db.Favorite;
 import no.ezet.fasttrack.popularmovies.db.MovieReview;
 import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
@@ -16,7 +17,6 @@ import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
-import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
 import timber.log.Timber;
 
 public class MovieDetailsViewModel extends ViewModel {
@@ -26,13 +26,12 @@ public class MovieDetailsViewModel extends ViewModel {
     private final MovieRepository movieRepository;
     private final FavoriteRepository favoriteRepository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private int movieId;
     private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
     private MediatorLiveData<List<MovieTrailer>> trailers = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> favorite = new MediatorLiveData<>();
 
     @Inject
-    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, Mdb3Api movieService) {
+    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository) {
         this.movieRepository = movieRepository;
         this.favoriteRepository = favoriteRepository;
     }
@@ -46,7 +45,6 @@ public class MovieDetailsViewModel extends ViewModel {
     }
 
     public void setMovie(int id) {
-        this.movieId = id;
         loading.setValue(true);
         LiveData<Resource<Movie>> selectedMovieSource = movieRepository.getMovieDetails(id);
         movie.addSource(selectedMovieSource, movieResource -> {
@@ -85,11 +83,11 @@ public class MovieDetailsViewModel extends ViewModel {
 
     public void toggleFavorite() {
         Timber.d("toggleFavorite: ");
-        Boolean value = !favorite.getValue();
-        if (value) {
-            favoriteRepository.add(movie.getValue());
-        } else {
+        Boolean isFavorite = favorite.getValue();
+        if (isFavorite) {
             favoriteRepository.remove(movie.getValue());
+        } else {
+            favoriteRepository.add(movie.getValue());
         }
     }
 }

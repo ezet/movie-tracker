@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import no.ezet.fasttrack.popularmovies.R;
+import no.ezet.fasttrack.popularmovies.api.body.PostFavoriteBody;
+import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
 import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Genre;
@@ -61,13 +63,21 @@ public class ApiService {
         return api3.filter(genreId, sortBy, releaseYear);
     }
 
+    public Call<PostResponse> setFavoriteMovie(int movieId, boolean favorite) {
+        return api3.setFavorite(id(), session(), new PostFavoriteBody(PostFavoriteBody.MOVIE, movieId, favorite));
+    }
+
     public Call<ApiList<Movie>> getFavoriteMovies() {
         //noinspection ConstantConditions
         if (session.getValue().status != Resource.SUCCESS) {
             Timber.d("getFavoriteMovies: not authenticated");
             return null;
         }
-        return api3.getFavoriteMovies(id(), session.getValue().data.sessionId);
+        return api3.getFavoriteMovies(id(), session());
+    }
+
+    private String session() {
+        return session.getValue().data.sessionId;
     }
 
     private int id() {

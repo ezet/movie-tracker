@@ -2,14 +2,18 @@ package no.ezet.fasttrack.popularmovies.api;
 
 import android.support.annotation.Nullable;
 
+import no.ezet.fasttrack.popularmovies.api.body.PostFavoriteBody;
 import no.ezet.fasttrack.popularmovies.api.model.AccountDetails;
+import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
 import no.ezet.fasttrack.popularmovies.model.ApiList;
 import no.ezet.fasttrack.popularmovies.model.Genre;
 import no.ezet.fasttrack.popularmovies.model.Movie;
 import no.ezet.fasttrack.popularmovies.model.RequestToken;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -41,4 +45,7 @@ public interface Mdb3Api {
 
     @GET("account")
     Call<AccountDetails> getAccountDetails(@Query("session_id") String sessionId);
+
+    @POST("account/{accountId}/favorite")
+    Call<PostResponse> setFavorite(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body PostFavoriteBody postFavoriteBody);
 }
