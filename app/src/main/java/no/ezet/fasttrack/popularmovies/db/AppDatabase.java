@@ -5,11 +5,9 @@ import android.arch.persistence.room.RoomDatabase;
 
 import no.ezet.fasttrack.popularmovies.model.Movie;
 
-@Database(entities = {Movie.class, Favorite.class}, version = 3, exportSchema = false)
+@Database(entities = {Movie.class, Favorite.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract MovieCacheDao movieCacheDao();
-
-    public abstract FavoriteDao favoriteDao();
 
 }

@@ -2,17 +2,18 @@ package no.ezet.fasttrack.popularmovies.view;
 
 import no.ezet.fasttrack.popularmovies.viewmodel.FavoriteListViewModel;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListBaseViewModel;
+import no.ezet.fasttrack.popularmovies.viewmodel.WatchListViewModel;
 
 @SuppressWarnings("ConstantConditions")
-public class FavoriteListFragment extends MovieListBaseFragment {
+public class WatchListFragment extends MovieListBaseFragment {
 
-    public static FavoriteListFragment create() {
-        return new FavoriteListFragment();
+    public static WatchListFragment create() {
+        return new WatchListFragment();
     }
 
     @Override
     protected Class<? extends MovieListBaseViewModel> getViewModelClass() {
-        return FavoriteListViewModel.class;
+        return WatchListViewModel.class;
     }
 
 }

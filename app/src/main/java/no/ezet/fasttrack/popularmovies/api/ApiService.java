@@ -93,4 +93,7 @@ public class ApiService {
         auth3Service.onActivityResult(requestCode, resultCode, data);
     }
 
+    public Call<ApiList<Movie>> getWatchlist() {
+        return null;
+    }
 }

@@ -12,7 +12,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import no.ezet.fasttrack.popularmovies.db.AppDatabase;
-import no.ezet.fasttrack.popularmovies.db.FavoriteDao;
 import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
 import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import no.ezet.fasttrack.popularmovies.viewmodel.ViewModelModule;
@@ -36,12 +35,6 @@ class AppModule {
     @Provides
     MovieCacheDao provideMovieCacheDao(AppDatabase appDatabase) {
         return appDatabase.movieCacheDao();
-    }
-
-    @Singleton
-    @Provides
-    FavoriteDao provideFavoriteDao(AppDatabase appDatabase) {
-        return appDatabase.favoriteDao();
     }
 
     @Singleton

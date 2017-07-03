@@ -60,7 +60,7 @@ public class MovieDetailsViewModel extends ViewModel {
             }
         });
 
-        LiveData<Resource<Favorite>> byId = favoriteRepository.getById(id);
+        LiveData<Resource<Movie>> byId = favoriteRepository.getById(id);
         favorite.addSource(byId, favoriteResource -> {
             Timber.d("setMovie: byId trigger");
 //            if (favoriteResource.status != Resource.LOADING) {

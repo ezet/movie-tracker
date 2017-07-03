@@ -2,7 +2,6 @@ package no.ezet.fasttrack.popularmovies.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.PrimaryKey;
 
 import java.util.List;
 
@@ -10,13 +9,15 @@ import no.ezet.fasttrack.popularmovies.db.MovieReview;
 import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
 
 @SuppressWarnings("WeakerAccess")
-@Entity
+@Entity(primaryKeys = {"id", "type"})
 public class Movie {
 
     public static final int POPULAR = 0;
     public static final int UPCOMING = 1;
     public static final int TOP_RATED = 2;
     public static final int NOW_PLAYING = 3;
+    public static final int FAVORITE = 4;
+    public static final int WATCHLIST = 5;
     public int budget;
     public String homepage;
     public String imdbId;
@@ -30,7 +31,6 @@ public class Movie {
     public ApiList<MovieReview> reviews;
     @Ignore
     public List<Genre> genres;
-    @PrimaryKey
     private int id;
     private String posterPath;
     private Boolean adult;
@@ -46,7 +46,7 @@ public class Movie {
     private Integer voteCount;
     private Boolean video;
     private Double voteAverage;
-    private int Type;
+    private int type;
 
     public String getGenresAsString() {
         if (genres.size() == 0) return "";
@@ -176,11 +176,11 @@ public class Movie {
     }
 
     public int getType() {
-        return Type;
+        return type;
     }
 
     public void setType(int type) {
-        Type = type;
+        this.type = type;
     }
 
 }

@@ -107,7 +107,7 @@ public class MovieRepository {
         return new MovieListResource(query, movieCacheDao, apiService).getAsLiveData();
     }
 
-    private static class MovieListResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
+    public static class MovieListResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
 
         private static final String QUERY_POPULAR = "popular";
         private static final String QUERY_UPCOMING = "upcoming";
