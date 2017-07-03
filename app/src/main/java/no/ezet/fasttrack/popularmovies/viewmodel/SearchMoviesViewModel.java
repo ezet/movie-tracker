@@ -8,8 +8,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.model.ApiList;
-import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.ApiList;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.api.ApiService;
 import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import retrofit2.Call;

@@ -1,7 +1,7 @@
 package no.ezet.fasttrack.popularmovies.api;
 
 import no.ezet.fasttrack.popularmovies.api.model.AccessToken;
-import no.ezet.fasttrack.popularmovies.model.RequestToken;
+import no.ezet.fasttrack.popularmovies.api.model.RequestToken;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;

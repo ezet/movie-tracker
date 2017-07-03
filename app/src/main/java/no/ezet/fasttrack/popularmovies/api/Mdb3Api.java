@@ -2,14 +2,14 @@ package no.ezet.fasttrack.popularmovies.api;
 
 import android.support.annotation.Nullable;
 
-import no.ezet.fasttrack.popularmovies.api.body.PostFavoriteBody;
+import no.ezet.fasttrack.popularmovies.api.requestbody.PostFavoriteBody;
 import no.ezet.fasttrack.popularmovies.api.model.AccountDetails;
+import no.ezet.fasttrack.popularmovies.api.model.ApiList;
 import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
-import no.ezet.fasttrack.popularmovies.model.ApiList;
-import no.ezet.fasttrack.popularmovies.model.Genre;
-import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.model.RequestToken;
+import no.ezet.fasttrack.popularmovies.api.model.Genre;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.RequestToken;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

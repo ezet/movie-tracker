@@ -9,12 +9,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.api.body.PostFavoriteBody;
+import no.ezet.fasttrack.popularmovies.api.requestbody.PostFavoriteBody;
+import no.ezet.fasttrack.popularmovies.api.model.ApiList;
 import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
-import no.ezet.fasttrack.popularmovies.model.ApiList;
-import no.ezet.fasttrack.popularmovies.model.Genre;
-import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.Genre;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import retrofit2.Call;

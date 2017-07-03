@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import no.ezet.fasttrack.popularmovies.R;
 import no.ezet.fasttrack.popularmovies.api.model.AccessToken;
-import no.ezet.fasttrack.popularmovies.model.RequestToken;
+import no.ezet.fasttrack.popularmovies.api.model.RequestToken;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import retrofit2.Call;

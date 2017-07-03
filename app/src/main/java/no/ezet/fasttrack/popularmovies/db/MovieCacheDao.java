@@ -9,13 +9,13 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 
 @Dao
 public abstract class MovieCacheDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract long insert(Movie movie);
+    public abstract Long insert(Movie movie);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract List<Long> insert(List<Movie> movies);
@@ -54,9 +54,13 @@ public abstract class MovieCacheDao {
     public abstract LiveData<Movie> getById(int id, int type);
 
     @Delete
-    public abstract void delete(Movie movie);
+    public abstract int delete(Movie movie);
 
     @Query("SELECT * FROM movie " +
             "WHERE type = :type")
     public abstract LiveData<List<Movie>> getByType(int type);
+
+    @Query("DELETE FROM movie " +
+            "WHERE type = :type")
+    public abstract int deleteByType(int type);
 }

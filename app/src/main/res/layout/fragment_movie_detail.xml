@@ -8,7 +8,7 @@
 
         <variable
             name="movie"
-            type="no.ezet.fasttrack.popularmovies.model.Movie" />
+            type="no.ezet.fasttrack.popularmovies.api.model.Movie" />
     </data>
 
     <android.support.constraint.ConstraintLayout

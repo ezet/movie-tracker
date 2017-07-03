@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies.model;
+package no.ezet.fasttrack.popularmovies.api.model;
 
 import com.google.gson.annotations.Expose;
 

@@ -1,6 +1,6 @@
 package no.ezet.fasttrack.popularmovies.viewmodel;
 
-import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 
 public class MovieListItem {
 

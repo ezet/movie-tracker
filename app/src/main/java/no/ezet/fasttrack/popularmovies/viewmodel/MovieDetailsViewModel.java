@@ -9,11 +9,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.api.Mdb3Api;
-import no.ezet.fasttrack.popularmovies.db.Favorite;
-import no.ezet.fasttrack.popularmovies.db.MovieReview;
-import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
-import no.ezet.fasttrack.popularmovies.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.MovieReview;
+import no.ezet.fasttrack.popularmovies.api.model.MovieTrailer;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;

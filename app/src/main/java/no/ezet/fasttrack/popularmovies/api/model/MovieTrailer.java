@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies.db;
+package no.ezet.fasttrack.popularmovies.api.model;
 
 public class MovieTrailer {
 

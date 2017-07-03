@@ -8,14 +8,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
-import no.ezet.fasttrack.popularmovies.model.ApiList;
-import no.ezet.fasttrack.popularmovies.model.Genre;
-import no.ezet.fasttrack.popularmovies.model.Movie;
-import no.ezet.fasttrack.popularmovies.network.NetworkResource;
-import no.ezet.fasttrack.popularmovies.network.NetworkResponse;
-import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.api.ApiService;
+import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
+import no.ezet.fasttrack.popularmovies.api.model.ApiList;
+import no.ezet.fasttrack.popularmovies.api.model.Genre;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
+import no.ezet.fasttrack.popularmovies.network.Resource;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,6 +21,10 @@ import timber.log.Timber;
 
 public class MovieRepository {
 
+    private static final String QUERY_POPULAR = "popular";
+    private static final String QUERY_UPCOMING = "upcoming";
+    private static final String QUERY_TOP_RATED = "top_rated";
+    private static final String QUERY_NOW_PLAYING = "now_playing";
     private final ApiService apiService;
     private final MovieCacheDao movieCacheDao;
 
@@ -83,117 +85,42 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getPopular() {
-        return getMovies(MovieListResource.QUERY_POPULAR);
+        return new CachedMovieResource(apiService, movieCacheDao, Movie.POPULAR) {
+            @Override
+            protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
+                return apiService.getMovies(QUERY_POPULAR);
+            }
+        }.getAsLiveData();
     }
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getUpcoming() {
-        return getMovies(MovieListResource.QUERY_UPCOMING);
+        return new CachedMovieResource(apiService, movieCacheDao, Movie.UPCOMING) {
+            @Override
+            protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
+                return apiService.getMovies(QUERY_UPCOMING);
+            }
+        }.getAsLiveData();
     }
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getTopRated() {
-        return getMovies(MovieListResource.QUERY_TOP_RATED);
+        return new CachedMovieResource(apiService, movieCacheDao, Movie.TOP_RATED) {
+            @Override
+            protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
+                return apiService.getMovies(QUERY_TOP_RATED);
+            }
+        }.getAsLiveData();
     }
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getNowPlaying() {
-        return getMovies(MovieListResource.QUERY_NOW_PLAYING);
-    }
-
-
-    @NonNull
-    private LiveData<Resource<List<Movie>>> getMovies(String query) {
-        return new MovieListResource(query, movieCacheDao, apiService).getAsLiveData();
-    }
-
-    public static class MovieListResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
-
-        private static final String QUERY_POPULAR = "popular";
-        private static final String QUERY_UPCOMING = "upcoming";
-        private static final String QUERY_TOP_RATED = "top_rated";
-        private static final String QUERY_NOW_PLAYING = "now_playing";
-        private static boolean[] cached = new boolean[4];
-        private MovieCacheDao movieCacheDao;
-        private ApiService apiService;
-        private String query;
-
-        private MovieListResource(String query, MovieCacheDao movieCacheDao, ApiService apiService) {
-            this.query = query;
-            this.movieCacheDao = movieCacheDao;
-            this.apiService = apiService;
-        }
-
-        @Override
-        protected void saveCallResult(ApiList<Movie> movies) {
-            for (Movie movie : movies.results) {
-                switch (query) {
-                    case QUERY_POPULAR:
-                        movie.setType(Movie.POPULAR);
-                        break;
-                    case QUERY_UPCOMING:
-                        movie.setType(Movie.UPCOMING);
-                        break;
-                    case QUERY_TOP_RATED:
-                        movie.setType(Movie.TOP_RATED);
-                        break;
-                    case QUERY_NOW_PLAYING:
-                        movie.setType(Movie.NOW_PLAYING);
-                        break;
-                }
+        return new CachedMovieResource(apiService, movieCacheDao, Movie.NOW_PLAYING) {
+            @Override
+            protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
+                return apiService.getMovies(QUERY_NOW_PLAYING);
             }
-            cached[movies.results.get(0).getType()] = true;
-            movieCacheDao.insert(movies.results);
-        }
-
-        @Override
-        protected boolean shouldFetch(List<Movie> data) {
-            return data == null || data.size() == 0 || !cached[data.get(0).getType()];
-        }
-
-        @Override
-        protected LiveData<List<Movie>> loadFromDb() {
-            switch (query) {
-                case QUERY_POPULAR:
-                    return movieCacheDao.getPopular();
-                case QUERY_UPCOMING:
-                    return movieCacheDao.getUpcoming();
-                case QUERY_TOP_RATED:
-                    return movieCacheDao.getTopRated();
-                case QUERY_NOW_PLAYING:
-                    return movieCacheDao.getNowPlaying();
-                default:
-                    throw new IllegalArgumentException("Cannot execute: " + query);
-            }
-        }
-
-        @Override
-        protected LiveData<NetworkResponse<ApiList<Movie>>> createCall() {
-            final MutableLiveData<NetworkResponse<ApiList<Movie>>> networkResponse = new MutableLiveData<>();
-            apiService.getMovies(query).enqueue(new Callback<ApiList<Movie>>() {
-                @Override
-                public void onResponse(@NonNull Call<ApiList<Movie>> call, @NonNull Response<ApiList<Movie>> response) {
-                    Timber.d("onResponse");
-                    networkResponse.setValue(new NetworkResponse<>(response));
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<ApiList<Movie>> call, @NonNull Throwable t) {
-                    Timber.d("onFailure");
-                    networkResponse.setValue(new NetworkResponse<>(t));
-                }
-            });
-            return networkResponse;
-        }
+        }.getAsLiveData();
     }
-
-//    @SuppressWarnings("unused")
-//    private boolean isOnline() {
-//        ConnectivityManager cm =
-//                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-//        return netInfo != null && netInfo.isConnectedOrConnecting();
-//    }
-
 
 }

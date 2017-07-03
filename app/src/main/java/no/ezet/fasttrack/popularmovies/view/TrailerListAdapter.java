@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
+import no.ezet.fasttrack.popularmovies.api.model.MovieTrailer;
 import no.ezet.fasttrack.popularmovies.service.VideoService;
 
 public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder> {

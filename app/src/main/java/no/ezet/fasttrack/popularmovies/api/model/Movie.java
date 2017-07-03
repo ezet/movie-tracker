@@ -1,12 +1,9 @@
-package no.ezet.fasttrack.popularmovies.model;
+package no.ezet.fasttrack.popularmovies.api.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 
 import java.util.List;
-
-import no.ezet.fasttrack.popularmovies.db.MovieReview;
-import no.ezet.fasttrack.popularmovies.db.MovieTrailer;
 
 @SuppressWarnings("WeakerAccess")
 @Entity(primaryKeys = {"id", "type"})

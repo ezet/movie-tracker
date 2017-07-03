@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.db.MovieReview;
+import no.ezet.fasttrack.popularmovies.api.model.MovieReview;
 
 public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolder> {
 

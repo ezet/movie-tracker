@@ -1,4 +1,4 @@
-package no.ezet.fasttrack.popularmovies.api.body;
+package no.ezet.fasttrack.popularmovies.api.requestbody;
 
 public class PostFavoriteBody {
     public static final String MOVIE = "movie";
