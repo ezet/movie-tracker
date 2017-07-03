@@ -2,7 +2,6 @@ package no.ezet.fasttrack.popularmovies.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,7 +9,6 @@ import javax.inject.Inject;
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
-import timber.log.Timber;
 
 
 public class FavoriteListViewModel extends MovieListBaseViewModel {
@@ -23,26 +21,7 @@ public class FavoriteListViewModel extends MovieListBaseViewModel {
     }
 
     @Override
-    public void loadMovies() {
-        loadFavorites(favoriteRepository.getAll());
+    public LiveData<Resource<List<Movie>>> loadMovies() {
+        return favoriteRepository.getAll();
     }
-
-    private void loadFavorites(LiveData<Resource<List<Movie>>> liveData) {
-        loading.setValue(true);
-        movies.addSource(liveData, resource -> {
-            Timber.d("loadFavorites: favorites has changed");
-            //noinspection ConstantConditions
-            if (resource.status != Resource.LOADING) {
-                loading.setValue(false);
-            }
-            if (resource.status == Resource.SUCCESS) {
-                List<MovieListItem> list = new ArrayList<>();
-                for (Movie item : resource.data) {
-                    list.add(MovieListItem.create(item));
-                }
-                movies.setValue(list);
-            }
-        });
-    }
-
 }

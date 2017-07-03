@@ -1,6 +1,5 @@
 package no.ezet.fasttrack.popularmovies.view;
 
-import no.ezet.fasttrack.popularmovies.viewmodel.FavoriteListViewModel;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieListBaseViewModel;
 import no.ezet.fasttrack.popularmovies.viewmodel.WatchListViewModel;
 

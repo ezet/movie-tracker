@@ -12,6 +12,9 @@ import dagger.multibindings.IntoMap;
 public abstract class ViewModelModule {
 
     @Binds
+    abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelFactory factory);
+
+    @Binds
     @IntoMap
     @ViewModelKey(MovieListViewModel.class)
     abstract ViewModel bindMovieListViewModel(MovieListViewModel viewModel);
@@ -32,6 +35,9 @@ public abstract class ViewModelModule {
     abstract ViewModel bindSearchMoviesViewModel(SearchMoviesViewModel viewModel);
 
     @Binds
-    abstract ViewModelProvider.Factory bindViewModelFactory(ViewModelFactory factory);
+    @IntoMap
+    @ViewModelKey(WatchListViewModel.class)
+    abstract ViewModel bindWatchListViewModel(WatchListViewModel viewModel);
+
 
 }

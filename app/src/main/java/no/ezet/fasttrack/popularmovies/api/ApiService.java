@@ -94,6 +94,11 @@ public class ApiService {
     }
 
     public Call<ApiList<Movie>> getWatchlist() {
-        return null;
+        //noinspection ConstantConditions
+        if (session.getValue().status != Resource.SUCCESS) {
+            Timber.d("getWatchlist: not authenticated");
+            return null;
+        }
+        return api3.getWatchlist(id(), session());
     }
 }

@@ -1,16 +1,17 @@
 package no.ezet.fasttrack.popularmovies.viewmodel;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import no.ezet.fasttrack.popularmovies.R;
+import no.ezet.fasttrack.popularmovies.api.ApiService;
 import no.ezet.fasttrack.popularmovies.api.model.ApiList;
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
-import no.ezet.fasttrack.popularmovies.api.ApiService;
+import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.service.PreferenceService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,29 +31,20 @@ public class SearchMoviesViewModel extends MovieListBaseViewModel {
     }
 
     @Override
-    public void loadMovies() {
-        loading.setValue(true);
+    public LiveData<Resource<List<Movie>>> loadMovies() {
+        MutableLiveData<Resource<List<Movie>>> liveData = new MutableLiveData<>();
         apiService.search(query).enqueue(new Callback<ApiList<Movie>>() {
             @Override
             public void onResponse(@NonNull Call<ApiList<Movie>> call, @NonNull Response<ApiList<Movie>> response) {
-                List<MovieListItem> items = new ArrayList<>();
-                if (response.body() != null) {
-                    for (Movie item : response.body().results) {
-                        if (!item.getAdult() || preferenceService.getBoolean(R.string.pkey_adult)) {
-                            items.add(MovieListItem.create(item));
-                        }
-                    }
-                }
-                movies.setValue(items);
-                loading.setValue(false);
+                liveData.setValue(Resource.success(response.body().results));
             }
 
             @Override
             public void onFailure(@NonNull Call<ApiList<Movie>> call, @NonNull Throwable t) {
-                loading.setValue(false);
-                errorMessage.setValue(t.getLocalizedMessage());
+                liveData.setValue(Resource.error(t.getLocalizedMessage(), null));
             }
         });
+        return liveData;
     }
 
     public void setQuery(String query) {

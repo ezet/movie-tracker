@@ -140,4 +140,5 @@
     <string name="pk_request_token_v3_expires">pk_request_token_v3_expires</string>
     <string name="pk_account_id">pk_account_id</string>
     <string name="pk_session_id">pk_session_id</string>
+    <string name="bnav_watchlist">Watchlist</string>
 </resources>

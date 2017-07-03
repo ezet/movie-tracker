@@ -8,7 +8,7 @@ public class MovieListItem {
 
     public final String posterPath;
 
-    public MovieListItem(int id, String posterPath) {
+    private MovieListItem(int id, String posterPath) {
         this.id = id;
         this.posterPath = posterPath;
     }

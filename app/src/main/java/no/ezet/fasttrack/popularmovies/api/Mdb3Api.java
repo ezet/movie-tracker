@@ -2,14 +2,14 @@ package no.ezet.fasttrack.popularmovies.api;
 
 import android.support.annotation.Nullable;
 
-import no.ezet.fasttrack.popularmovies.api.requestbody.PostFavoriteBody;
 import no.ezet.fasttrack.popularmovies.api.model.AccountDetails;
 import no.ezet.fasttrack.popularmovies.api.model.ApiList;
-import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
-import no.ezet.fasttrack.popularmovies.api.model.Session;
 import no.ezet.fasttrack.popularmovies.api.model.Genre;
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.RequestToken;
+import no.ezet.fasttrack.popularmovies.api.model.Session;
+import no.ezet.fasttrack.popularmovies.api.requestbody.PostFavoriteBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -48,4 +48,7 @@ public interface Mdb3Api {
 
     @POST("account/{accountId}/favorite")
     Call<PostResponse> setFavorite(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body PostFavoriteBody postFavoriteBody);
+
+    @GET("account/{accountId}/watchlist/movies")
+    Call<ApiList<Movie>> getWatchlist(@Path("accountId") int accountId, @Query("session_id") String sessionId);
 }

@@ -8,10 +8,10 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import no.ezet.fasttrack.popularmovies.api.ApiService;
-import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
-import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
 import no.ezet.fasttrack.popularmovies.api.model.ApiList;
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
+import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,10 +33,13 @@ public abstract class MutableMovieRepository {
         return new CachedMovieResource(apiService, movieCacheDao, type) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
-                return apiService.getFavoriteMovies();
+                return MutableMovieRepository.this.createApiCall(apiService);
             }
         }.getAsLiveData();
     }
+
+    public abstract Call<ApiList<Movie>> createApiCall(ApiService apiService);
+
 
     public boolean add(Movie movie) {
         apiService.setFavoriteMovie(movie.getId(), true).enqueue(new Callback<PostResponse>() {
