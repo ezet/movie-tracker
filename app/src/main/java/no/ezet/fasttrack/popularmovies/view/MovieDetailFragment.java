@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 
 import javax.inject.Inject;
 
@@ -62,6 +64,8 @@ public class MovieDetailFragment extends LifecycleFragment {
     private boolean isFavoriteButtonInitialized;
     private int movieId;
     private boolean isBookmarkButtonInitialized;
+    private boolean isRateButtonInitialized;
+    private int rating;
 
     @NonNull
     public static MovieDetailFragment create(Integer movieId, String posterPath) {
@@ -121,6 +125,7 @@ public class MovieDetailFragment extends LifecycleFragment {
 
         setupFavoriteButton();
         setupBookmarkButton();
+        setupRateButton();
         setupTrailerList(trailerList);
 //        setupReviewList(reviewList);
     }
@@ -157,6 +162,11 @@ public class MovieDetailFragment extends LifecycleFragment {
         binding.setMovie(movie);
     }
 
+    private void abortBackTransition() {
+        ViewCompat.setTransitionName(portrait, null);
+    }
+
+
     private void setupFavoriteButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
         viewModel.getIsFavorite().observe(this, isFavorite -> {
@@ -177,7 +187,7 @@ public class MovieDetailFragment extends LifecycleFragment {
         });
         fab.setOnClickListener(view -> {
             viewModel.toggleFavorite();
-            ViewCompat.setTransitionName(portrait, null);
+            abortBackTransition();
         });
     }
 
@@ -202,7 +212,65 @@ public class MovieDetailFragment extends LifecycleFragment {
         });
         fab.setOnClickListener(view -> {
             viewModel.toggleBookmark();
-            ViewCompat.setTransitionName(portrait, null);
+            abortBackTransition();
+        });
+    }
+
+
+    private void setupRateButton() {
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_rate);
+        viewModel.getIsRated().observe(this, isRated -> {
+
+            if (isRated != null && isRated) {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_white_24dp));
+                if (isRateButtonInitialized && getView() != null) {
+                    Snackbar.make(getView(), "Successfully rated", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            } else {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_border_white_24dp));
+                if (isRateButtonInitialized && getView() != null) {
+                    Snackbar.make(getView(), "Rating removed", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            }
+            isRateButtonInitialized = true;
+        });
+        fab.setOnClickListener(view -> {
+            if (viewModel.getIsRated().getValue() != null && viewModel.getIsRated().getValue()) {
+                viewModel.deleteRating();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                SeekBar seekBar = new SeekBar(getContext());
+                seekBar.setMax(10);
+                seekBar.setKeyProgressIncrement(1);
+                builder.setView(seekBar);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        MovieDetailFragment.this.rating = progress;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+                builder.setTitle("Rate").setPositiveButton("Rate", (dialog, which) -> {
+                    viewModel.rate(rating);
+
+                }).setNegativeButton("Cancel", (dialog, which) -> {
+                }).setNeutralButton("Delete", (dialog, which) -> {
+                    viewModel.deleteRating();
+                }).create().show();
+            }
+
         });
     }
 

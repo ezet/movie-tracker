@@ -10,14 +10,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.api.model.MovieReview;
 import no.ezet.fasttrack.popularmovies.api.model.MovieTrailer;
-import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
 import no.ezet.fasttrack.popularmovies.repository.WatchlistRepository;
-import timber.log.Timber;
 
 public class MovieDetailsViewModel extends ViewModel {
 
@@ -26,17 +25,18 @@ public class MovieDetailsViewModel extends ViewModel {
     private final MovieRepository movieRepository;
     private final FavoriteRepository favoriteRepository;
     private final WatchlistRepository watchlistRepository;
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
     private MediatorLiveData<List<MovieTrailer>> trailers = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> favorite = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> bookmark = new MediatorLiveData<>();
+    private MediatorLiveData<Boolean> isRated = new MediatorLiveData<>();
 
     @Inject
     MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository) {
         this.movieRepository = movieRepository;
         this.favoriteRepository = favoriteRepository;
         this.watchlistRepository = watchlistRepository;
+        isRated.setValue(false);
     }
 
     @NonNull
@@ -71,19 +71,23 @@ public class MovieDetailsViewModel extends ViewModel {
 
         LiveData<Resource<Movie>> favoriteRes = favoriteRepository.getById(id);
         favorite.addSource(favoriteRes, favoriteResource -> {
-            //noinspection ConstantConditions
-            if (favoriteResource.status == Resource.SUCCESS) {
+            if (favoriteResource != null && favoriteResource.status == Resource.SUCCESS) {
                 favorite.setValue(favoriteResource.data != null);
             }
         });
 
         LiveData<Resource<Movie>> watchlistRes = watchlistRepository.getById(id);
         favorite.addSource(watchlistRes, bookmarkResource -> {
-            //noinspection ConstantConditions
-            if (bookmarkResource.status == Resource.SUCCESS) {
+            if (bookmarkResource != null && bookmarkResource.status == Resource.SUCCESS) {
                 bookmark.setValue(bookmarkResource.data != null);
             }
         });
+    }
+
+    public void rate(double rating) {
+        if (getMovie().getValue() == null) return;
+        if (rating < 0.5) rating = 0.5;
+        movieRepository.rate(getMovie().getValue().getId(), rating);
     }
 
     public LiveData<List<MovieReview>> getReviews() {
@@ -95,9 +99,8 @@ public class MovieDetailsViewModel extends ViewModel {
     }
 
     public void toggleFavorite() {
-        Timber.d("toggleFavorite: ");
         Boolean isFavorite = favorite.getValue();
-        if (isFavorite) {
+        if (isFavorite != null && isFavorite) {
             favoriteRepository.remove(movie.getValue());
         } else {
             favoriteRepository.add(movie.getValue());
@@ -106,10 +109,19 @@ public class MovieDetailsViewModel extends ViewModel {
 
     public void toggleBookmark() {
         Boolean isBookmarked = bookmark.getValue();
-        if (isBookmarked) {
+        if (isBookmarked != null && isBookmarked) {
             watchlistRepository.remove(movie.getValue());
         } else {
             watchlistRepository.add(movie.getValue());
         }
+    }
+
+    public LiveData<Boolean> getIsRated() {
+        return isRated;
+    }
+
+    public void deleteRating() {
+        if (getMovie().getValue() == null) return;
+        movieRepository.deleteRating(getMovie().getValue().getId());
     }
 }

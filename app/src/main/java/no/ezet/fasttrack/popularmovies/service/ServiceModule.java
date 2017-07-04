@@ -29,7 +29,7 @@ public class ServiceModule {
     private static OkHttpClient createHttpClient(final String apiKey) {
         OkHttpClient.Builder httpClient =
                 new OkHttpClient.Builder();
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE);
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
         httpClient.addInterceptor(loggingInterceptor);
         httpClient.addInterceptor(chain -> {
             Request original = chain.request();

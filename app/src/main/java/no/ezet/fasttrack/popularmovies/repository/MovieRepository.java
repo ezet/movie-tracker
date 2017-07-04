@@ -9,10 +9,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import no.ezet.fasttrack.popularmovies.api.ApiService;
-import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
 import no.ezet.fasttrack.popularmovies.api.model.ApiList;
 import no.ezet.fasttrack.popularmovies.api.model.Genre;
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
+import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,25 +35,68 @@ public class MovieRepository {
         this.movieCacheDao = movieCacheDao;
     }
 
+    public LiveData<Resource<PostResponse>> rate(int movieId, double rating) {
+        MutableLiveData<Resource<PostResponse>> liveData = new MutableLiveData<>();
+        apiService.rate(movieId, rating).enqueue(new Callback<PostResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<PostResponse> call, @NonNull Response<PostResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(Resource.success(response.body()));
+                } else {
+                    Timber.w("onResponse: " + response.message());
+                    liveData.setValue(Resource.error(response.message(), null));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PostResponse> call, @NonNull Throwable t) {
+                Timber.w("onFailure: ", t);
+                liveData.setValue(Resource.error(t.getMessage(), null));
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<Resource<PostResponse>> deleteRating(int movieId) {
+        MutableLiveData<Resource<PostResponse>> liveData = new MutableLiveData<>();
+        apiService.deleteRating(movieId).enqueue(new Callback<PostResponse>() {
+            @Override
+            public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(Resource.success(response.body()));
+                } else {
+                    Timber.w("onResponse: " + response.message());
+                    liveData.setValue(Resource.error(response.message(), null));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostResponse> call, Throwable t) {
+                Timber.w("onFailure: ", t);
+                liveData.setValue(Resource.error(t.getMessage(), null));
+            }
+        });
+        return liveData;
+    }
+
     @NonNull
     public LiveData<Resource<Movie>> getMovieDetails(int id) {
         MutableLiveData<Resource<Movie>> liveData = new MutableLiveData<>();
         apiService.getDetailsWithAppend(id, "videos,reviews,images").enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
-                Timber.d("onResponse: getMovieDetails()");
-                if (response.body() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     liveData.setValue(Resource.success(response.body()));
-                } else if (response.errorBody() != null) {
-                    //noinspection ConstantConditions
-                    liveData.setValue(Resource.error(response.errorBody().toString(), null));
+                } else {
+                    Timber.w("onResponse: " + response.message());
+                    liveData.setValue(Resource.error(response.message(), null));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) {
+                Timber.w("onFailure: ", t);
                 liveData.setValue(Resource.error(t.getMessage(), null));
-                Timber.d("onFailure: ");
             }
         });
         return liveData;
@@ -65,19 +109,19 @@ public class MovieRepository {
             @Override
             public void onResponse(@NonNull Call<ApiList<Genre>> call, @NonNull Response<ApiList<Genre>> response) {
                 Timber.d("onResponse: getGenres()");
-                if (response.body() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     //noinspection ConstantConditions
                     liveData.setValue(Resource.success(response.body().results));
-                } else if (response.errorBody() != null) {
-                    //noinspection ConstantConditions
-                    liveData.setValue(Resource.error(response.errorBody().toString(), null));
+                } else {
+                    Timber.w("onResponse: " + response.message());
+                    liveData.setValue(Resource.error(response.message(), null));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ApiList<Genre>> call, @NonNull Throwable t) {
-                Timber.d("onFailure: getGenres()");
-                liveData.setValue(Resource.error(t.getMessage(), null));
+                Timber.w("onFailure: getGenres()", t);
+                liveData.setValue(Resource.error(t.getLocalizedMessage(), null));
             }
         });
         return liveData;
@@ -122,5 +166,6 @@ public class MovieRepository {
             }
         }.getAsLiveData();
     }
+
 
 }

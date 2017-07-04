@@ -80,7 +80,6 @@ public abstract class MutableMovieRepository {
                 } else {
                     Timber.d("onResponse: " + response.message());
                 }
-
             }
 
             @Override

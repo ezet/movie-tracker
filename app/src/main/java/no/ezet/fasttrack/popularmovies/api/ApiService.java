@@ -9,14 +9,15 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.api.requestbody.PostBody;
 import no.ezet.fasttrack.popularmovies.api.model.ApiList;
-import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
-import no.ezet.fasttrack.popularmovies.api.model.Session;
 import no.ezet.fasttrack.popularmovies.api.model.Genre;
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
+import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
+import no.ezet.fasttrack.popularmovies.api.model.Session;
+import no.ezet.fasttrack.popularmovies.api.requestbody.RequestBody;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.service.PreferenceService;
+import okhttp3.MediaType;
 import retrofit2.Call;
 import timber.log.Timber;
 
@@ -64,7 +65,7 @@ public class ApiService {
     }
 
     public Call<PostResponse> setFavoriteMovie(int movieId, boolean favorite) {
-        return api3.setFavorite(id(), session(), PostBody.favorite(PostBody.MOVIE, movieId, favorite));
+        return api3.setFavorite(id(), session(), RequestBody.favorite(RequestBody.MOVIE, movieId, favorite));
     }
 
     public Call<ApiList<Movie>> getFavoriteMovies() {
@@ -103,6 +104,16 @@ public class ApiService {
     }
 
     public Call<PostResponse> setWatchlist(int movieId, boolean watchlist) {
-        return api3.setWatchlist(id(), session(), PostBody.watchlist(PostBody.MOVIE, movieId, watchlist));
+        return api3.setWatchlist(id(), session(), RequestBody.watchlist(RequestBody.MOVIE, movieId, watchlist));
+    }
+
+    public Call<PostResponse> rate(int movieId, double rating) {
+        if (rating < 0.5 || rating > 10) throw new IllegalArgumentException();
+        okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(MediaType.parse("application/json;charset=utf-8"), "{ \"value\":" + rating + "}");
+        return api3.rate(movieId, session(), requestBody);
+    }
+
+    public Call<PostResponse> deleteRating(int movieId) {
+        return api3.deleteRating(movieId, session());
     }
 }
