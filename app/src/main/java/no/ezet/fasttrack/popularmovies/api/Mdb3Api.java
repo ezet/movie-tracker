@@ -9,11 +9,11 @@ import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.RequestToken;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
-import no.ezet.fasttrack.popularmovies.api.requestbody.PostBody;
+import no.ezet.fasttrack.popularmovies.api.requestbody.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -38,6 +38,9 @@ public interface Mdb3Api {
     @GET("account/{accountId}/favorite/movies")
     Call<ApiList<Movie>> getFavoriteMovies(@Path("accountId") int accountId, @Query("session_id") String sessionId);
 
+    @GET("account/{accountId}/rated/movies")
+    Call<ApiList<Movie>> getRatedMovies(@Path("accountId") int accountId, @Query("session_id") String sessionId);
+
     @GET("authentication/token/new")
     Call<RequestToken> createRequestToken();
 
@@ -48,12 +51,20 @@ public interface Mdb3Api {
     Call<AccountDetails> getAccountDetails(@Query("session_id") String sessionId);
 
     @POST("account/{accountId}/favorite")
-    Call<PostResponse> setFavorite(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body PostBody postBody);
+    Call<PostResponse> setFavorite(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body RequestBody requestBody);
 
     @GET("account/{accountId}/watchlist/movies")
     Call<ApiList<Movie>> getWatchlist(@Path("accountId") int accountId, @Query("session_id") String sessionId);
 
-    @Headers("Content-Type: application/json;charset=utf-8")
     @POST("account/{accountId}/watchlist")
-    Call<PostResponse> setWatchlist(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body PostBody postBody);
+    Call<PostResponse> setWatchlist(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body RequestBody requestBody);
+
+    @POST("movie/{movie_id}/rating")
+    Call<PostResponse> rate(@Path("movie_id") int movieId, @Query("session_id") String sessionId, @Body okhttp3.RequestBody requestBody);
+
+    @DELETE("movie/{movie_id}/rating")
+    Call<PostResponse> deleteRating(@Path("movie_id") int movieId, @Query("session_id") String sessionId);
+
+
 }
+

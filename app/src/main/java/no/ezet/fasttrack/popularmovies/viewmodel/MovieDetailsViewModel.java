@@ -10,14 +10,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.api.model.MovieReview;
 import no.ezet.fasttrack.popularmovies.api.model.MovieTrailer;
-import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
+import no.ezet.fasttrack.popularmovies.repository.RatedRepository;
 import no.ezet.fasttrack.popularmovies.repository.WatchlistRepository;
-import timber.log.Timber;
 
 public class MovieDetailsViewModel extends ViewModel {
 
@@ -26,17 +26,19 @@ public class MovieDetailsViewModel extends ViewModel {
     private final MovieRepository movieRepository;
     private final FavoriteRepository favoriteRepository;
     private final WatchlistRepository watchlistRepository;
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final RatedRepository ratedRepository;
     private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
     private MediatorLiveData<List<MovieTrailer>> trailers = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> favorite = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> bookmark = new MediatorLiveData<>();
+    private MediatorLiveData<Boolean> isRated = new MediatorLiveData<>();
 
     @Inject
-    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository) {
+    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository, RatedRepository ratedRepository) {
         this.movieRepository = movieRepository;
         this.favoriteRepository = favoriteRepository;
         this.watchlistRepository = watchlistRepository;
+        this.ratedRepository = ratedRepository;
     }
 
     @NonNull
@@ -59,7 +61,7 @@ public class MovieDetailsViewModel extends ViewModel {
         movie.addSource(selectedMovieSource, movieResource -> {
             //noinspection ConstantConditions
             if (movieResource.status != Resource.LOADING) {
-                movie.removeSource(selectedMovieSource);
+//                movie.removeSource(selectedMovieSource);
                 loading.setValue(false);
             }
             if (movieResource.status == Resource.SUCCESS) {
@@ -70,21 +72,32 @@ public class MovieDetailsViewModel extends ViewModel {
         });
 
         LiveData<Resource<Movie>> favoriteRes = favoriteRepository.getById(id);
-        favorite.addSource(favoriteRes, favoriteResource -> {
-            //noinspection ConstantConditions
-            if (favoriteResource.status == Resource.SUCCESS) {
-                favorite.setValue(favoriteResource.data != null);
+        favorite.addSource(favoriteRes, movieResource -> {
+            if (movieResource != null && movieResource.status == Resource.SUCCESS) {
+                boolean newValue = movieResource.data != null;
+                if (favorite.getValue() == null || newValue != favorite.getValue())
+                    favorite.setValue(newValue);
             }
         });
 
         LiveData<Resource<Movie>> watchlistRes = watchlistRepository.getById(id);
-        favorite.addSource(watchlistRes, bookmarkResource -> {
-            //noinspection ConstantConditions
-            if (bookmarkResource.status == Resource.SUCCESS) {
-                bookmark.setValue(bookmarkResource.data != null);
+        favorite.addSource(watchlistRes, movieResource -> {
+            if (movieResource != null && movieResource.status == Resource.SUCCESS) {
+                boolean newValue = movieResource.data != null;
+                if (bookmark.getValue() == null || newValue != bookmark.getValue())
+                    bookmark.setValue(newValue);
+            }
+        });
+
+        isRated.addSource(ratedRepository.getById(id), movieResource -> {
+            if (movieResource != null && movieResource.status == Resource.SUCCESS) {
+                boolean newValue = movieResource.data != null;
+                if (isRated.getValue() == null || newValue != isRated.getValue())
+                    isRated.setValue(newValue);
             }
         });
     }
+
 
     public LiveData<List<MovieReview>> getReviews() {
         return reviews;
@@ -95,9 +108,8 @@ public class MovieDetailsViewModel extends ViewModel {
     }
 
     public void toggleFavorite() {
-        Timber.d("toggleFavorite: ");
         Boolean isFavorite = favorite.getValue();
-        if (isFavorite) {
+        if (isFavorite != null && isFavorite) {
             favoriteRepository.remove(movie.getValue());
         } else {
             favoriteRepository.add(movie.getValue());
@@ -106,10 +118,26 @@ public class MovieDetailsViewModel extends ViewModel {
 
     public void toggleBookmark() {
         Boolean isBookmarked = bookmark.getValue();
-        if (isBookmarked) {
+        if (isBookmarked != null && isBookmarked) {
             watchlistRepository.remove(movie.getValue());
         } else {
             watchlistRepository.add(movie.getValue());
         }
+    }
+
+    public LiveData<Boolean> getIsRated() {
+        return isRated;
+    }
+
+    public void rate(double rating) {
+        if (getMovie().getValue() == null) return;
+        if (rating < 0.5) rating = 0.5;
+        getMovie().getValue().setRating(rating);
+        ratedRepository.add(getMovie().getValue());
+    }
+
+    public void deleteRating() {
+        if (getMovie().getValue() == null) return;
+        ratedRepository.remove(getMovie().getValue());
     }
 }

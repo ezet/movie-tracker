@@ -1,7 +1,8 @@
 package no.ezet.fasttrack.popularmovies.network;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * A generic class that describes data with a status

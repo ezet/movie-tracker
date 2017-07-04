@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -62,6 +65,8 @@ public class MovieDetailFragment extends LifecycleFragment {
     private boolean isFavoriteButtonInitialized;
     private int movieId;
     private boolean isBookmarkButtonInitialized;
+    private boolean isRateButtonInitialized;
+    private int rating;
 
     @NonNull
     public static MovieDetailFragment create(Integer movieId, String posterPath) {
@@ -121,6 +126,7 @@ public class MovieDetailFragment extends LifecycleFragment {
 
         setupFavoriteButton();
         setupBookmarkButton();
+        setupRateButton();
         setupTrailerList(trailerList);
 //        setupReviewList(reviewList);
     }
@@ -157,19 +163,24 @@ public class MovieDetailFragment extends LifecycleFragment {
         binding.setMovie(movie);
     }
 
+    private void abortBackTransition() {
+        ViewCompat.setTransitionName(portrait, null);
+    }
+
+
     private void setupFavoriteButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
         viewModel.getIsFavorite().observe(this, isFavorite -> {
             if (isFavorite != null && isFavorite) {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white_24dp));
                 if (isFavoriteButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Added to favorites", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.favorite_added, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             } else {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_border_white_24dp));
                 if (isFavoriteButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Removed from favorites", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.favorite_removed, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }
@@ -177,24 +188,23 @@ public class MovieDetailFragment extends LifecycleFragment {
         });
         fab.setOnClickListener(view -> {
             viewModel.toggleFavorite();
-            ViewCompat.setTransitionName(portrait, null);
+            abortBackTransition();
         });
     }
 
     private void setupBookmarkButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_bookmark);
         viewModel.getIsBookmark().observe(this, isBookmarked -> {
-
             if (isBookmarked != null && isBookmarked) {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_bookmark_white_24dp));
                 if (isBookmarkButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Added to bookmarks", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.bookmark_added, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             } else {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_bookmark_border_white_24dp));
                 if (isBookmarkButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Removed from bookmarks", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.bookmark_removed, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }
@@ -202,7 +212,67 @@ public class MovieDetailFragment extends LifecycleFragment {
         });
         fab.setOnClickListener(view -> {
             viewModel.toggleBookmark();
-            ViewCompat.setTransitionName(portrait, null);
+            abortBackTransition();
+        });
+    }
+
+
+    private void setupRateButton() {
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_rate);
+        viewModel.getIsRated().observe(this, isRated -> {
+            if (isRated != null && isRated) {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_white_24dp));
+                if (isRateButtonInitialized && getView() != null) {
+                    Snackbar.make(getView(), R.string.rating_successfull, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            } else {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_border_white_24dp));
+                if (isRateButtonInitialized && getView() != null) {
+                    Snackbar.make(getView(), R.string.rating_deleted, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            }
+            isRateButtonInitialized = true;
+        });
+        fab.setOnClickListener(view -> {
+            abortBackTransition();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            View content = getLayoutInflater().inflate(R.layout.dialog_rate, null);
+            SeekBar seekBar = (SeekBar) content.findViewById(R.id.seekbar);
+            TextView textView = (TextView) content.findViewById(R.id.tv_rate);
+            seekBar.setMax(10);
+            seekBar.setKeyProgressIncrement(1);
+            Movie movie = viewModel.getMovie().getValue();
+            if (movie != null && movie.getRating() != null) {
+                seekBar.setProgress(movie.getRating().intValue());
+                textView.setText(String.valueOf(movie.getRating().intValue()));
+            }
+            builder.setView(content);
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    MovieDetailFragment.this.rating = progress;
+                    textView.setText(String.valueOf(progress));
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+            builder.setTitle(R.string.dialog_title_rate).setPositiveButton(R.string.dialog_btn_rate, (dialog, which) -> {
+                viewModel.rate(rating);
+
+            }).setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+            }).setNeutralButton(R.string.delete, (dialog, which) -> viewModel.deleteRating()).create().show();
+
         });
     }
 

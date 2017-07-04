@@ -1,7 +1,6 @@
 package no.ezet.fasttrack.popularmovies.repository;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -30,7 +29,7 @@ public abstract class MutableMovieRepository {
     }
 
     public LiveData<Resource<List<Movie>>> getAll() {
-        return new CachedMovieResource(apiService, movieCacheDao, type) {
+        return new CachedMovieListResource(apiService, movieCacheDao, type) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return MutableMovieRepository.this.createApiCall(apiService);
@@ -67,7 +66,12 @@ public abstract class MutableMovieRepository {
 
     @NonNull
     public LiveData<Resource<Movie>> getById(int id) {
-        return Transformations.map(movieCacheDao.getById(id, type), Resource::success);
+        return new CachedMovieResource(apiService, movieCacheDao, id, type) {
+            @Override
+            protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
+                return MutableMovieRepository.this.createApiCall(apiService);
+            }
+        }.getAsLiveData();
     }
 
     public void remove(Movie movie) {
@@ -80,7 +84,6 @@ public abstract class MutableMovieRepository {
                 } else {
                     Timber.d("onResponse: " + response.message());
                 }
-
             }
 
             @Override
