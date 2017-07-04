@@ -8,14 +8,14 @@ import javax.inject.Inject;
 
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
-import no.ezet.fasttrack.popularmovies.repository.WatchListRepository;
+import no.ezet.fasttrack.popularmovies.repository.WatchlistRepository;
 
-public class WatchListViewModel extends MovieListBaseViewModel {
+public class WatchlistViewModel extends MovieListBaseViewModel {
 
-    private final WatchListRepository repository;
+    private final WatchlistRepository repository;
 
     @Inject
-    WatchListViewModel(WatchListRepository repository) {
+    WatchlistViewModel(WatchlistRepository repository) {
         this.repository = repository;
     }
 

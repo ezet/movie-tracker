@@ -6,18 +6,23 @@
         android:title="@string/bnav_lists" />
 
     <item
-        android:id="@+id/bnav_filter"
-        android:icon="@drawable/ic_tune_black_24dp"
-        android:title="@string/bnav_filter" />
+        android:id="@+id/bnav_watchlist"
+        android:icon="@drawable/ic_bookmark_white_24dp"
+        android:title="@string/bnav_watchlist" />
 
     <item
         android:id="@+id/bnav_favorites"
-        android:icon="@drawable/ic_star_white_24dp"
+        android:icon="@drawable/ic_favorite_white_24dp"
         android:title="@string/bnav_favorites" />
 
     <item
-        android:id="@+id/bnav_watchlist"
-        android:icon="@drawable/ic_watch_later_black_24dp"
-        android:title="@string/bnav_watchlist" />
+        android:id="@+id/bnav_rated"
+        android:icon="@drawable/ic_star_white_24dp"
+        android:title="@string/bnav_rated" />
+
+    <item
+        android:id="@+id/bnav_filter"
+        android:icon="@drawable/ic_tune_black_24dp"
+        android:title="@string/bnav_filter" />
 
 </menu>

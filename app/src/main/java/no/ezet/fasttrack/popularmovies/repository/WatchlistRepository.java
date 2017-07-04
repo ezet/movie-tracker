@@ -9,26 +9,25 @@ import no.ezet.fasttrack.popularmovies.db.MovieCacheDao;
 import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import retrofit2.Call;
 
-
-public class FavoriteRepository extends MutableMovieRepository {
+public class WatchlistRepository extends MutableMovieRepository {
 
     @Inject
-    FavoriteRepository(MovieCacheDao movieCacheDao, ApiService apiService) {
-        super(Movie.FAVORITE, movieCacheDao, apiService);
+    WatchlistRepository(MovieCacheDao movieCacheDao, ApiService apiService) {
+        super(Movie.WATCHLIST, movieCacheDao, apiService);
     }
 
     @Override
     public Call<ApiList<Movie>> createApiCall(ApiService apiService) {
-        return apiService.getFavoriteMovies();
+        return apiService.getWatchlist();
     }
 
     @Override
     protected Call<PostResponse> createAddMovieCall(ApiService apiService, Movie movie) {
-        return apiService.setFavoriteMovie(movie.getId(), true);
+        return apiService.setWatchlist(movie.getId(), true);
     }
 
     @Override
     protected Call<PostResponse> createRemoveMovieCall(ApiService apiService, Movie movie) {
-        return apiService.setFavoriteMovie(movie.getId(), false);
+        return apiService.setWatchlist(movie.getId(), false);
     }
 }

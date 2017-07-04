@@ -28,10 +28,10 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.databinding.FragmentMovieDetailBinding;
+import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.api.model.MovieReview;
 import no.ezet.fasttrack.popularmovies.api.model.MovieTrailer;
-import no.ezet.fasttrack.popularmovies.api.model.Movie;
+import no.ezet.fasttrack.popularmovies.databinding.FragmentMovieDetailBinding;
 import no.ezet.fasttrack.popularmovies.service.ImageService;
 import no.ezet.fasttrack.popularmovies.service.VideoService;
 import no.ezet.fasttrack.popularmovies.viewmodel.MovieDetailsViewModel;
@@ -59,8 +59,9 @@ public class MovieDetailFragment extends LifecycleFragment {
     private RecyclerView reviewList;
     private RecyclerView trailerList;
     private ImageView portrait;
-    private boolean initialized;
+    private boolean isFavoriteButtonInitialized;
     private int movieId;
+    private boolean isBookmarkButtonInitialized;
 
     @NonNull
     public static MovieDetailFragment create(Integer movieId, String posterPath) {
@@ -119,6 +120,7 @@ public class MovieDetailFragment extends LifecycleFragment {
         }
 
         setupFavoriteButton();
+        setupBookmarkButton();
         setupTrailerList(trailerList);
 //        setupReviewList(reviewList);
     }
@@ -155,30 +157,53 @@ public class MovieDetailFragment extends LifecycleFragment {
         binding.setMovie(movie);
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void setupFavoriteButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_favorite);
-        viewModel.getFavorite().observe(this, isFavorite -> {
-            if (isFavorite) {
-                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_white_24dp));
-                if (initialized) {
+        viewModel.getIsFavorite().observe(this, isFavorite -> {
+            if (isFavorite != null && isFavorite) {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white_24dp));
+                if (isFavoriteButtonInitialized && getView() != null) {
                     Snackbar.make(getView(), "Added to favorites", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             } else {
-                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_border_black_24dp));
-                if (initialized) {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_border_white_24dp));
+                if (isFavoriteButtonInitialized && getView() != null) {
                     Snackbar.make(getView(), "Removed from favorites", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }
-            initialized = true;
+            isFavoriteButtonInitialized = true;
         });
         fab.setOnClickListener(view -> {
             viewModel.toggleFavorite();
             ViewCompat.setTransitionName(portrait, null);
         });
+    }
 
+    private void setupBookmarkButton() {
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_bookmark);
+        viewModel.getIsBookmark().observe(this, isBookmarked -> {
+
+            if (isBookmarked != null && isBookmarked) {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_bookmark_white_24dp));
+                if (isBookmarkButtonInitialized && getView() != null) {
+                    Snackbar.make(getView(), "Added to bookmarks", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            } else {
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_bookmark_border_white_24dp));
+                if (isBookmarkButtonInitialized && getView() != null) {
+                    Snackbar.make(getView(), "Removed from bookmarks", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            }
+            isBookmarkButtonInitialized = true;
+        });
+        fab.setOnClickListener(view -> {
+            viewModel.toggleBookmark();
+            ViewCompat.setTransitionName(portrait, null);
+        });
     }
 
 

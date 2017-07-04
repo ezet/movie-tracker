@@ -36,8 +36,8 @@ public abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(WatchListViewModel.class)
-    abstract ViewModel bindWatchListViewModel(WatchListViewModel viewModel);
+    @ViewModelKey(WatchlistViewModel.class)
+    abstract ViewModel bindWatchListViewModel(WatchlistViewModel viewModel);
 
 
 }

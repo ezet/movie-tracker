@@ -38,15 +38,23 @@ public abstract class MutableMovieRepository {
         }.getAsLiveData();
     }
 
-    public abstract Call<ApiList<Movie>> createApiCall(ApiService apiService);
+    protected abstract Call<ApiList<Movie>> createApiCall(ApiService apiService);
+
+    protected abstract Call<PostResponse> createAddMovieCall(ApiService apiService, Movie movie);
+
+    protected abstract Call<PostResponse> createRemoveMovieCall(ApiService apiService, Movie movie);
 
 
     public boolean add(Movie movie) {
-        apiService.setFavoriteMovie(movie.getId(), true).enqueue(new Callback<PostResponse>() {
+        createAddMovieCall(apiService, movie).enqueue(new Callback<PostResponse>() {
             @Override
             public void onResponse(@NonNull Call<PostResponse> call, @NonNull Response<PostResponse> response) {
-                movie.setType(type);
-                AsyncTask.execute(() -> movieCacheDao.insert(movie));
+                if (response.isSuccessful()) {
+                    movie.setType(type);
+                    AsyncTask.execute(() -> movieCacheDao.insert(movie));
+                } else {
+                    Timber.d("onResponse: " + response.message());
+                }
             }
 
             @Override
@@ -63,11 +71,16 @@ public abstract class MutableMovieRepository {
     }
 
     public void remove(Movie movie) {
-        apiService.setFavoriteMovie(movie.getId(), false).enqueue(new Callback<PostResponse>() {
+        createRemoveMovieCall(apiService, movie).enqueue(new Callback<PostResponse>() {
             @Override
             public void onResponse(@NonNull Call<PostResponse> call, @NonNull Response<PostResponse> response) {
-                movie.setType(type);
-                AsyncTask.execute(() -> movieCacheDao.delete(movie));
+                if (response.isSuccessful()) {
+                    movie.setType(type);
+                    AsyncTask.execute(() -> movieCacheDao.delete(movie));
+                } else {
+                    Timber.d("onResponse: " + response.message());
+                }
+
             }
 
             @Override

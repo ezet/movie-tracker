@@ -30,13 +30,10 @@ public abstract class MovieListBaseViewModel extends ViewModel {
     }
 
     private void loadMoviesInternal() {
-        Timber.d("loadMovies: ");
         LiveData<Resource<List<Movie>>> liveData = loadMovies();
         movies.addSource(liveData, resource -> {
-            Timber.d("loadMovies: callback: status: " + resource.status);
             //noinspection ConstantConditions
             if (resource.status != Resource.LOADING) {
-                movies.removeSource(liveData);
                 loading.setValue(false);
             }
             if (resource.status == Resource.SUCCESS) {

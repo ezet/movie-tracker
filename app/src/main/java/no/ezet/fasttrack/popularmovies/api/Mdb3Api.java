@@ -9,10 +9,11 @@ import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.RequestToken;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
-import no.ezet.fasttrack.popularmovies.api.requestbody.PostFavoriteBody;
+import no.ezet.fasttrack.popularmovies.api.requestbody.PostBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -22,8 +23,8 @@ public interface Mdb3Api {
     @GET("movie/{sortBy}")
     Call<ApiList<Movie>> getMovies(@Path("sortBy") String sortBy);
 
-    @GET("movie/{movieId}")
-    Call<Movie> getDetailsWithAppend(@Path("movieId") int movieId, @Query("append_to_response") String resources);
+    @GET("movie/{mediaId}")
+    Call<Movie> getDetailsWithAppend(@Path("mediaId") int movieId, @Query("append_to_response") String resources);
 
     @GET("search/movie")
     Call<ApiList<Movie>> search(@Query("query") String query);
@@ -47,8 +48,12 @@ public interface Mdb3Api {
     Call<AccountDetails> getAccountDetails(@Query("session_id") String sessionId);
 
     @POST("account/{accountId}/favorite")
-    Call<PostResponse> setFavorite(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body PostFavoriteBody postFavoriteBody);
+    Call<PostResponse> setFavorite(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body PostBody postBody);
 
     @GET("account/{accountId}/watchlist/movies")
     Call<ApiList<Movie>> getWatchlist(@Path("accountId") int accountId, @Query("session_id") String sessionId);
+
+    @Headers("Content-Type: application/json;charset=utf-8")
+    @POST("account/{accountId}/watchlist")
+    Call<PostResponse> setWatchlist(@Path("accountId") int accountId, @Query("session_id") String sessionId, @Body PostBody postBody);
 }

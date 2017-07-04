@@ -7,7 +7,7 @@ import no.ezet.fasttrack.popularmovies.view.FilterFragment;
 import no.ezet.fasttrack.popularmovies.view.MovieDetailFragment;
 import no.ezet.fasttrack.popularmovies.view.MovieListFragment;
 import no.ezet.fasttrack.popularmovies.view.SearchFragment;
-import no.ezet.fasttrack.popularmovies.view.WatchListFragment;
+import no.ezet.fasttrack.popularmovies.view.WatchlistFragment;
 
 @Module()
 abstract class FragmentModule {
@@ -28,7 +28,7 @@ abstract class FragmentModule {
     abstract FilterFragment contributeFilterFragment();
 
     @ContributesAndroidInjector
-    abstract WatchListFragment contributeWatchListFragment();
+    abstract WatchlistFragment contributeWatchListFragment();
 
 //    @Provides
 //    MovieListFragment.FragmentListener provideMovieListFragmentListener(DiscoverActivity activity) {

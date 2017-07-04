@@ -60,7 +60,7 @@ public class MovieListRecyclerViewAdapter
     }
 
     void setMovies(List<MovieListItem> movieList) {
-        Timber.d("setMovies: " + counter++);
+        Timber.d("setMovies: counter:" + counter++);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(this.movies, movieList));
         this.movies.clear();
         this.movies.addAll(movieList);

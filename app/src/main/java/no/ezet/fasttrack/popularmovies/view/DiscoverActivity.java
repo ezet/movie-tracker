@@ -79,7 +79,7 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     private DiscoverListsFragment discoverListsFragment;
     private Fragment filterFragment;
     private FavoriteListFragment favoriteListFragment;
-    private WatchListFragment watchListFragment;
+    private WatchlistFragment watchlistFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,10 +162,10 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     }
 
     private void gotoWatchList() {
-        if (watchListFragment == null) {
-            watchListFragment = WatchListFragment.create();
+        if (watchlistFragment == null) {
+            watchlistFragment = WatchlistFragment.create();
         }
-        setRootFragment(watchListFragment);
+        setRootFragment(watchlistFragment);
     }
 
     private void setRootFragment(Fragment fragment) {

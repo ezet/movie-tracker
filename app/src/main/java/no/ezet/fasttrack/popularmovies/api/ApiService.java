@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import no.ezet.fasttrack.popularmovies.R;
-import no.ezet.fasttrack.popularmovies.api.requestbody.PostFavoriteBody;
+import no.ezet.fasttrack.popularmovies.api.requestbody.PostBody;
 import no.ezet.fasttrack.popularmovies.api.model.ApiList;
 import no.ezet.fasttrack.popularmovies.api.model.PostResponse;
 import no.ezet.fasttrack.popularmovies.api.model.Session;
@@ -64,7 +64,7 @@ public class ApiService {
     }
 
     public Call<PostResponse> setFavoriteMovie(int movieId, boolean favorite) {
-        return api3.setFavorite(id(), session(), new PostFavoriteBody(PostFavoriteBody.MOVIE, movieId, favorite));
+        return api3.setFavorite(id(), session(), PostBody.favorite(PostBody.MOVIE, movieId, favorite));
     }
 
     public Call<ApiList<Movie>> getFavoriteMovies() {
@@ -96,9 +96,13 @@ public class ApiService {
     public Call<ApiList<Movie>> getWatchlist() {
         //noinspection ConstantConditions
         if (session.getValue().status != Resource.SUCCESS) {
-            Timber.d("getWatchlist: not authenticated");
+            Timber.d("getIsBookmark: not authenticated");
             return null;
         }
         return api3.getWatchlist(id(), session());
+    }
+
+    public Call<PostResponse> setWatchlist(int movieId, boolean watchlist) {
+        return api3.setWatchlist(id(), session(), PostBody.watchlist(PostBody.MOVIE, movieId, watchlist));
     }
 }

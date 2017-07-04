@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import no.ezet.fasttrack.popularmovies.api.model.Movie;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
+import no.ezet.fasttrack.popularmovies.repository.WatchlistRepository;
 import timber.log.Timber;
 
 public class MovieDetailsViewModel extends ViewModel {
@@ -23,19 +25,28 @@ public class MovieDetailsViewModel extends ViewModel {
     private final MediatorLiveData<Movie> movie = new MediatorLiveData<>();
     private final MovieRepository movieRepository;
     private final FavoriteRepository favoriteRepository;
+    private final WatchlistRepository watchlistRepository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
     private MediatorLiveData<List<MovieTrailer>> trailers = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> favorite = new MediatorLiveData<>();
+    private MediatorLiveData<Boolean> bookmark = new MediatorLiveData<>();
 
     @Inject
-    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository) {
+    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository) {
         this.movieRepository = movieRepository;
         this.favoriteRepository = favoriteRepository;
+        this.watchlistRepository = watchlistRepository;
     }
 
-    public LiveData<Boolean> getFavorite() {
+    @NonNull
+    public LiveData<Boolean> getIsFavorite() {
         return favorite;
+    }
+
+    @NonNull
+    public LiveData<Boolean> getIsBookmark() {
+        return bookmark;
     }
 
     public LiveData<Movie> getMovie() {
@@ -58,15 +69,19 @@ public class MovieDetailsViewModel extends ViewModel {
             }
         });
 
-        LiveData<Resource<Movie>> byId = favoriteRepository.getById(id);
-        favorite.addSource(byId, favoriteResource -> {
-            Timber.d("setMovie: byId trigger");
-//            if (favoriteResource.status != Resource.LOADING) {
-//                favorite.removeSource(byId);
-//            }
+        LiveData<Resource<Movie>> favoriteRes = favoriteRepository.getById(id);
+        favorite.addSource(favoriteRes, favoriteResource -> {
             //noinspection ConstantConditions
             if (favoriteResource.status == Resource.SUCCESS) {
                 favorite.setValue(favoriteResource.data != null);
+            }
+        });
+
+        LiveData<Resource<Movie>> watchlistRes = watchlistRepository.getById(id);
+        favorite.addSource(watchlistRes, bookmarkResource -> {
+            //noinspection ConstantConditions
+            if (bookmarkResource.status == Resource.SUCCESS) {
+                bookmark.setValue(bookmarkResource.data != null);
             }
         });
     }
@@ -86,6 +101,15 @@ public class MovieDetailsViewModel extends ViewModel {
             favoriteRepository.remove(movie.getValue());
         } else {
             favoriteRepository.add(movie.getValue());
+        }
+    }
+
+    public void toggleBookmark() {
+        Boolean isBookmarked = bookmark.getValue();
+        if (isBookmarked) {
+            watchlistRepository.remove(movie.getValue());
+        } else {
+            watchlistRepository.add(movie.getValue());
         }
     }
 }
