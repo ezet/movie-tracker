@@ -16,6 +16,7 @@ import no.ezet.fasttrack.popularmovies.api.model.MovieTrailer;
 import no.ezet.fasttrack.popularmovies.network.Resource;
 import no.ezet.fasttrack.popularmovies.repository.FavoriteRepository;
 import no.ezet.fasttrack.popularmovies.repository.MovieRepository;
+import no.ezet.fasttrack.popularmovies.repository.RatedRepository;
 import no.ezet.fasttrack.popularmovies.repository.WatchlistRepository;
 
 public class MovieDetailsViewModel extends ViewModel {
@@ -25,6 +26,7 @@ public class MovieDetailsViewModel extends ViewModel {
     private final MovieRepository movieRepository;
     private final FavoriteRepository favoriteRepository;
     private final WatchlistRepository watchlistRepository;
+    private final RatedRepository ratedRepository;
     private MediatorLiveData<List<MovieReview>> reviews = new MediatorLiveData<>();
     private MediatorLiveData<List<MovieTrailer>> trailers = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> favorite = new MediatorLiveData<>();
@@ -32,11 +34,11 @@ public class MovieDetailsViewModel extends ViewModel {
     private MediatorLiveData<Boolean> isRated = new MediatorLiveData<>();
 
     @Inject
-    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository) {
+    MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository, RatedRepository ratedRepository) {
         this.movieRepository = movieRepository;
         this.favoriteRepository = favoriteRepository;
         this.watchlistRepository = watchlistRepository;
-        isRated.setValue(false);
+        this.ratedRepository = ratedRepository;
     }
 
     @NonNull
@@ -70,25 +72,32 @@ public class MovieDetailsViewModel extends ViewModel {
         });
 
         LiveData<Resource<Movie>> favoriteRes = favoriteRepository.getById(id);
-        favorite.addSource(favoriteRes, favoriteResource -> {
-            if (favoriteResource != null && favoriteResource.status == Resource.SUCCESS) {
-                favorite.setValue(favoriteResource.data != null);
+        favorite.addSource(favoriteRes, movieResource -> {
+            if (movieResource != null && movieResource.status == Resource.SUCCESS) {
+                boolean newValue = movieResource.data != null;
+                if (favorite.getValue() == null || newValue != favorite.getValue())
+                    favorite.setValue(newValue);
             }
         });
 
         LiveData<Resource<Movie>> watchlistRes = watchlistRepository.getById(id);
-        favorite.addSource(watchlistRes, bookmarkResource -> {
-            if (bookmarkResource != null && bookmarkResource.status == Resource.SUCCESS) {
-                bookmark.setValue(bookmarkResource.data != null);
+        favorite.addSource(watchlistRes, movieResource -> {
+            if (movieResource != null && movieResource.status == Resource.SUCCESS) {
+                boolean newValue = movieResource.data != null;
+                if (bookmark.getValue() == null || newValue != bookmark.getValue())
+                    bookmark.setValue(newValue);
+            }
+        });
+
+        isRated.addSource(ratedRepository.getById(id), movieResource -> {
+            if (movieResource != null && movieResource.status == Resource.SUCCESS) {
+                boolean newValue = movieResource.data != null;
+                if (isRated.getValue() == null || newValue != isRated.getValue())
+                    isRated.setValue(newValue);
             }
         });
     }
 
-    public void rate(double rating) {
-        if (getMovie().getValue() == null) return;
-        if (rating < 0.5) rating = 0.5;
-        movieRepository.rate(getMovie().getValue().getId(), rating);
-    }
 
     public LiveData<List<MovieReview>> getReviews() {
         return reviews;
@@ -120,8 +129,15 @@ public class MovieDetailsViewModel extends ViewModel {
         return isRated;
     }
 
+    public void rate(double rating) {
+        if (getMovie().getValue() == null) return;
+        if (rating < 0.5) rating = 0.5;
+        getMovie().getValue().setRating(rating);
+        ratedRepository.add(getMovie().getValue());
+    }
+
     public void deleteRating() {
         if (getMovie().getValue() == null) return;
-        movieRepository.deleteRating(getMovie().getValue().getId());
+        ratedRepository.remove(getMovie().getValue());
     }
 }

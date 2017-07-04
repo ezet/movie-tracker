@@ -129,7 +129,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getPopular() {
-        return new CachedMovieResource(apiService, movieCacheDao, Movie.POPULAR) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.POPULAR) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_POPULAR);
@@ -139,7 +139,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getUpcoming() {
-        return new CachedMovieResource(apiService, movieCacheDao, Movie.UPCOMING) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.UPCOMING) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_UPCOMING);
@@ -149,7 +149,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getTopRated() {
-        return new CachedMovieResource(apiService, movieCacheDao, Movie.TOP_RATED) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.TOP_RATED) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_TOP_RATED);
@@ -159,7 +159,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getNowPlaying() {
-        return new CachedMovieResource(apiService, movieCacheDao, Movie.NOW_PLAYING) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.NOW_PLAYING) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_NOW_PLAYING);

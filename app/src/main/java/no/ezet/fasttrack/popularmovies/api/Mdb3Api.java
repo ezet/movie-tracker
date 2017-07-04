@@ -38,6 +38,9 @@ public interface Mdb3Api {
     @GET("account/{accountId}/favorite/movies")
     Call<ApiList<Movie>> getFavoriteMovies(@Path("accountId") int accountId, @Query("session_id") String sessionId);
 
+    @GET("account/{accountId}/rated/movies")
+    Call<ApiList<Movie>> getRatedMovies(@Path("accountId") int accountId, @Query("session_id") String sessionId);
+
     @GET("authentication/token/new")
     Call<RequestToken> createRequestToken();
 
@@ -61,4 +64,7 @@ public interface Mdb3Api {
 
     @DELETE("movie/{movie_id}/rating")
     Call<PostResponse> deleteRating(@Path("movie_id") int movieId, @Query("session_id") String sessionId);
+
+
 }
+

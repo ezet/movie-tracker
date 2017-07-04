@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProvider;
 import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
+import no.ezet.fasttrack.popularmovies.view.RatedListFragment;
 
 @SuppressWarnings("unused")
 @Module
@@ -38,6 +39,11 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(WatchlistViewModel.class)
     abstract ViewModel bindWatchListViewModel(WatchlistViewModel viewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RatedListViewModel.class)
+    abstract ViewModel bindRatedListViewModel(RatedListViewModel viewModel);
 
 
 }

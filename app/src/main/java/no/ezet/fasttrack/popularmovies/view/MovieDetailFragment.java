@@ -173,13 +173,13 @@ public class MovieDetailFragment extends LifecycleFragment {
             if (isFavorite != null && isFavorite) {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_white_24dp));
                 if (isFavoriteButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Added to favorites", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.favorite_added, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             } else {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_favorite_border_white_24dp));
                 if (isFavoriteButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Removed from favorites", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.favorite_removed, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }
@@ -194,17 +194,16 @@ public class MovieDetailFragment extends LifecycleFragment {
     private void setupBookmarkButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_bookmark);
         viewModel.getIsBookmark().observe(this, isBookmarked -> {
-
             if (isBookmarked != null && isBookmarked) {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_bookmark_white_24dp));
                 if (isBookmarkButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Added to bookmarks", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.bookmark_added, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             } else {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_bookmark_border_white_24dp));
                 if (isBookmarkButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Removed from bookmarks", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.bookmark_removed, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }
@@ -220,56 +219,50 @@ public class MovieDetailFragment extends LifecycleFragment {
     private void setupRateButton() {
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_rate);
         viewModel.getIsRated().observe(this, isRated -> {
-
             if (isRated != null && isRated) {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_white_24dp));
                 if (isRateButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Successfully rated", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.rating_successfull, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             } else {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_border_white_24dp));
                 if (isRateButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), "Rating removed", Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.rating_deleted, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }
             isRateButtonInitialized = true;
         });
         fab.setOnClickListener(view -> {
-            if (viewModel.getIsRated().getValue() != null && viewModel.getIsRated().getValue()) {
-                viewModel.deleteRating();
-            } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                SeekBar seekBar = new SeekBar(getContext());
-                seekBar.setMax(10);
-                seekBar.setKeyProgressIncrement(1);
-                builder.setView(seekBar);
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            abortBackTransition();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            SeekBar seekBar = new SeekBar(getContext());
+            seekBar.setMax(10);
+            seekBar.setKeyProgressIncrement(1);
+            builder.setView(seekBar);
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        MovieDetailFragment.this.rating = progress;
-                    }
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    MovieDetailFragment.this.rating = progress;
+                }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
 
-                    }
+                }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
 
-                    }
-                });
-                builder.setTitle("Rate").setPositiveButton("Rate", (dialog, which) -> {
-                    viewModel.rate(rating);
+                }
+            });
+            builder.setTitle(R.string.dialog_title_rate).setPositiveButton(R.string.dialog_btn_rate, (dialog, which) -> {
+                viewModel.rate(rating);
 
-                }).setNegativeButton("Cancel", (dialog, which) -> {
-                }).setNeutralButton("Delete", (dialog, which) -> {
-                    viewModel.deleteRating();
-                }).create().show();
-            }
+            }).setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+            }).setNeutralButton(R.string.delete, (dialog, which) -> viewModel.deleteRating()).create().show();
 
         });
     }

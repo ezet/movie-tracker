@@ -3,8 +3,12 @@ package no.ezet.fasttrack.popularmovies.repository;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.persistence.room.Room;
+import android.arch.persistence.room.RoomDatabase;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+
+import java.util.List;
 
 import no.ezet.fasttrack.popularmovies.api.ApiService;
 import no.ezet.fasttrack.popularmovies.api.model.ApiList;
@@ -17,19 +21,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-public abstract class CachedMovieResource extends NetworkResource<Movie, ApiList<Movie>> {
+public abstract class CachedMovieListResource extends NetworkResource<List<Movie>, ApiList<Movie>> {
 
     private final ApiService apiService;
     private final MovieCacheDao movieCacheDao;
-    private final int id;
     private final int type;
     private boolean shouldFetch = true;
 
-
-    CachedMovieResource(ApiService apiService, MovieCacheDao movieCacheDao, int id, int type) {
+    CachedMovieListResource(ApiService apiService, MovieCacheDao movieCacheDao, int type) {
         this.apiService = apiService;
         this.movieCacheDao = movieCacheDao;
-        this.id = id;
         this.type = type;
     }
 
@@ -43,7 +44,7 @@ public abstract class CachedMovieResource extends NetworkResource<Movie, ApiList
     }
 
     @Override
-    protected boolean shouldFetch(Movie data) {
+    protected boolean shouldFetch(List<Movie> data) {
         if (shouldFetch) {
             shouldFetch = false;
             return true;
@@ -52,9 +53,9 @@ public abstract class CachedMovieResource extends NetworkResource<Movie, ApiList
     }
 
     @Override
-    protected LiveData<Movie> loadFromDb() {
-        MediatorLiveData<Movie> liveData = new MediatorLiveData<>();
-        AsyncTask.execute(() -> liveData.addSource(movieCacheDao.getById(id, type), liveData::postValue));
+    protected LiveData<List<Movie>> loadFromDb() {
+        MediatorLiveData<List<Movie>> liveData = new MediatorLiveData<>();
+        AsyncTask.execute(() -> liveData.addSource(movieCacheDao.getByType(type), liveData::setValue));
         return liveData;
     }
 
@@ -78,4 +79,5 @@ public abstract class CachedMovieResource extends NetworkResource<Movie, ApiList
     }
 
     abstract protected Call<ApiList<Movie>> createApiCall(ApiService apiService);
+
 }

@@ -69,12 +69,20 @@ public class ApiService {
     }
 
     public Call<ApiList<Movie>> getFavoriteMovies() {
-        //noinspection ConstantConditions
-        if (session.getValue().status != Resource.SUCCESS) {
+        if (session.getValue() != null && session.getValue().status != Resource.SUCCESS) {
             Timber.d("getFavoriteMovies: not authenticated");
             return null;
         }
         return api3.getFavoriteMovies(id(), session());
+    }
+
+    public Call<ApiList<Movie>> getRatedMovies() {
+        if (session.getValue() != null && session.getValue().status != Resource.SUCCESS) {
+            Timber.d("getFavoriteMovies: not authenticated");
+            return null;
+        }
+        return api3.getRatedMovies(id(), session());
+
     }
 
     private String session() {

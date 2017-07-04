@@ -15,6 +15,7 @@ public class Movie {
     public static final int NOW_PLAYING = 3;
     public static final int FAVORITE = 4;
     public static final int WATCHLIST = 5;
+    public static final int RATED = 6;
     public int budget;
     public String homepage;
     public String imdbId;
@@ -28,6 +29,7 @@ public class Movie {
     public ApiList<MovieReview> reviews;
     @Ignore
     public List<Genre> genres;
+    private Double rating;
     private int id;
     private String posterPath;
     private Boolean adult;
@@ -180,4 +182,11 @@ public class Movie {
         this.type = type;
     }
 
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
 }

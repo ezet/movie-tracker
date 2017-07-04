@@ -76,10 +76,11 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
     private boolean twoPane;
     private AppBarLayout appBarLayout;
     private BottomNavigationView bottomNavigation;
-    private DiscoverListsFragment discoverListsFragment;
+    private Fragment discoverListsFragment;
     private Fragment filterFragment;
-    private FavoriteListFragment favoriteListFragment;
-    private WatchlistFragment watchlistFragment;
+    private Fragment favoriteListFragment;
+    private Fragment watchlistFragment;
+    private Fragment ratedListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,12 +126,16 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
                 case R.id.bnav_watchlist:
                     gotoWatchList();
                     break;
+                case R.id.bnav_rated:
+                    gotoRatedList();
+                    break;
             }
             return true;
         });
 
         if (savedInstanceState == null) gotoDiscoverLists();
     }
+
 
     private void doAuth() {
         LiveData<Resource<Session>> authenticate = apiService.authenticate(this);
@@ -166,6 +171,14 @@ public class DiscoverActivity extends AppCompatActivity implements LifecycleRegi
             watchlistFragment = WatchlistFragment.create();
         }
         setRootFragment(watchlistFragment);
+    }
+
+    private void gotoRatedList() {
+        if (ratedListFragment == null) {
+            ratedListFragment = RatedListFragment.create();
+        }
+        setRootFragment(ratedListFragment);
+
     }
 
     private void setRootFragment(Fragment fragment) {
