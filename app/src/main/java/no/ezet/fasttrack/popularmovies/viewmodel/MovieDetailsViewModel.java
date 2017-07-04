@@ -61,7 +61,7 @@ public class MovieDetailsViewModel extends ViewModel {
         movie.addSource(selectedMovieSource, movieResource -> {
             //noinspection ConstantConditions
             if (movieResource.status != Resource.LOADING) {
-                movie.removeSource(selectedMovieSource);
+//                movie.removeSource(selectedMovieSource);
                 loading.setValue(false);
             }
             if (movieResource.status == Resource.SUCCESS) {

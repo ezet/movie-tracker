@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -237,15 +238,23 @@ public class MovieDetailFragment extends LifecycleFragment {
         fab.setOnClickListener(view -> {
             abortBackTransition();
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            SeekBar seekBar = new SeekBar(getContext());
+            View content = getLayoutInflater().inflate(R.layout.dialog_rate, null);
+            SeekBar seekBar = (SeekBar) content.findViewById(R.id.seekbar);
+            TextView textView = (TextView) content.findViewById(R.id.tv_rate);
             seekBar.setMax(10);
             seekBar.setKeyProgressIncrement(1);
-            builder.setView(seekBar);
+            Movie movie = viewModel.getMovie().getValue();
+            if (movie != null && movie.getRating() != null) {
+                seekBar.setProgress(movie.getRating().intValue());
+                textView.setText(String.valueOf(movie.getRating().intValue()));
+            }
+            builder.setView(content);
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     MovieDetailFragment.this.rating = progress;
+                    textView.setText(String.valueOf(progress));
                 }
 
                 @Override
