@@ -223,7 +223,7 @@ public class MovieDetailFragment extends LifecycleFragment {
             if (isRated != null && isRated) {
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star_white_24dp));
                 if (isRateButtonInitialized && getView() != null) {
-                    Snackbar.make(getView(), R.string.rating_successfull, Snackbar.LENGTH_LONG)
+                    Snackbar.make(getView(), R.string.rating_successful, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             } else {
