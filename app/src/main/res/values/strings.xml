@@ -145,10 +145,10 @@
     <string name="delete">Delete</string>
     <string name="dialog_btn_rate">Rate</string>
     <string name="dialog_title_rate">Rate</string>
-    <string name="rating_successfull">Successfully rated</string>
+    <string name="rating_successful">Successfully rated</string>
     <string name="rating_deleted">Rating removed</string>
-    <string name="bookmark_added">Added to bookmarks</string>
-    <string name="bookmark_removed">Removed from bookmarks</string>
+    <string name="bookmark_added">Added to watchlist</string>
+    <string name="bookmark_removed">Removed from watchlist</string>
     <string name="favorite_added">Added to favorites</string>
     <string name="favorite_removed">Removed from favorites</string>
 </resources>
