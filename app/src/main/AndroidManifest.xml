@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="no.ezet.fasttrack.popularmovies">
+    package="no.ezet.tmdb">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".App"
+        android:name="no.ezet.tmdb.App"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.DiscoverActivity"
+            android:name="no.ezet.tmdb.view.DiscoverActivity"
             android:label="@string/title_movie_list"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
@@ -31,22 +31,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.MovieDetailActivity"
+            android:name="no.ezet.tmdb.view.MovieDetailActivity"
             android:label="@string/title_movie_detail"
-            android:parentActivityName=".view.MovieDetailActivity"
+            android:parentActivityName="no.ezet.tmdb.view.MovieDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="no.ezet.fasttrack.popularmovies.view.DiscoverActivity" />
+                android:value="no.ezet.tmdb.view.DiscoverActivity" />
         </activity>
         <activity
-            android:name=".view.SettingsActivity"
+            android:name="no.ezet.tmdb.view.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".view.DiscoverActivity"
+            android:parentActivityName="no.ezet.tmdb.view.DiscoverActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="no.ezet.fasttrack.popularmovies.view.DiscoverActivity" />
+                android:value="no.ezet.tmdb.view.DiscoverActivity" />
         </activity>
     </application>
 

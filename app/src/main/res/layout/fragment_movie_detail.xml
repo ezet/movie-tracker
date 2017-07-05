@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="no.ezet.fasttrack.popularmovies.view.MovieDetailFragment">
+    tools:context="no.ezet.tmdb.view.MovieDetailFragment">
 
     <data>
 
         <variable
             name="movie"
-            type="no.ezet.fasttrack.popularmovies.api.model.Movie" />
+            type="no.ezet.tmdb.api.model.Movie" />
     </data>
 
     <android.support.constraint.ConstraintLayout
