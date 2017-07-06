@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ public class MovieDetailsViewModel extends ViewModel {
     private MediatorLiveData<Boolean> bookmark = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> isRated = new MediatorLiveData<>();
     private MediatorLiveData<List<MovieListItem>> similar = new MediatorLiveData<>();
+    private MediatorLiveData<List<MovieListItem>> recommended = new MediatorLiveData<>();
 
     @Inject
     MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository, RatedRepository ratedRepository) {
@@ -66,11 +66,12 @@ public class MovieDetailsViewModel extends ViewModel {
             if (movieResource.status != Resource.LOADING) {
                 loading.setValue(false);
             }
-            if (movieResource.status == Resource.SUCCESS) {
+            if (movieResource.status == Resource.SUCCESS && movieResource.data != null) {
                 movie.setValue(movieResource.data);
                 reviews.setValue(movieResource.data.reviews.results);
                 trailers.setValue(movieResource.data.videos.results);
                 setSimilarMovies(movieResource.data.similar.results);
+                setRecommendedMovies(movieResource.data.recommendations.results);
             }
         });
 
@@ -107,6 +108,14 @@ public class MovieDetailsViewModel extends ViewModel {
             list.add(MovieListItem.create(movie));
         }
         similar.setValue(list);
+    }
+
+    private void setRecommendedMovies(List<Movie> results) {
+        List<MovieListItem> list = new ArrayList<>();
+        for (Movie movie : results) {
+            list.add(MovieListItem.create(movie));
+        }
+        recommended.setValue(list);
     }
 
     public LiveData<List<MovieReview>> getReviews() {
@@ -155,15 +164,11 @@ public class MovieDetailsViewModel extends ViewModel {
         ratedRepository.remove(getMovie().getValue());
     }
 
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-
-    }
-
-    public void onSaveInstanceState(Bundle outState) {
-
-    }
-
     public LiveData<Boolean> getIsLoading() {
         return loading;
+    }
+
+    public LiveData<List<MovieListItem>> getRecommended() {
+        return recommended;
     }
 }

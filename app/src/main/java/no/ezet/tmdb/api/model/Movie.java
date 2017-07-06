@@ -32,7 +32,7 @@ public class Movie {
     @Ignore
     public ApiList<Movie> similar;
     @Ignore
-    public ApiList<Movie> recommended;
+    public ApiList<Movie> recommendations;
     private Double rating;
     private int id;
     private String posterPath;

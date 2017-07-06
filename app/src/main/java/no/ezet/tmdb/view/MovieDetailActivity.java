@@ -133,6 +133,10 @@ public class MovieDetailActivity extends AppCompatActivity implements LifecycleR
     }
 
     private void gotoRecommended() {
+        String posterPath = getIntent().getStringExtra(EXTRA_POSTER_PATH);
+        RecommendedListFragment fragment = RecommendedListFragment.create(movieId, posterPath);
+        setRoot(fragment);
+        hideFabs();
     }
 
     private void gotoSimilar() {
