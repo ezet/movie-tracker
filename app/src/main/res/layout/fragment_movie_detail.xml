@@ -196,16 +196,6 @@
             tools:orientation="horizontal" />
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/review_list"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/similar_list"
-            tools:layout_height="100dp"
-            tools:listitem="@layout/review_list_item" />
-
     </android.support.constraint.ConstraintLayout>
 
 

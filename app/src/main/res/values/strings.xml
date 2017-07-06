@@ -155,4 +155,7 @@
     <string name="bnav_reviews">Reviews</string>
     <string name="bnav_similar">Similar</string>
     <string name="bnav_recommended">Recommended</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
