@@ -1,14 +1,13 @@
 package no.ezet.tmdb.view;
 
-import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import no.ezet.tmdb.viewmodel.FavoriteListViewModel;
+import java.util.List;
+
+import no.ezet.tmdb.viewmodel.MovieListItem;
 import no.ezet.tmdb.viewmodel.MovieListViewModel;
 
 /**
@@ -20,11 +19,12 @@ import no.ezet.tmdb.viewmodel.MovieListViewModel;
  * item details side-by-side using two vertical panes.
  */
 @SuppressWarnings("ConstantConditions")
-public class MovieListFragment extends MovieListBaseFragment<MovieListViewModel> {
+public class MovieListFragment extends MovieListBaseFragment {
 
     public static final String ARG_MODE = "ARG_MODE";
 
     public int mode;
+    private MovieListViewModel viewModel;
 
     public static MovieListFragment create(int mode) {
         Bundle args = new Bundle();
@@ -38,23 +38,20 @@ public class MovieListFragment extends MovieListBaseFragment<MovieListViewModel>
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mode = getArguments().getInt(ARG_MODE);
-    }
-
-    @Override
-    protected MovieListViewModel getViewModel(ViewModelProvider.Factory viewModelFactory) {
-        return ViewModelProviders.of(this, viewModelFactory).get(MovieListViewModel.class);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
-    protected void setupViewModel(MovieListViewModel viewModel) {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MovieListViewModel.class);
         viewModel.setListType(getArguments().getInt(ARG_MODE));
     }
+
+    @Override
+    protected LiveData<List<MovieListItem>> getListItems() {
+        return viewModel.getMovies();
+    }
+
+    @Override
+    protected LiveData<Boolean> getIsLoading() {
+        return viewModel.getIsLoading();
+    }
+
 }
 
 

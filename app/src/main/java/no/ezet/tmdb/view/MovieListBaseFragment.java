@@ -1,6 +1,7 @@
 package no.ezet.tmdb.view;
 
 import android.arch.lifecycle.LifecycleFragment;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,16 +16,17 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.tmdb.R;
 import no.ezet.tmdb.service.ImageService;
-import no.ezet.tmdb.viewmodel.MovieListBaseViewModel;
+import no.ezet.tmdb.viewmodel.MovieListItem;
 
-public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> extends LifecycleFragment {
+public abstract class MovieListBaseFragment extends LifecycleFragment {
 
-    protected T viewModel;
     @Inject
     ImageService imageService;
     @Inject
@@ -60,17 +62,12 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = getViewModel(viewModelFactory);
     }
-
-    protected abstract T getViewModel(ViewModelProvider.Factory viewModelFactory);
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setupViewModel(viewModel);
-        viewModel.onRestoreInstanceState(savedInstanceState);
-        viewModel.getIsLoading().observe(this, loading -> {
+        getIsLoading().observe(this, loading -> {
                     if (loading != null && loading) showLoadingIndicator();
                     else showMovieList();
                 }
@@ -88,14 +85,13 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        viewModel.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        viewModel.getMovies().removeObservers(this);
-        viewModel.getIsLoading().removeObservers(this);
+        getListItems().removeObservers(this);
+        getIsLoading().removeObservers(this);
     }
 
     @Override
@@ -108,12 +104,13 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
         final MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService, listener);
-        viewModel.getMovies().observe(this, adapter::setMovies);
+        getListItems().observe(this, adapter::setMovies);
         recyclerView.setAdapter(adapter);
     }
 
-    protected void setupViewModel(T viewModel) {
-    }
+    protected abstract LiveData<List<MovieListItem>> getListItems();
+
+    protected abstract LiveData<Boolean> getIsLoading();
 
     public void showLoadingIndicator() {
         errorTextView.setVisibility(View.INVISIBLE);
