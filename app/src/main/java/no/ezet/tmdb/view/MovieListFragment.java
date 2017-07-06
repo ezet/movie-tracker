@@ -1,11 +1,14 @@
 package no.ezet.tmdb.view;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import no.ezet.tmdb.viewmodel.FavoriteListViewModel;
 import no.ezet.tmdb.viewmodel.MovieListViewModel;
 
 /**
@@ -37,15 +40,15 @@ public class MovieListFragment extends MovieListBaseFragment<MovieListViewModel>
         mode = getArguments().getInt(ARG_MODE);
     }
 
+    @Override
+    protected MovieListViewModel getViewModel(ViewModelProvider.Factory viewModelFactory) {
+        return ViewModelProviders.of(this, viewModelFactory).get(MovieListViewModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
-    protected Class<MovieListViewModel> getViewModelClass() {
-        return MovieListViewModel.class;
     }
 
     @Override

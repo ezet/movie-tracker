@@ -82,7 +82,7 @@ public class MovieRepository {
     @NonNull
     public LiveData<Resource<Movie>> getMovieDetails(int id) {
         MutableLiveData<Resource<Movie>> liveData = new MutableLiveData<>();
-        apiService.getDetailsWithAppend(id, "videos,reviews,images").enqueue(new Callback<Movie>() {
+        apiService.getDetailsWithAppend(id, "videos,reviews,images,similar,recommendations").enqueue(new Callback<Movie>() {
             @Override
             public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
                 if (response.isSuccessful() && response.body() != null) {

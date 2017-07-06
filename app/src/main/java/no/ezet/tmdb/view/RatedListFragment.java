@@ -1,5 +1,8 @@
 package no.ezet.tmdb.view;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
+
 import no.ezet.tmdb.viewmodel.RatedListViewModel;
 
 public class RatedListFragment extends MovieListBaseFragment<RatedListViewModel> {
@@ -9,7 +12,7 @@ public class RatedListFragment extends MovieListBaseFragment<RatedListViewModel>
     }
 
     @Override
-    protected Class<RatedListViewModel> getViewModelClass() {
-        return RatedListViewModel.class;
+    protected RatedListViewModel getViewModel(ViewModelProvider.Factory viewModelFactory) {
+        return ViewModelProviders.of(this, viewModelFactory).get(RatedListViewModel.class);
     }
 }

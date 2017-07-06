@@ -29,6 +29,10 @@ public class Movie {
     public ApiList<MovieReview> reviews;
     @Ignore
     public List<Genre> genres;
+    @Ignore
+    public ApiList<Movie> similar;
+    @Ignore
+    public ApiList<Movie> recommended;
     private Double rating;
     private int id;
     private String posterPath;

@@ -53,7 +53,7 @@ public abstract class CachedMovieListResource extends NetworkResource<List<Movie
     @Override
     protected LiveData<List<Movie>> loadFromDb() {
         MediatorLiveData<List<Movie>> liveData = new MediatorLiveData<>();
-        AsyncTask.execute(() -> liveData.addSource(movieCacheDao.getByType(type), liveData::setValue));
+        AsyncTask.execute(() -> liveData.addSource(movieCacheDao.getByType(type), liveData::postValue));
         return liveData;
     }
 

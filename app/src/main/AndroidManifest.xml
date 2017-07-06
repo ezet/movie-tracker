@@ -33,6 +33,7 @@
         <activity
             android:name="no.ezet.tmdb.view.MovieDetailActivity"
             android:label="@string/title_movie_detail"
+            android:launchMode="standard"
             android:parentActivityName="no.ezet.tmdb.view.MovieDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

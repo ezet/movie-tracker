@@ -8,6 +8,7 @@ import no.ezet.tmdb.view.MovieDetailFragment;
 import no.ezet.tmdb.view.MovieListFragment;
 import no.ezet.tmdb.view.RatedListFragment;
 import no.ezet.tmdb.view.SearchFragment;
+import no.ezet.tmdb.view.SimilarListFragment;
 import no.ezet.tmdb.view.WatchlistFragment;
 
 @Module()
@@ -33,6 +34,9 @@ abstract class FragmentModule {
 
     @ContributesAndroidInjector
     abstract RatedListFragment contributeRatedListFragment();
+
+    @ContributesAndroidInjector
+    abstract SimilarListFragment contributeSimilarListFragment();
 
 //    @Provides
 //    MovieListFragment.FragmentListener provideMovieListFragmentListener(DiscoverActivity activity) {

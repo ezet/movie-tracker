@@ -2,6 +2,7 @@ package no.ezet.tmdb.view;
 
 import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,11 +21,11 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.tmdb.R;
 import no.ezet.tmdb.service.ImageService;
-import no.ezet.tmdb.viewmodel.MovieListBaseViewModel;
+import no.ezet.tmdb.viewmodel.MovieDetailsViewModel;
 
-public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> extends LifecycleFragment {
+public class SimilarListFragment extends LifecycleFragment {
 
-    protected T viewModel;
+    protected MovieDetailsViewModel viewModel;
     @Inject
     ImageService imageService;
     @Inject
@@ -40,6 +41,10 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return (int) (dpWidth / 180);
+    }
+
+    public static SimilarListFragment create(int movieId, String posterPath) {
+        return new SimilarListFragment();
     }
 
     @Override
@@ -60,21 +65,20 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        viewModel = getViewModel(viewModelFactory);
-    }
+        viewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(MovieDetailsViewModel.class);
 
-    protected abstract T getViewModel(ViewModelProvider.Factory viewModelFactory);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setupViewModel(viewModel);
         viewModel.onRestoreInstanceState(savedInstanceState);
-        viewModel.getIsLoading().observe(this, loading -> {
-                    if (loading != null && loading) showLoadingIndicator();
-                    else showMovieList();
-                }
-        );
+//        viewModel.getIsLoading().observe(this, loading -> {
+//                    if (loading != null && loading) showLoadingIndicator();
+//                    else showMovieList();
+//                }
+//        );
         View root = inflater.inflate(R.layout.fragment_movie_list, container, false);
         recyclerView = (RecyclerView) root.findViewById(R.id.movie_list);
         progressBar = (ProgressBar) root.findViewById(R.id.pb_loading_indicator);
@@ -94,7 +98,7 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        viewModel.getMovies().removeObservers(this);
+        viewModel.getSimilar().removeObservers(this);
         viewModel.getIsLoading().removeObservers(this);
     }
 
@@ -108,11 +112,11 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calculateNoOfColumns(getContext())));
         final MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(imageService, listener);
-        viewModel.getMovies().observe(this, adapter::setMovies);
+        viewModel.getSimilar().observe(this, adapter::setMovies);
         recyclerView.setAdapter(adapter);
     }
 
-    protected void setupViewModel(T viewModel) {
+    protected void setupViewModel(MovieDetailsViewModel viewModel) {
     }
 
     public void showLoadingIndicator() {
@@ -130,7 +134,6 @@ public abstract class MovieListBaseFragment<T extends MovieListBaseViewModel> ex
         progressBar.setVisibility(View.INVISIBLE);
         errorTextView.setVisibility(View.VISIBLE);
     }
-
 }
 
 

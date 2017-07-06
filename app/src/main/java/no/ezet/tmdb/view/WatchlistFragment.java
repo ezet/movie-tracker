@@ -1,20 +1,21 @@
 package no.ezet.tmdb.view;
 
-import no.ezet.tmdb.viewmodel.MovieListBaseViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
+
 import no.ezet.tmdb.viewmodel.WatchlistViewModel;
 
 @SuppressWarnings("ConstantConditions")
-public class WatchlistFragment extends MovieListBaseFragment {
+public class WatchlistFragment extends MovieListBaseFragment<WatchlistViewModel> {
 
     public static WatchlistFragment create() {
         return new WatchlistFragment();
     }
 
     @Override
-    protected Class<? extends MovieListBaseViewModel> getViewModelClass() {
-        return WatchlistViewModel.class;
+    protected WatchlistViewModel getViewModel(ViewModelProvider.Factory viewModelFactory) {
+        return ViewModelProviders.of(this, viewModelFactory).get(WatchlistViewModel.class);
     }
-
 }
 
 

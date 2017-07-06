@@ -1,5 +1,7 @@
 package no.ezet.tmdb.view;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 
 import javax.inject.Inject;
@@ -31,13 +33,14 @@ public class SearchFragment extends MovieListBaseFragment<SearchMoviesViewModel>
     }
 
     @Override
+    protected SearchMoviesViewModel getViewModel(ViewModelProvider.Factory viewModelFactory) {
+        return ViewModelProviders.of(this, viewModelFactory).get(SearchMoviesViewModel.class);
+    }
+
+    @Override
     protected void setupViewModel(SearchMoviesViewModel viewModel) {
         viewModel.setQuery(query);
     }
 
-    @Override
-    protected Class<SearchMoviesViewModel> getViewModelClass() {
-        return SearchMoviesViewModel.class;
-    }
 
 }

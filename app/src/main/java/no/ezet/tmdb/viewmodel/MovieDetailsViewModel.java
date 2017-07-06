@@ -4,8 +4,10 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,6 +34,7 @@ public class MovieDetailsViewModel extends ViewModel {
     private MediatorLiveData<Boolean> favorite = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> bookmark = new MediatorLiveData<>();
     private MediatorLiveData<Boolean> isRated = new MediatorLiveData<>();
+    private MediatorLiveData<List<MovieListItem>> similar = new MediatorLiveData<>();
 
     @Inject
     MovieDetailsViewModel(MovieRepository movieRepository, FavoriteRepository favoriteRepository, WatchlistRepository watchlistRepository, RatedRepository ratedRepository) {
@@ -61,13 +64,13 @@ public class MovieDetailsViewModel extends ViewModel {
         movie.addSource(selectedMovieSource, movieResource -> {
             //noinspection ConstantConditions
             if (movieResource.status != Resource.LOADING) {
-//                movie.removeSource(selectedMovieSource);
                 loading.setValue(false);
             }
             if (movieResource.status == Resource.SUCCESS) {
                 movie.setValue(movieResource.data);
                 reviews.setValue(movieResource.data.reviews.results);
                 trailers.setValue(movieResource.data.videos.results);
+                setSimilarMovies(movieResource.data.similar.results);
             }
         });
 
@@ -81,7 +84,7 @@ public class MovieDetailsViewModel extends ViewModel {
         });
 
         LiveData<Resource<Movie>> watchlistRes = watchlistRepository.getById(id);
-        favorite.addSource(watchlistRes, movieResource -> {
+        bookmark.addSource(watchlistRes, movieResource -> {
             if (movieResource != null && movieResource.status == Resource.SUCCESS) {
                 boolean newValue = movieResource.data != null;
                 if (bookmark.getValue() == null || newValue != bookmark.getValue())
@@ -98,6 +101,13 @@ public class MovieDetailsViewModel extends ViewModel {
         });
     }
 
+    private void setSimilarMovies(List<Movie> results) {
+        List<MovieListItem> list = new ArrayList<>();
+        for (Movie movie : results) {
+            list.add(MovieListItem.create(movie));
+        }
+        similar.setValue(list);
+    }
 
     public LiveData<List<MovieReview>> getReviews() {
         return reviews;
@@ -105,6 +115,10 @@ public class MovieDetailsViewModel extends ViewModel {
 
     public LiveData<List<MovieTrailer>> getTrailers() {
         return trailers;
+    }
+
+    public LiveData<List<MovieListItem>> getSimilar() {
+        return similar;
     }
 
     public void toggleFavorite() {
@@ -139,5 +153,17 @@ public class MovieDetailsViewModel extends ViewModel {
     public void deleteRating() {
         if (getMovie().getValue() == null) return;
         ratedRepository.remove(getMovie().getValue());
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+
+    }
+
+    public LiveData<Boolean> getIsLoading() {
+        return loading;
     }
 }

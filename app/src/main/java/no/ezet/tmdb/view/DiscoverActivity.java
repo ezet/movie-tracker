@@ -57,7 +57,7 @@ import timber.log.Timber;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class DiscoverActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector, MovieListBaseFragment.FragmentListener, NavigationView.OnNavigationItemSelectedListener, DiscoverListsFragment.TabLayoutHost {
+public class DiscoverActivity extends AppCompatActivity implements LifecycleRegistryOwner, HasSupportFragmentInjector, MovieListRecyclerViewAdapter.FragmentListener, NavigationView.OnNavigationItemSelectedListener, DiscoverListsFragment.TabLayoutHost {
 
     public static final String BOTTOM_NAV_TRANSITION_NAME = "BOTTOM_NAV_TRANSITION_NAME";
     private static final String APP_BAR_TRANSITION_NAME = "APP_BAR_TRANSITION_NAME";

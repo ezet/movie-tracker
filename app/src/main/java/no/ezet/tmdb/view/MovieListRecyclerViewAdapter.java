@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+import no.ezet.tmdb.BuildConfig;
 import no.ezet.tmdb.R;
 import no.ezet.tmdb.service.ImageService;
 import no.ezet.tmdb.viewmodel.MovieListItem;
@@ -21,10 +22,10 @@ public class MovieListRecyclerViewAdapter
 
     private final List<MovieListItem> movies = new ArrayList<>();
     private ImageService imageService;
-    private MovieListBaseFragment.FragmentListener listener;
+    private FragmentListener listener;
     private int counter;
 
-    MovieListRecyclerViewAdapter(ImageService imageService, MovieListBaseFragment.FragmentListener listener) {
+    MovieListRecyclerViewAdapter(ImageService imageService, FragmentListener listener) {
         this.imageService = imageService;
         this.listener = listener;
         setHasStableIds(true);
@@ -60,11 +61,17 @@ public class MovieListRecyclerViewAdapter
     }
 
     void setMovies(List<MovieListItem> movieList) {
-        Timber.d("setMovies: counter:" + counter++);
+        if (BuildConfig.DEBUG && counter > 1) throw new AssertionError("List set more than once");
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(this.movies, movieList));
         this.movies.clear();
         this.movies.addAll(movieList);
+//        notifyDataSetChanged();
         diffResult.dispatchUpdatesTo(this);
+    }
+
+    public interface FragmentListener {
+
+        void onItemClick(View f, MovieListItem movie);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

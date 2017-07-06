@@ -13,15 +13,15 @@ import no.ezet.tmdb.repository.FavoriteRepository;
 
 public class FavoriteListViewModel extends MovieListBaseViewModel {
 
-    private final FavoriteRepository favoriteRepository;
+    private final FavoriteRepository repository;
 
     @Inject
-    FavoriteListViewModel(FavoriteRepository favoriteRepository) {
-        this.favoriteRepository = favoriteRepository;
+    FavoriteListViewModel(FavoriteRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public LiveData<Resource<List<Movie>>> loadMovies() {
-        return favoriteRepository.getAll();
+        return repository.getAll();
     }
 }

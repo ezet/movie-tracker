@@ -1,5 +1,8 @@
 package no.ezet.tmdb.view;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
+
 import no.ezet.tmdb.viewmodel.FavoriteListViewModel;
 import no.ezet.tmdb.viewmodel.MovieListBaseViewModel;
 
@@ -10,8 +13,8 @@ public class FavoriteListFragment extends MovieListBaseFragment {
     }
 
     @Override
-    protected Class<? extends MovieListBaseViewModel> getViewModelClass() {
-        return FavoriteListViewModel.class;
+    protected MovieListBaseViewModel getViewModel(ViewModelProvider.Factory viewModelFactory) {
+        return ViewModelProviders.of(this, viewModelFactory).get(FavoriteListViewModel.class);
     }
 
 }
