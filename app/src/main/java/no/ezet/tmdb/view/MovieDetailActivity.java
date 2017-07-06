@@ -6,7 +6,6 @@ import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
@@ -20,8 +19,6 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.ChangeBounds;
-import android.transition.Fade;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -129,7 +126,10 @@ public class MovieDetailActivity extends AppCompatActivity implements LifecycleR
     }
 
     private void gotoReviews() {
-
+        String posterPath = getIntent().getStringExtra(EXTRA_POSTER_PATH);
+        ReviewsFragment fragment = ReviewsFragment.create(movieId, posterPath);
+        setRoot(fragment);
+        hideFabs();
     }
 
     private void gotoRecommended() {
