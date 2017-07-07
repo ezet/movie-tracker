@@ -12,6 +12,7 @@ import no.ezet.tmdb.api.model.Movie;
 import no.ezet.tmdb.api.model.PostResponse;
 import no.ezet.tmdb.db.MovieCacheDao;
 import no.ezet.tmdb.network.Resource;
+import no.ezet.tmdb.service.PreferenceService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,16 +21,18 @@ import timber.log.Timber;
 public abstract class MutableMovieRepository {
     protected final int type;
     private final ApiService apiService;
+    private final PreferenceService preferenceService;
     private MovieCacheDao movieCacheDao;
 
-    MutableMovieRepository(int type, MovieCacheDao movieCacheDao, ApiService apiService) {
+    MutableMovieRepository(int type, MovieCacheDao movieCacheDao, ApiService apiService, PreferenceService preferenceService) {
         this.type = type;
         this.movieCacheDao = movieCacheDao;
         this.apiService = apiService;
+        this.preferenceService = preferenceService;
     }
 
     public LiveData<Resource<List<Movie>>> getAll() {
-        return new CachedMovieListResource(apiService, movieCacheDao, type) {
+        return new CachedMovieListResource(apiService, movieCacheDao, type, preferenceService) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return MutableMovieRepository.this.createApiCall(apiService);
