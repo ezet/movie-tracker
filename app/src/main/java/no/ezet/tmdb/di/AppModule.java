@@ -5,8 +5,6 @@ import android.arch.persistence.room.Room;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.squareup.picasso.Picasso;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -18,12 +16,6 @@ import no.ezet.tmdb.viewmodel.ViewModelModule;
 
 @Module(includes = ViewModelModule.class)
 class AppModule {
-
-    @Singleton
-    @Provides
-    Picasso providePicasso(Application application) {
-        return new Picasso.Builder(application).loggingEnabled(false).build();
-    }
 
     @Singleton
     @Provides

@@ -1,9 +1,13 @@
 package no.ezet.tmdb.di;
 
 import dagger.Module;
+import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
+import no.ezet.tmdb.service.ImageService;
+import no.ezet.tmdb.view.DiscoverActivity;
 import no.ezet.tmdb.view.FavoriteListFragment;
 import no.ezet.tmdb.view.FilterFragment;
+import no.ezet.tmdb.view.MovieDetailActivity;
 import no.ezet.tmdb.view.MovieDetailFragment;
 import no.ezet.tmdb.view.MovieListFragment;
 import no.ezet.tmdb.view.RatedListFragment;
@@ -13,7 +17,7 @@ import no.ezet.tmdb.view.SimilarListFragment;
 import no.ezet.tmdb.view.WatchlistFragment;
 
 @Module()
-abstract class FragmentModule {
+abstract class DiscoverModule {
 
     @ContributesAndroidInjector
     abstract MovieDetailFragment contributeMovieDetailFragment();
@@ -41,10 +45,5 @@ abstract class FragmentModule {
 
     @ContributesAndroidInjector
     abstract RecommendedListFragment contributeRecommendedListFragment();
-
-//    @Provides
-//    MovieListFragment.FragmentListener provideMovieListFragmentListener(DiscoverActivity activity) {
-//        return activity;
-//    }
 
 }

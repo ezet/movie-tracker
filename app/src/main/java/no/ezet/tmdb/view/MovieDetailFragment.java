@@ -26,11 +26,9 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import no.ezet.tmdb.R;
 import no.ezet.tmdb.api.model.Movie;
-import no.ezet.tmdb.api.model.MovieReview;
 import no.ezet.tmdb.api.model.MovieTrailer;
 import no.ezet.tmdb.databinding.FragmentMovieDetailBinding;
 import no.ezet.tmdb.service.ImageService;
-import no.ezet.tmdb.service.VideoService;
 import no.ezet.tmdb.viewmodel.MovieDetailsViewModel;
 
 /**
@@ -46,9 +44,6 @@ public class MovieDetailFragment extends LifecycleFragment {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
-
-    @Inject
-    VideoService videoService;
 
     private MovieDetailsViewModel viewModel;
     private ImageView backdropImage;
@@ -93,7 +88,7 @@ public class MovieDetailFragment extends LifecycleFragment {
         trailerList = (RecyclerView) binding.getRoot().findViewById(R.id.trailer_list);
         portrait = (ImageView) binding.getRoot().findViewById(R.id.movie_portrait);
         ViewCompat.setTransitionName(portrait, String.valueOf(movieId));
-        imageService.loadImage(getArguments().getString(ARG_POSTER_PATH), ImageService.SIZE_W342, portrait);
+        imageService.loadImage(getArguments().getString(ARG_POSTER_PATH), ImageService.SIZE_W185, portrait);
         viewModel.getMovie().observe(this, movie -> {
             if (movie != null) {
                 bindMovie(movie);
@@ -119,7 +114,7 @@ public class MovieDetailFragment extends LifecycleFragment {
 
 
     private void setupTrailerList(RecyclerView recyclerView) {
-        TrailerListAdapter trailerListAdapter = new TrailerListAdapter(videoService, (movieTrailer, i) -> openTrailer(movieTrailer));
+        TrailerListAdapter trailerListAdapter = new TrailerListAdapter(imageService, (movieTrailer, i) -> openTrailer(movieTrailer));
         recyclerView.setAdapter(trailerListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         viewModel.getTrailers().observe(this, trailerListAdapter::setVideos);

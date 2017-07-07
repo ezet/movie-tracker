@@ -11,16 +11,16 @@ import java.util.List;
 
 import no.ezet.tmdb.R;
 import no.ezet.tmdb.api.model.MovieTrailer;
-import no.ezet.tmdb.service.VideoService;
+import no.ezet.tmdb.service.ImageService;
 
 public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder> {
 
     private final List<MovieTrailer> videos = new ArrayList<>();
-    private final VideoService videoService;
+    private final ImageService imageService;
     private ItemClickListener itemClickListener;
 
-    TrailerListAdapter(VideoService videoService, ItemClickListener itemClickListener) {
-        this.videoService = videoService;
+    TrailerListAdapter(ImageService imageService, ItemClickListener itemClickListener) {
+        this.imageService = imageService;
         this.itemClickListener = itemClickListener;
     }
 
@@ -34,7 +34,7 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         viewHolder.movieTrailer = videos.get(i);
-        videoService.loadThumbnail(viewHolder.movieTrailer.key, viewHolder.trailerThumbnail);
+        imageService.loadThumbnail(viewHolder.movieTrailer.key, viewHolder.trailerThumbnail);
         viewHolder.itemView.setOnClickListener(v -> itemClickListener.onClick(viewHolder.movieTrailer, viewHolder.getAdapterPosition()));
     }
 
