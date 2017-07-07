@@ -7,14 +7,15 @@ import no.ezet.tmdb.api.model.ApiList;
 import no.ezet.tmdb.api.model.PostResponse;
 import no.ezet.tmdb.db.MovieCacheDao;
 import no.ezet.tmdb.api.model.Movie;
+import no.ezet.tmdb.service.PreferenceService;
 import retrofit2.Call;
 
 
 public class FavoriteRepository extends MutableMovieRepository {
 
     @Inject
-    FavoriteRepository(MovieCacheDao movieCacheDao, ApiService apiService) {
-        super(Movie.FAVORITE, movieCacheDao, apiService);
+    FavoriteRepository(MovieCacheDao movieCacheDao, ApiService apiService, PreferenceService preferenceService) {
+        super(Movie.FAVORITE, movieCacheDao, apiService, preferenceService);
     }
 
     @Override

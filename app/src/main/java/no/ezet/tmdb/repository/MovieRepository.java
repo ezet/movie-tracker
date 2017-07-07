@@ -15,6 +15,7 @@ import no.ezet.tmdb.api.model.Movie;
 import no.ezet.tmdb.api.model.PostResponse;
 import no.ezet.tmdb.db.MovieCacheDao;
 import no.ezet.tmdb.network.Resource;
+import no.ezet.tmdb.service.PreferenceService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,11 +29,13 @@ public class MovieRepository {
     private static final String QUERY_NOW_PLAYING = "now_playing";
     private final ApiService apiService;
     private final MovieCacheDao movieCacheDao;
+    private PreferenceService preferenceService;
 
     @Inject
-    MovieRepository(ApiService apiService, MovieCacheDao movieCacheDao) {
+    MovieRepository(ApiService apiService, MovieCacheDao movieCacheDao, PreferenceService preferenceService) {
         this.apiService = apiService;
         this.movieCacheDao = movieCacheDao;
+        this.preferenceService = preferenceService;
     }
 
     public LiveData<Resource<PostResponse>> rate(int movieId, double rating) {
@@ -129,7 +132,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getPopular() {
-        return new CachedMovieListResource(apiService, movieCacheDao, Movie.POPULAR) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.POPULAR, preferenceService) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_POPULAR);
@@ -139,7 +142,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getUpcoming() {
-        return new CachedMovieListResource(apiService, movieCacheDao, Movie.UPCOMING) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.UPCOMING, preferenceService) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_UPCOMING);
@@ -149,7 +152,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getTopRated() {
-        return new CachedMovieListResource(apiService, movieCacheDao, Movie.TOP_RATED) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.TOP_RATED, preferenceService) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_TOP_RATED);
@@ -159,7 +162,7 @@ public class MovieRepository {
 
     @NonNull
     public LiveData<Resource<List<Movie>>> getNowPlaying() {
-        return new CachedMovieListResource(apiService, movieCacheDao, Movie.NOW_PLAYING) {
+        return new CachedMovieListResource(apiService, movieCacheDao, Movie.NOW_PLAYING, preferenceService) {
             @Override
             protected Call<ApiList<Movie>> createApiCall(ApiService apiService) {
                 return apiService.getMovies(QUERY_NOW_PLAYING);

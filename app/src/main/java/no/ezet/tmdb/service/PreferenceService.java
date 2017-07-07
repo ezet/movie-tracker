@@ -44,4 +44,20 @@ public class PreferenceService {
     public void putInt(@StringRes int resId, int value) {
         defaultSharedPreferences.edit().putInt(resources.getString(resId), value).apply();
     }
+
+    public void putLong(@StringRes int resId, long value) {
+        putLong(resources.getString(resId), value);
+    }
+
+    public void putLong(String key, long value) {
+        defaultSharedPreferences.edit().putLong(key, value).apply();
+    }
+
+    public long getLong(@StringRes int resId) {
+        return getLong(resources.getString(resId));
+    }
+
+    public long getLong(String key) {
+        return defaultSharedPreferences.getLong(key, 0);
+    }
 }

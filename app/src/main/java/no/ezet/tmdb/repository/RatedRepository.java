@@ -7,13 +7,14 @@ import no.ezet.tmdb.api.model.ApiList;
 import no.ezet.tmdb.api.model.Movie;
 import no.ezet.tmdb.api.model.PostResponse;
 import no.ezet.tmdb.db.MovieCacheDao;
+import no.ezet.tmdb.service.PreferenceService;
 import retrofit2.Call;
 
 public class RatedRepository extends MutableMovieRepository {
 
     @Inject
-    RatedRepository(MovieCacheDao movieCacheDao, ApiService apiService) {
-        super(Movie.RATED, movieCacheDao, apiService);
+    RatedRepository(MovieCacheDao movieCacheDao, ApiService apiService, PreferenceService preferenceService) {
+        super(Movie.RATED, movieCacheDao, apiService, preferenceService);
     }
 
     @Override
