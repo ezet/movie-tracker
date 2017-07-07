@@ -57,7 +57,7 @@ public class MovieListRecyclerViewAdapter
     }
 
     private void loadImage(String relPath, ImageView imageView) {
-        imageService.loadImage(relPath, ImageService.SIZE_W342, imageView);
+        imageService.loadImage(relPath, ImageService.SIZE_W185, imageView);
     }
 
     void setMovies(List<MovieListItem> movieList) {

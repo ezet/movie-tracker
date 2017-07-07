@@ -8,19 +8,20 @@ import no.ezet.tmdb.view.MovieDetailActivity;
 @Module
 abstract class ActivityModule {
 
-    @ContributesAndroidInjector(modules = FragmentModule.class)
+    @ContributesAndroidInjector(modules = DiscoverModule.class)
     abstract DiscoverActivity contributeDiscoverActivity();
 
-    @ContributesAndroidInjector(modules = FragmentModule.class)
+    @ContributesAndroidInjector(modules = MovieDetailModule.class)
     abstract MovieDetailActivity contributeMovieDetailActivity();
 
 }
-//@Module(subcomponents = MainActivitySubcomponent.class)
+
+//@ActivityScope
+//@Module(subcomponents = DiscoverActivitySubcomponent.class)
 //abstract class ActivityModule {
 //    @Binds
 //    @IntoMap
 //    @ActivityKey(DiscoverActivity.class)
 //    abstract AndroidInjector.Factory<? extends Activity>
-//    bindMainActivityInjectorFactory(MainActivitySubcomponent.Builder builder);
-//
+//    bindDiscoverActivityInjectorFactory(DiscoverActivitySubcomponent.Builder builder);
 //}
